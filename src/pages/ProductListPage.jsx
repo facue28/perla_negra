@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { products } from '@/features/products/data/products';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductSearchBar from '@/features/products/components/ProductSearchBar';
@@ -8,17 +8,31 @@ import SEO from '@/components/ui/SEO';
 const ProductListPage = () => {
     // States for filters
     const [selectedCategories, setSelectedCategories] = useState([]);
-    const [sortOrder, setSortOrder] = useState(''); // 'asc', 'desc' or ''
+    const [selectedSensations, setSelectedSensations] = useState([]);
+    const [sortOrder, setSortOrder] = useState('newest'); // 'asc', 'desc', 'newest', 'oldest'
     const [priceRange, setPriceRange] = useState({ min: 0, max: 200 }); // Ajustable range
 
     // Collapsible sections state
     const [expanded, setExpanded] = useState({
-        categories: true,
-        sort: false,
-        price: false
+        categories: false,
+        sensations: true,
+        price: true
     });
 
     const categories = [...new Set(products.map(p => p.category))];
+
+    // Dynamic sensations based on selected categories
+    const sensations = useMemo(() => {
+        const relevantProducts = selectedCategories.length > 0
+            ? products.filter(p => selectedCategories.includes(p.category))
+            : products;
+        return [...new Set(relevantProducts.map(p => p.sensation))];
+    }, [selectedCategories]);
+
+    // Auto-deselect sensations that are no longer available
+    useEffect(() => {
+        setSelectedSensations(prev => prev.filter(s => sensations.includes(s)));
+    }, [sensations]);
 
     // Toggle logic
     const toggleSection = (section) => {
@@ -35,33 +49,60 @@ const ProductListPage = () => {
         });
     };
 
+    const handleSensationChange = (sensation) => {
+        setSelectedSensations(prev => {
+            if (prev.includes(sensation)) {
+                return prev.filter(s => s !== sensation);
+            } else {
+                return [...prev, sensation];
+            }
+        });
+    };
+
     const clearFilters = () => {
         setSelectedCategories([]);
-        setSortOrder('');
+        setSelectedSensations([]);
+        setSortOrder('newest');
         setPriceRange({ min: 0, max: 200 });
     };
 
     // Filtering and Sorting logic
     const filteredAndSortedProducts = useMemo(() => {
-        let result = products;
+        let result = [...products];
 
         // Filter by Category
         if (selectedCategories.length > 0) {
             result = result.filter(p => selectedCategories.includes(p.category));
         }
 
+        // Filter by Sensation
+        if (selectedSensations.length > 0) {
+            result = result.filter(p => selectedSensations.includes(p.sensation));
+        }
+
         // Filter by Price
         result = result.filter(p => p.price >= priceRange.min && p.price <= priceRange.max);
 
         // Sort
-        if (sortOrder === 'asc') {
-            result.sort((a, b) => a.price - b.price);
-        } else if (sortOrder === 'desc') {
-            result.sort((a, b) => b.price - a.price);
+        switch (sortOrder) {
+            case 'asc':
+                result.sort((a, b) => a.price - b.price);
+                break;
+            case 'desc':
+                result.sort((a, b) => b.price - a.price);
+                break;
+            case 'newest':
+                result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                break;
+            case 'oldest':
+                result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                break;
+            default:
+                break;
         }
 
         return result;
-    }, [selectedCategories, priceRange, sortOrder]);
+    }, [selectedCategories, selectedSensations, priceRange, sortOrder]);
 
     return (
         <div className="bg-background-dark min-h-screen py-8 fade-in">
@@ -70,9 +111,70 @@ const ProductListPage = () => {
 
                 <div className="flex flex-col md:flex-row md:items-start gap-8">
 
-                    {/* Sidebar Filters */}
-                    <aside className="w-full md:w-64 flex-shrink-0">
-                        <div className="bg-background-alt p-6 rounded-xl border border-border/20 sticky top-24">
+                    {/* Header Section - Shows first on mobile, part of right column on desktop */}
+                    <div className="w-full md:hidden order-1">
+                        <div className="mb-6 flex flex-col gap-4 border-b border-border/10 pb-4">
+                            <div>
+                                <h2 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h2>
+                                <p className="text-text-muted text-sm">
+                                    Mostrando {filteredAndSortedProducts.length} risultati
+                                </p>
+                            </div>
+                            {/* Search Bar */}
+                            <div className="w-full">
+                                <ProductSearchBar />
+                            </div>
+
+                            {/* Category Chips */}
+                            <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
+                                <div className="flex gap-2 pb-2">
+                                    <button
+                                        onClick={() => setSelectedCategories([])}
+                                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategories.length === 0
+                                            ? 'bg-accent text-background-dark shadow-[0_0_10px_rgba(63,255,193,0.3)]'
+                                            : 'bg-background-alt text-text-muted border border-border/30 hover:border-accent/50 hover:text-text-primary'
+                                            }`}
+                                    >
+                                        Tutti
+                                    </button>
+                                    {categories.map(cat => (
+                                        <button
+                                            key={cat}
+                                            onClick={() => handleCategoryChange(cat)}
+                                            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategories.includes(cat)
+                                                ? 'bg-accent text-background-dark shadow-[0_0_10px_rgba(63,255,193,0.3)]'
+                                                : 'bg-background-alt text-text-muted border border-border/30 hover:border-accent/50 hover:text-text-primary'
+                                                }`}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Sorting Dropdown - Mobile */}
+                            <div className="w-full">
+                                <label className="text-xs text-text-muted mb-1 block font-medium">Ordina per</label>
+                                <div className="relative">
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value)}
+                                        className="w-full bg-background-alt border border-border/30 rounded-lg px-4 py-2 text-sm text-text-primary focus:border-accent focus:outline-none appearance-none cursor-pointer"
+                                    >
+                                        <option value="newest">Più recenti</option>
+                                        <option value="oldest">Meno recenti</option>
+                                        <option value="asc">Prezzo: Basso → Alto</option>
+                                        <option value="desc">Prezzo: Alto → Basso</option>
+                                    </select>
+                                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Sidebar Filters - Shows second on mobile, left on desktop */}
+                    <aside className="w-full md:w-64 flex-shrink-0 order-2 md:order-1">
+                        <div className="bg-background-alt p-6 rounded-xl border border-border/20 md:sticky md:top-24">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-2 text-text-primary font-bold text-lg">
                                     <Filter size={20} className="text-accent" />
@@ -86,82 +188,31 @@ const ProductListPage = () => {
                                 </button>
                             </div>
 
-                            {/* Category Filter */}
+                            {/* Sensation Filter */}
                             <div className="border-b border-border/20 py-4">
                                 <button
-                                    onClick={() => toggleSection('categories')}
+                                    onClick={() => toggleSection('sensations')}
                                     className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
                                 >
-                                    <span>Categoria</span>
-                                    {expanded.categories ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                    <span>Sensazione</span>
+                                    {expanded.sensations ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                                 </button>
 
-                                {expanded.categories && (
+                                {expanded.sensations && (
                                     <div className="space-y-2 mt-3 animate-slideDown">
-                                        <label className="flex items-center space-x-3 cursor-pointer group">
-                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedCategories.length === 0 ? 'bg-accent border-accent' : 'border-text-muted group-hover:border-accent'}`}>
-                                                {selectedCategories.length === 0 && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
-                                            </div>
-                                            <input
-                                                type="checkbox"
-                                                className="hidden"
-                                                checked={selectedCategories.length === 0}
-                                                onChange={() => setSelectedCategories([])}
-                                            />
-                                            <span className={`text-sm ${selectedCategories.length === 0 ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
-                                                Tutti
-                                            </span>
-                                        </label>
-
-                                        {categories.map(cat => (
-                                            <label key={cat} className="flex items-center space-x-3 cursor-pointer group">
-                                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedCategories.includes(cat) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
-                                                    {selectedCategories.includes(cat) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                        {sensations.map(sens => (
+                                            <label key={sens} className="flex items-center space-x-3 cursor-pointer group">
+                                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedSensations.includes(sens) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                                    {selectedSensations.includes(sens) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
                                                 </div>
                                                 <input
                                                     type="checkbox"
                                                     className="hidden"
-                                                    checked={selectedCategories.includes(cat)}
-                                                    onChange={() => handleCategoryChange(cat)}
+                                                    checked={selectedSensations.includes(sens)}
+                                                    onChange={() => handleSensationChange(sens)}
                                                 />
-                                                <span className={`text-sm ${selectedCategories.includes(cat) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
-                                                    {cat}
-                                                </span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Sort Filter */}
-                            <div className="border-b border-border/20 py-4">
-                                <button
-                                    onClick={() => toggleSection('sort')}
-                                    className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
-                                >
-                                    <span>Ordina per</span>
-                                    {expanded.sort ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </button>
-
-                                {expanded.sort && (
-                                    <div className="space-y-2 mt-3">
-                                        {[
-                                            { label: 'Prezzo: Dal più basso', value: 'asc' },
-                                            { label: 'Prezzo: Dal più alto', value: 'desc' }
-                                        ].map((option) => (
-                                            <label key={option.value} className="flex items-center space-x-3 cursor-pointer group">
-                                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${sortOrder === option.value ? 'border-accent' : 'border-text-muted group-hover:border-accent'}`}>
-                                                    {sortOrder === option.value && <div className="w-2 h-2 bg-accent rounded-full" />}
-                                                </div>
-                                                <input
-                                                    type="radio"
-                                                    name="sort"
-                                                    className="hidden"
-                                                    checked={sortOrder === option.value}
-                                                    onChange={() => setSortOrder(option.value)}
-                                                />
-                                                <span className={`text-sm ${sortOrder === option.value ? 'text-text-primary' : 'text-text-muted group-hover:text-text-primary'}`}>
-                                                    {option.label}
+                                                <span className={`text-sm ${selectedSensations.includes(sens) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                                    {sens}
                                                 </span>
                                             </label>
                                         ))}
@@ -214,26 +265,73 @@ const ProductListPage = () => {
                     </aside>
 
                     {/* Product Grid */}
-                    <div className="flex-grow">
-                        <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/10 pb-4">
+                    <div className="flex-grow order-3 md:order-2">
+                        {/* Header - Desktop only */}
+                        <div className="mb-6 hidden md:flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/10 pb-4">
                             <div>
                                 <h2 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h2>
                                 <p className="text-text-muted text-sm">
                                     Mostrando {filteredAndSortedProducts.length} risultati
                                 </p>
                             </div>
-                            {/* Search Bar */}
-                            <div className="w-full md:w-auto md:min-w-[320px]">
-                                <ProductSearchBar />
+                            {/* Search & Sort Section */}
+                            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto md:min-w-[450px]">
+                                {/* Search Bar */}
+                                <div className="flex-grow">
+                                    <ProductSearchBar />
+                                </div>
+                                {/* Sort Filter - Desktop */}
+                                <div className="min-w-[200px]">
+                                    <div className="relative">
+                                        <select
+                                            value={sortOrder}
+                                            onChange={(e) => setSortOrder(e.target.value)}
+                                            className="w-full bg-background-alt border border-border/30 rounded-lg px-4 py-2 text-sm text-text-primary focus:border-accent focus:outline-none appearance-none cursor-pointer h-full"
+                                        >
+                                            <option value="newest">Più recenti</option>
+                                            <option value="oldest">Meno recenti</option>
+                                            <option value="asc">Prezzo: Basso → Alto</option>
+                                            <option value="desc">Prezzo: Alto → Basso</option>
+                                        </select>
+                                        <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Category Chips - Desktop */}
+                        <div className="mb-6 overflow-x-auto scrollbar-thin scrollbar-thumb-accent/20 scrollbar-track-transparent">
+                            <div className="flex gap-2 pb-2">
+                                <button
+                                    onClick={() => setSelectedCategories([])}
+                                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategories.length === 0
+                                        ? 'bg-accent text-background-dark shadow-[0_0_10px_rgba(63,255,193,0.3)]'
+                                        : 'bg-background-alt text-text-muted border border-border/30 hover:border-accent/50 hover:text-text-primary'
+                                        }`}
+                                >
+                                    Tutti
+                                </button>
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => handleCategoryChange(cat)}
+                                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategories.includes(cat)
+                                            ? 'bg-accent text-background-dark shadow-[0_0_10px_rgba(63,255,193,0.3)]'
+                                            : 'bg-background-alt text-text-muted border border-border/30 hover:border-accent/50 hover:text-text-primary'
+                                            }`}
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
                         {filteredAndSortedProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                                 {filteredAndSortedProducts.map((product, index) => (
                                     <div
                                         key={product.id}
-                                        className="fade-in opacity-0"
+                                        className="fade-in opacity-0 h-full"
                                         style={{ animationDelay: `${index * 100}ms` }}
                                     >
                                         <ProductCard product={product} />

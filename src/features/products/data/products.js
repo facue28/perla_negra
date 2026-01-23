@@ -14,7 +14,9 @@ const rawProducts = [
         "categoria": "GEL LUBRIFICANTE",
         "imagen": null,
         "codigo": "LUB01",
-        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti"
+        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti",
+        "sensazione": "Rilassante",
+        "createdAt": "2024-01-01T10:00:00Z"
     },
     {
         "id": 2.0,
@@ -27,7 +29,9 @@ const rawProducts = [
         "categoria": "GEL LUBRIFICANTE",
         "imagen": null,
         "codigo": "LUB03",
-        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti"
+        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti",
+        "sensazione": "Freddo",
+        "createdAt": "2024-01-02T10:00:00Z"
     },
     {
         "id": 3.0,
@@ -40,7 +44,9 @@ const rawProducts = [
         "categoria": "GEL LUBRIFICANTE",
         "imagen": null,
         "codigo": "LUB02",
-        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti"
+        "descripcion_adicional": "Senza parabeni | Senza profumo | Senza coloranti",
+        "sensazione": "Calore",
+        "createdAt": "2024-01-03T10:00:00Z"
     },
     {
         "id": 4.0,
@@ -53,7 +59,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "IBZ",
-        "descripcion_adicional": "Note di Testa: fiore di tè dolce e lime Note di Cuore: ambra grigia, iris e note terrose Note di Fondo: cuoio, iris e vaniglia."
+        "descripcion_adicional": "Note di Testa: fiore di tè dolce e lime Note di Cuore: ambra grigia, iris e note terrose Note di Fondo: cuoio, iris e vaniglia.",
+        "sensazione": "Vibrante",
+        "createdAt": "2024-01-04T10:00:00Z"
     },
     {
         "id": 5.0,
@@ -66,7 +74,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "BSS",
-        "descripcion_adicional": "Nota di testa: accordo salato Nota di cuore: gelsomino Nota di fondo: meringa"
+        "descripcion_adicional": "Nota di testa: accordo salato Nota di cuore: gelsomino Nota di fondo: meringa",
+        "sensazione": "Sensuale",
+        "createdAt": "2024-01-05T10:00:00Z"
     },
     {
         "id": 6.0,
@@ -79,46 +89,54 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "FBLS",
-        "descripcion_adicional": "Note di testa: pompelmo, lime, menta e pepe rosa Note di cuore: zenzero, vetiver e gelsomino Note di fondo: incenso di olibano e legno di cedro."
+        "descripcion_adicional": "Note di testa: pompelmo, lime, menta e pepe rosa Note di cuore: zenzero, vetiver e gelsomino Note di fondo: incenso di olibano e legno di cedro.",
+        "sensazione": "Energico",
+        "createdAt": "2024-01-06T10:00:00Z"
     },
     {
         "id": 7.0,
         "nombre": "VERY SEXY",
         "subtitulo": "APHRODISIAC EAU DETOILETTE",
-        "descripcion": "Questo profumo non si indossa, si conquista. Pensato per la donna che non chiede permesso, che trasforma gli sguardi in desideri e i momenti in ricordi.Non è solo un profumo. È una dichiarazione d'intenti.",
+        "descripcion": "Questo profumo non si indossa, si conquista. Pensato per la donna que non chiede permesso, que trasforma gli sguardi in desideri e i momenti in ricordi.Non è solo un profumo. È una dichiarazione d'intenti.",
         "tamaño_ml": "50 ml",
         "tamaño_fl_oz": "1,7",
         "precio": 29.2,
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "PLS",
-        "descripcion_adicional": "Note di Testa: mandorla, caffè, bergamotto e limone. Note di Cuore: tuberosa, gelsomino, fiore d'arancio, iris e rosa bulgara. Note di Fondo: cacao, vaniglia e cannella."
+        "descripcion_adicional": "Note di Testa: mandorla, caffè, bergamotto e limone. Note di Cuore: tuberosa, gelsomino, fiore d'arancio, iris e rosa bulgara. Note di Fondo: cacao, vaniglia e cannella.",
+        "sensazione": "Provocante",
+        "createdAt": "2024-01-07T10:00:00Z"
     },
     {
         "id": 8.0,
         "nombre": "PETIT MORT",
         "subtitulo": "APHRODISIAC EAU DETOILETTE",
-        "descripcion": "È una fragranza floreale e legnosa, con un aroma allegro, giovanile, fresco e puro che trasmette un'indescrivibile sensazione di libertà.",
+        "descripcion": "È una fragranza floreale e legnosa, con un aroma allegro, giovanile, fresco e puro que trasmette un'indescrivibile sensazione di libertà.",
         "tamaño_ml": "50 ml",
         "tamaño_fl_oz": "1,7",
         "precio": 29.2,
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "PM03",
-        "descripcion_adicional": "Note di Testa: mela, mandarino e magnolia. Note di Cuore: ribes bianco, peonia e gelsomino. Note di Fondo: muschio e Amberwood."
+        "descripcion_adicional": "Note di Testa: mela, mandarino e magnolia. Note di Cuore: ribes bianco, peonia e gelsomino. Note di Fondo: muschio e Amberwood.",
+        "sensazione": "Libero",
+        "createdAt": "2024-01-08T10:00:00Z"
     },
     {
         "id": 9.0,
         "nombre": "ITFEMME",
         "subtitulo": "APHRODISIAC EAU DETOILETTE",
-        "descripcion": "Il calore narcotico della vaniglia libera il suo istinto carnale. Un aroma orientale-floreale, provocante e selvaggio, che cattura, accelera ed esalta i sensi. Un risultato magnetico.",
+        "descripcion": "Il calore narcotico della vaniglia libera il suo istinto carnale. Un aroma orientale-floreale, provocante e selvaggio, que cattura, accelera ed esalta i sensi. Un risultato magnetico.",
         "tamaño_ml": "60 ml",
         "tamaño_fl_oz": "2 fl oz",
         "precio": 32.7,
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "IT01",
-        "descripcion_adicional": "Note di Testa: Ylang-Ylang e vaniglia Note di Cuore: Legno di sandalo Note di Fondo: Popcorn"
+        "descripcion_adicional": "Note di Testa: Ylang-Ylang e vaniglia Note di Cuore: Legno di sandalo Note di Fondo: Popcorn",
+        "sensazione": "Selvaggio",
+        "createdAt": "2024-01-09T10:00:00Z"
     },
     {
         "id": 10.0,
@@ -131,20 +149,24 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "IT02",
-        "descripcion_adicional": "Note di Testa: bergamotto, agrumi e pera. Note di Cuore: gelsomino, ylang ylang e legno di palissandro. Note di Fondo: vaniglia, fava tonka e legno di cedro."
+        "descripcion_adicional": "Note di Testa: bergamotto, agrumi e pera. Note di Cuore: gelsomino, ylang ylang e legno di palissandro. Note di Fondo: vaniglia, fava tonka e legno di cedro.",
+        "sensazione": "Provocante",
+        "createdAt": "2024-01-10T10:00:00Z"
     },
     {
         "id": 11.0,
         "nombre": "CRAZY GIRL",
         "subtitulo": "APHRODISIAC EAU DETOILETTE",
-        "descripcion": "Una fragranza creata per le donne che emanano sicurezza e amano il gioco della seduzione. Un profumo fresco, seducente, sensuale e irresistibile",
+        "descripcion": "Una fragranza creata per le donne que emanano sicurezza e amano il gioco della seduzione. Un profumo fresco, seducente, sensuale e irresistibile",
         "tamaño_ml": "60 ml",
         "tamaño_fl_oz": "2 fl oz",
         "precio": 30.7,
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "C51",
-        "descripcion_adicional": "Note di Testa: lampone e limone di Amalfi Note di Cuore: gelsomino, fiore d'arancio africano e gardenia Note di Fondo: miele e ambra."
+        "descripcion_adicional": "Note di Testa: lampone e limone di Amalfi Note di Cuore: gelsomino, fiore d'arancio africano e gardenia Note di Fondo: miele e ambra.",
+        "sensazione": "Irresistibile",
+        "createdAt": "2024-01-11T10:00:00Z"
     },
     {
         "id": 12.0,
@@ -157,7 +179,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "C01",
-        "descripcion_adicional": "Note di Testa: mango e bergamotto Note di Cuore: gelsomino e incenso di olibano Note di Fondo: vaniglia e sandalo."
+        "descripcion_adicional": "Note di Testa: mango e bergamotto Note di Cuore: gelsomino e incenso di olibano Note di Fondo: vaniglia e sandalo.",
+        "sensazione": "Misterioso",
+        "createdAt": "2024-01-12T10:00:00Z"
     },
     {
         "id": 13.0,
@@ -170,7 +194,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "C01V-1",
-        "descripcion_adicional": "Note di Testa: pera, pepe rosa e fiore d'arancio Note di Cuore: caffè, gelsomino, mandorla Note di Fondo: vaniglia e legno di cedro"
+        "descripcion_adicional": "Note di Testa: pera, pepe rosa e fiore d'arancio Note di Cuore: caffè, gelsomino, mandorla Note di Fondo: vaniglia e legno di cedro",
+        "sensazione": "Elegante",
+        "createdAt": "2024-01-13T10:00:00Z"
     },
     {
         "id": 14.0,
@@ -183,7 +209,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "C01V-2",
-        "descripcion_adicional": "Note di Testa: peonia, pesca e violetta Note di Cuore: gigli, giglio bianco, giacinto, gelsomino, fresia Note di Fondo: muschio, legno di cedro, ambra."
+        "descripcion_adicional": "Note di Testa: peonia, peach e violetta Note di Cuore: gigli, giglio bianco, giacinto, gelsomino, fresia Note di Fondo: muschio, legno di cedro, ambra.",
+        "sensazione": "Vibrante",
+        "createdAt": "2024-01-14T10:00:00Z"
     },
     {
         "id": 15.0,
@@ -196,7 +224,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "FH",
-        "descripcion_adicional": "Note di Testa: mela verde, lavanda Note di Fondo: abete, legno di cedro"
+        "descripcion_adicional": "Note di Testa: mela verde, lavanda Note di Fondo: abete, legno di cedro",
+        "sensazione": "Sicuro",
+        "createdAt": "2024-01-15T10:00:00Z"
     },
     {
         "id": 16.0,
@@ -209,7 +239,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "FH02",
-        "descripcion_adicional": "Note di Testa: limone, zenzero e menta. Note di Fondo: Fava Tonka e Amberwood."
+        "descripcion_adicional": "Note di Testa: limone, zenzero e menta. Note di Fondo: Fava Tonka e Amberwood.",
+        "sensazione": "Audace",
+        "createdAt": "2024-01-16T10:00:00Z"
     },
     {
         "id": 17.0,
@@ -222,7 +254,9 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "IN01",
-        "descripcion_adicional": "Note di Testa: pompelmo, cardamomo e coriandolo Nota di Cuore: assenzio, geranio, artemisia e mango Nota di Fondo: vetiver, legno di guaiaco e fava tonka"
+        "descripcion_adicional": "Note di Testa: pompelmo, cardamomo e coriandolo Nota di Cuore: assenzio, geranio, artemisia e mango Nota di Fondo: vetiver, legno di guaiaco e fava tonka",
+        "sensazione": "Intenso",
+        "createdAt": "2024-01-17T10:00:00Z"
     },
     {
         "id": 18.0,
@@ -235,72 +269,84 @@ const rawProducts = [
         "categoria": "FRAGANZA",
         "imagen": null,
         "codigo": "IN02",
-        "descripcion_adicional": "Nota di Testa: incenso di Kyara Note di Cuore: ambra e fava tonka Note di Fondo: vaniglia, cuoio e note legnose."
+        "descripcion_adicional": "Nota di Testa: incenso di Kyara Note di Cuore: ambra e fava tonka Note di Fondo: vaniglia, cuoio e note legnose.",
+        "sensazione": "Misterioso",
+        "createdAt": "2024-01-18T10:00:00Z"
     },
     {
         "id": 19.0,
         "nombre": "hi! SEX",
         "subtitulo": "AFRODISIACO",
-        "descripcion": "È un afrodisiaco naturale, ma anche un invito a riconnetterti con la tua essenza, a risvegliare il tuo desiderio e a vivere la tua intimità in modo pieno e consapevole. La sua formula combina il potere di ingredienti millenari che rivitalizzano il corpo, potenziano l'energia e migliorano le prestazioni sessuali",
+        "descripcion": "È un afrodisiaco naturale, ma anche un invito a riconnetterti con la tua essenza, a risvegliare il tuo desiderio e a vivere la tua intimità in modo pieno e consapevole. La sua formula combina il potere di ingredienti millenari que rivitalizzano il corpo, potenziano l'energia e migliorano le prestazioni sessuali",
         "tamaño_ml": "60 CAPS",
         "tamaño_fl_oz": null,
         "precio": 35.9,
         "categoria": "SUPLEMENTO",
         "imagen": null,
         "codigo": "HSX-AE- 001",
-        "descripcion_adicional": "AUMENTA IL TUO DESIDERIO SESSUALE: 2 capsule al giorno"
+        "descripcion_adicional": "AUMENTA IL TUO DESIDERIO SESSUALE: 2 capsule al giorno",
+        "sensazione": "Vitalizzante",
+        "createdAt": "2024-01-19T10:00:00Z"
     },
     {
         "id": 20.0,
         "nombre": "hi! SEX",
         "subtitulo": "AFRODISIACO",
-        "descripcion": "È un afrodisiaco naturale, ma anche un invito a riconnetterti con la tua essenza, a risvegliare il tuo desiderio e a vivere la tua intimità in modo pieno e consapevole. La sua formula combina il potere di ingredienti millenari che rivitalizzano il corpo, potenziano l'energia e migliorano le prestazioni sessuali",
+        "descripcion": "È un afrodisiaco naturale, ma anche un invito a riconnetterti con la tua essenza, a risvegliare il tuo desiderio e a vivere la tua intimità in modo pieno e consapevole. La sua formula combina il potere di ingredienti millenari que rivitalizzano il corpo, potenziano l'energia e migliorano le prestazioni sessuali",
         "tamaño_ml": "40 CAPS + ESPOSITORE",
         "tamaño_fl_oz": null,
         "precio": 69.7,
         "categoria": "SUPLEMENTO",
         "imagen": null,
         "codigo": "HSX-AE- 003",
-        "descripcion_adicional": null
+        "descripcion_adicional": null,
+        "sensazione": "Vitalizzante",
+        "createdAt": "2024-01-20T10:00:00Z"
     },
     {
         "id": 21.0,
         "nombre": "BLACK DRAGON",
         "subtitulo": "CREMA INTENSIFICANTE",
-        "descripcion": "L'esclusiva formula di Sexitive, sviluppata con estratti naturali, favorisce una maggiore eccitazione e intensifica la risposta sessuale. Inizia con una sensazione calda e delicata che poi si intensifica profondamente",
+        "descripcion": "L'esclusiva formula di Sexitive, sviluppata con estratti naturali, favorisce una maggiore eccitazione e intensifica la risposta sessuale. Inizia con una sensazione calda e delicata que poi si intensifica profondamente",
         "tamaño_ml": "50 ml",
         "tamaño_fl_oz": "1.7 fl oz",
         "precio": 25.2,
         "categoria": "CREMA",
         "imagen": null,
         "codigo": "DRN02",
-        "descripcion_adicional": "L'esclusiva formula di Sexitive, sviluppata con estratti naturali, favorisce una maggiore eccitazione e intensifica la risposta sessuale. Inizia con una sensazione calda e delicata che poi si intensifica profondamente"
+        "descripcion_adicional": "L'esclusiva formula di Sexitive, sviluppata con estratti naturali, favorisce una maggiore eccitazione e intensifica la risposta sessuale. Inizia con una sensazione calda e delicata que poi si intensifica profondamente",
+        "sensazione": "Calore",
+        "createdAt": "2024-01-21T10:00:00Z"
     },
     {
         "id": 22.0,
         "nombre": "MORE SEX - BERRIES",
         "subtitulo": "Goditi un delizioso sesso orale con una sensazione unica.",
-        "descripcion": "Dimostra al partner che hai buon gusto. Questo lubrificante è stato creato per aggiungere sapore e migliorare il sesso orale.",
+        "descripcion": "Dimostra al partner que hai buon gusto. Questo lubrificante è stato creato per aggiungere sapore e migliorare il sesso orale.",
         "tamaño_ml": "50 ml",
         "tamaño_fl_oz": "1.7 fl oz",
         "precio": 21.9,
         "categoria": "GEL LUBRIFICANTE COMESTIBLE",
         "imagen": null,
         "codigo": "MMSB",
-        "descripcion_adicional": "FRUTTI DI BOSCO"
+        "descripcion_adicional": "FRUTTI DI BOSCO",
+        "sensazione": "Dolce",
+        "createdAt": "2024-01-22T10:00:00Z"
     },
     {
         "id": 23.0,
         "nombre": "MORE SEX - CHOCOLATE",
         "subtitulo": "Goditi un delizioso sesso orale con una sensazione unica.",
-        "descripcion": "Dimostra al partner che hai buon gusto. Questo lubrificante è stato creato per aggiungere sapore e migliorare il sesso orale.",
+        "descripcion": "Dimostra al partner que hai buon gusto. Questo lubrificante è stato creato per aggiungere sapore e migliorare il sesso orale.",
         "tamaño_ml": "50 ml",
         "tamaño_fl_oz": "1.7 fl oz",
         "precio": 21.9,
         "categoria": "GEL LUBRIFICANTE COMESTIBLE",
         "imagen": null,
         "codigo": "MMSC",
-        "descripcion_adicional": "CHOCOLATE"
+        "descripcion_adicional": "CHOCOLATE",
+        "sensazione": "Dolce",
+        "createdAt": "2024-01-23T10:00:00Z"
     },
     {
         "id": 24.0,
@@ -313,12 +359,14 @@ const rawProducts = [
         "categoria": "GEL INTIMO",
         "imagen": null,
         "codigo": "MMP",
-        "descripcion_adicional": null
+        "descripcion_adicional": null,
+        "sensazione": "Intenso",
+        "createdAt": "2024-01-24T10:00:00Z"
     },
     {
         "id": 25.0,
         "nombre": "DIVA'S SECRET - EFFETTO CALORE",
-        "subtitulo": "Una combinazione unica di componenti che stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
+        "subtitulo": "Una combinazione unica di componenti que stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
         "descripcion": "Una volta applicato, genera un aumento della temperatura, massimizzando il piacere.",
         "tamaño_ml": "30 ml",
         "tamaño_fl_oz": "1 fl oz",
@@ -326,12 +374,14 @@ const rawProducts = [
         "categoria": "GEL INTIMO",
         "imagen": null,
         "codigo": "DVS01",
-        "descripcion_adicional": "Una combinazione unica di componenti che stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi."
+        "descripcion_adicional": "Una combinazione unica di componenti que stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
+        "sensazione": "Calore",
+        "createdAt": "2024-01-25T10:00:00Z"
     },
     {
         "id": 26.0,
         "nombre": "DIVA'S SECRET - EFFETTO STRINGENTE ",
-        "subtitulo": "Una combinazione unica di componenti che stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
+        "subtitulo": "Una combinazione unica di componenti que stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
         "descripcion": "Una volta applicato, regala un'immediata sensazione di avvolgente compattezza, intensificando il piacere con il suo effetto stringente.",
         "tamaño_ml": "30 ml",
         "tamaño_fl_oz": "1 fl oz",
@@ -339,33 +389,39 @@ const rawProducts = [
         "categoria": "GEL INTIMO",
         "imagen": null,
         "codigo": "DVS02",
-        "descripcion_adicional": "Una combinazione unica di componenti che stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi."
+        "descripcion_adicional": "Una combinazione unica di componenti que stimolano, aumentano il desiderio e aiutano a intensificare gli orgasmi.",
+        "sensazione": "Stringente",
+        "createdAt": "2024-01-26T10:00:00Z"
     },
     {
         "id": 27.0,
         "nombre": "SENS BOMB MACA",
         "subtitulo": "GEL INTIMO CON ESTRATTI NATURAL",
-        "descripcion": "Tutto il potere afrodisiaco della Maca concentrato in questo gel intimo femminile, che offre un'azione rinvigorente aumentando il desiderio sessuale.",
+        "descripcion": "Tutto il potere afrodisiaco della Maca concentrato in dieses gel intimo femminile, que offre un'azione rinvigorente aumentando il desiderio sessuale.",
         "tamaño_ml": "70 ml",
         "tamaño_fl_oz": "2.5 fl oz",
         "precio": 13.9,
         "categoria": "GEL INTIMO",
         "imagen": null,
         "codigo": null,
-        "descripcion_adicional": "I gel Sens Bomb, con il loro effetto calore, offrono una stimolante sensazione di relax che risveglia il desiderio sessuale."
+        "descripcion_adicional": "I gel Sens Bomb, con il loro effetto calore, offrono una stimolante sensazione di relax que risveglia il desiderio sessuale.",
+        "sensazione": "Calore",
+        "createdAt": "2024-01-27T10:00:00Z"
     },
     {
         "id": 28.0,
         "nombre": "SENS BOMB SANDALO",
         "subtitulo": "GEL INTIMO CON ESTRATTI NATURAL",
-        "descripcion": "Formulato con il potere stimolante e afrodisiaco del Sandalo. Progettato per aiutare a intensificare le sensazioni. Offre uno stimolante effetto di rilassamento che risveglia il desiderio.",
+        "descripcion": "Formulato con il potere stimolante e afrodisiaco del Sandalo. Progettato per aiutare a intensificare le sensazioni. Offre uno stimolante effetto di rilassamento que risveglia il desiderio.",
         "tamaño_ml": "70 ml",
         "tamaño_fl_oz": "2.5 fl oz",
         "precio": 13.9,
         "categoria": "GEL INTIMO",
         "imagen": null,
         "codigo": null,
-        "descripcion_adicional": "I gel Sens Bomb, con il loro effetto calore, offrono una stimolante sensazione di relax che risveglia il desiderio sessuale."
+        "descripcion_adicional": "I gel Sens Bomb, con il loro effetto calore, offrono una stimolante sensazione di relax que risveglia il desiderio sessuale.",
+        "sensazione": "Rilassante",
+        "createdAt": "2024-01-28T10:00:00Z"
     }
 ];
 
@@ -425,5 +481,7 @@ export const products = rawProducts.map(p => ({
     sizeFlOz: p.tamaño_fl_oz,
     code: p.codigo,
     shortDescription: p.subtitulo || (p.descripcion ? p.descripcion.split('.')[0] + '.' : ''),
-    details: p.descripcion_adicional
+    details: p.descripcion_adicional,
+    sensation: p.sensazione || 'Standard',
+    createdAt: p.createdAt ? new Date(p.createdAt) : new Date(0)
 }));

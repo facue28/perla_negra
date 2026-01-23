@@ -103,8 +103,8 @@ const ProductDetailPage = () => {
                     <span className="text-accent">{product.category}</span>
                 </nav>
 
-                {/* Top Section: Fit to Screen Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch h-[calc(100vh-140px)] min-h-[600px]">
+                {/* Top Section: Fit to Screen Layout (Desktop) / Scroll (Mobile) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch lg:h-[calc(100vh-140px)] h-auto min-h-[600px]">
 
                     {/* Left: Main Image Card */}
                     <div className="w-full h-full">
@@ -152,7 +152,7 @@ const ProductDetailPage = () => {
                             <div className="space-y-5 flex-grow flex flex-col justify-center">
 
                                 {/* Description */}
-                                <p className="text-text-muted text-sm leading-relaxed line-clamp-3">
+                                <p className="text-text-muted text-sm leading-relaxed first-letter:uppercase lg:max-h-[150px] lg:overflow-y-auto lg:pr-2 lg:scrollbar-thin lg:scrollbar-thumb-accent/20 lg:scrollbar-track-transparent">
                                     {product.description || "Lorem ipsum dolor sit amet consectetur. Placerat arcu at non consequat phasellus mi morbi maecenas."}
                                 </p>
 
@@ -194,9 +194,9 @@ const ProductDetailPage = () => {
 
                                 {/* Compact Info Box */}
                                 <div className="border border-border/30 rounded-xl p-3 bg-background-dark/30 text-xs text-text-muted space-y-2">
-                                    <div className="flex justify-between items-center border-b border-border/30 pb-2">
+                                    <div className="flex justify-between items-center border-b border-border/30 pb-2 w-full">
                                         <span>Sensazione</span>
-                                        <span className="text-text-primary font-medium">{mockData.sensation || "Standard"}</span>
+                                        <span className="text-text-primary font-medium text-right flex-1 ml-4">{mockData.sensation || "Standard"}</span>
                                     </div>
                                     {product.size && (
                                         <div className="flex justify-between items-center border-b border-border/30 pb-2">
@@ -245,7 +245,7 @@ const ProductDetailPage = () => {
                 <div className="max-w-3xl mx-auto w-full mt-12 pb-20">
                     <div className="space-y-4">
                         <AccordionItem title="Descrizione Completa">
-                            <p className="text-text-muted leading-relaxed">
+                            <p className="text-text-muted leading-relaxed first-letter:uppercase">
                                 {product.details ? product.details : (product.description + " Una experiencia diseñada para el placer.")}
                             </p>
                         </AccordionItem>

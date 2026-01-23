@@ -158,7 +158,7 @@ const CartPage = () => {
                     </div>
 
                     {/* Right Col: Summary & Checkout (Span 5) */}
-                    <div className="lg:col-span-5 sticky top-24">
+                    <div className="lg:col-span-5 lg:sticky lg:top-24">
                         <div className="bg-background-alt p-8 rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
                             <h2 className="text-2xl font-serif text-text-primary mb-8 border-b border-white/5 pb-4">
                                 Riepilogo Ordine
