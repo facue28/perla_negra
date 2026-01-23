@@ -56,9 +56,9 @@ const ProductCard = ({ product }) => {
                     <p className="text-text-muted text-[10px] md:text-xs mb-2 md:mb-3 min-h-[2em] md:min-h-[3em] flex items-center justify-center line-clamp-2 leading-tight first-letter:uppercase">{product.subtitle}</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center justify-between mt-2 gap-2 md:gap-0">
+                <div className="flex flex-col md:flex-row items-center justify-center mt-2 gap-2 md:gap-4">
                     <span className="text-accent font-bold text-base md:text-lg">${product.price.toFixed(2)}</span>
-                    <span className="bg-accent text-background-dark px-3 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
+                    <span className="bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
                         Ver
                     </span>
                 </div>
