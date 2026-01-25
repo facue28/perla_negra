@@ -101,22 +101,22 @@ const CartPage = () => {
                     {/* Left Col: Cart Items (Span 7) */}
                     <div className="lg:col-span-7 space-y-6">
                         {cart.map((item) => (
-                            <div key={item.id} className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-all duration-300 flex gap-6 items-center shadow-lg shadow-black/20">
+                            <div key={item.id} className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-all duration-300 flex flex-wrap sm:flex-nowrap gap-6 items-center shadow-lg shadow-black/20">
 
                                 {/* Image */}
-                                <div className="w-24 h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5">
+                                <div className="w-fit mx-auto sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
                                     <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
                                 </div>
 
                                 {/* Info */}
-                                <div className="flex-grow">
+                                <div className="flex-grow min-w-[140px]">
                                     <h3 className="text-xl font-serif text-text-primary mb-1">{item.name}</h3>
                                     <p className="text-text-muted text-sm mb-2 italic">{item.subtitle || "Prodotto esclusivo"}</p>
                                     <div className="text-accent font-bold text-lg">${item.price.toFixed(2)}</div>
                                 </div>
 
                                 {/* Controls */}
-                                <div className="flex flex-col items-end gap-3">
+                                <div className="flex flex-row-reverse sm:flex-col items-center sm:items-end gap-3 ml-auto sm:ml-0 flex-shrink-0">
                                     {/* Remove */}
                                     <button
                                         onClick={() => {
