@@ -5,6 +5,7 @@ import { useCart } from '@/features/cart/context/CartContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+
     const { getCartCount } = useCart();
     const cartCount = getCartCount();
 
