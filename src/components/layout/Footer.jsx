@@ -33,7 +33,7 @@ const Footer = () => {
                             <a href="https://www.instagram.com/perlanegra.it?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Instagram">
                                 <Instagram size={20} />
                             </a>
-                            <a href="#" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Facebook">
+                            <a href="https://www.facebook.com/profile.php?id=61580952122579&rdid=KF3E80I7TNmdrcd4&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1C3Cp1Ayiw%2F" target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Facebook">
                                 <Facebook size={20} />
                             </a>
                         </div>
