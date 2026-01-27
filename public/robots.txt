@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perla-negra.vercel.app/sitemap.xml
