@@ -23,7 +23,7 @@ const Navbar = () => {
 
                     {/* Mobile Menu Button */}
                     <div className="md:hidden">
-                        <button onClick={() => setIsOpen(!isOpen)} className="text-text-primary hover:text-accent">
+                        <button onClick={() => setIsOpen(!isOpen)} className="text-text-primary hover:text-accent" aria-label="Menu">
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
@@ -51,10 +51,10 @@ const Navbar = () => {
 
                     {/* Icons */}
                     <div className="flex items-center space-x-6">
-                        <button className="text-text-primary hover:text-accent transition-colors hidden sm:block">
+                        <button className="text-text-primary hover:text-accent transition-colors hidden sm:block" aria-label="Account">
                             <User size={20} />
                         </button>
-                        <Link to="/carrito" className="text-text-primary hover:text-accent transition-colors relative">
+                        <Link to="/carrito" className="text-text-primary hover:text-accent transition-colors relative" aria-label="Carrello">
                             <ShoppingBag size={20} />
                             {cartCount > 0 && (
                                 <span className="absolute -top-2 -right-2 bg-accent text-background-dark text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
