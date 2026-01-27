@@ -75,7 +75,7 @@ const SearchBar = () => {
     };
 
     const handleSelectProduct = (product) => {
-        navigate(`/productos/${product.id}`);
+        navigate(`/productos/${product.slug}`);
         setSearchTerm('');
         setIsOpen(false);
         setSelectedIndex(-1);

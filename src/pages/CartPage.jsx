@@ -1,27 +1,125 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/features/cart/context/CartContext';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ArrowLeft, Send, ChevronDown, ShoppingBag } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import { toast } from 'sonner';
+import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete';
+import Select from '@/components/ui/Select';
+import { isValidPhoneNumber } from 'libphonenumber-js';
+import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
 
 const CartPage = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+
     const [formData, setFormData] = useState({
         nombre: '',
-        telefono: '',
-        direccion: '',
-        metodoEnvio: 'Envío a domicilio'
+        telefono: '+',
+        indirizzo: '',
+        civico: '',
+        citta: '',
+        provincia: '',
+        cap: '',
+        dettagli: '',
+        note: '',
+        metodoEnvio: 'Spedizione a domicilio',
+        latitude: null,
+        longitude: null
     });
+
+    const [errors, setErrors] = useState({});
+
+    // 1. Persistence: Load data on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem('checkoutFormData');
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                // Ensure phone starts with + or default to +
+                if (!parsed.telefono || parsed.telefono.trim() === '') {
+                    parsed.telefono = '+';
+                }
+                setFormData(parsed);
+            } catch (e) {
+                console.error("Error loading saved form data", e);
+            }
+        }
+    }, []);
+
+    // 2. Persistence: Save data on change
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            localStorage.setItem('checkoutFormData', JSON.stringify(formData));
+        }, 500); // Debounce saving slightly
+        return () => clearTimeout(timer);
+    }, [formData]);
+
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        // Clear error on type
+        if (errors[e.target.name]) {
+            setErrors({ ...errors, [e.target.name]: null });
+        }
     };
 
-    const generateOrder = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Hard Validations
+        if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
+
+        // Smart Phone Validation (libphonenumber-js)
+        // Checks length, country code, and format automatically
+        if (!formData.telefono || formData.telefono.trim() === '+' || !formData.telefono.trim()) {
+            newErrors.telefono = "Il telefono è obbligatorio";
+        } else if (!isValidPhoneNumber(formData.telefono)) {
+            newErrors.telefono = "Numero non valido (controlla prefisso e lunghezza).";
+        }
+
+        if (!formData.indirizzo.trim()) newErrors.indirizzo = "L'indirizzo è obbligatorio";
+        if (!formData.civico.trim()) newErrors.civico = "Il civico è obbligatorio";
+
+        if (!formData.cap.trim() || !/^\d{5}$/.test(formData.cap)) {
+            newErrors.cap = "Inserisci un CAP valido (5 cifre).";
+        }
+
+        if (!formData.citta.trim()) newErrors.citta = "Inserisci il Comune.";
+
+        if (!formData.provincia.trim() || !/^[A-Za-z]{2}$/.test(formData.provincia)) {
+            newErrors.provincia = "Provincia (2 lettere).";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Prevent Form Submission on Enter
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    };
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // ... (rest of logic)
+
+    const handlePreSubmit = (e) => {
         e.preventDefault();
         if (cart.length === 0) return;
 
+        if (!validateForm()) {
+            toast.error("Per favore correggi gli errori nel modulo.", {
+                style: { backgroundColor: '#fee2e2', color: '#dc2626' }
+            });
+            return;
+        }
+
+        setIsModalOpen(true);
+    };
+
+    const confirmOrder = () => {
         // 1. Generate Unique ID: #PN-{DDMM}-{RAND}
         const date = new Date();
         const day = String(date.getDate()).padStart(2, '0');
@@ -30,31 +128,41 @@ const CartPage = () => {
         const orderId = `PN-${day}${month}-${randomCode}`;
 
         // 2. Construct the message
-        let message = `*ORDINE #${orderId}* 🖤\n\n`; // Header with ID
+        let message = `*ORDINE #${orderId}* 🖤\n\n`;
         message += `*Cliente:* ${formData.nombre}\n`;
         message += `*Telefono:* ${formData.telefono}\n`;
-        message += `*Indirizzo:* ${formData.direccion}\n`;
-        message += `*Consegna:* ${formData.metodoEnvio}\n\n`;
+
+        // Formatted Address Block
+        message += `*Indirizzo:*\n`;
+        message += `${formData.indirizzo} ${formData.civico}\n`;
+        if (formData.dettagli) message += `(${formData.dettagli})\n`;
+        message += `${formData.cap} ${formData.citta} (${formData.provincia})\n`;
+
+        // GPS Coordinates Link (New)
+        if (formData.latitude && formData.longitude) {
+            message += `📍 *Posizione GPS:* https://maps.google.com/?q=${formData.latitude},${formData.longitude}\n`;
+        }
+
+        if (formData.note) {
+            message += `\n*Note:* ${formData.note}\n`;
+        }
+
+        message += `\n*Consegna:* ${formData.metodoEnvio}\n\n`;
         message += `*DETTAGLIO DELL'ORDINE:*\n`;
 
         cart.forEach(item => {
-            message += `- ${item.name} (x${item.quantity}): $${(item.price * item.quantity).toFixed(2)}\n`;
+            message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): $${(item.price * item.quantity).toFixed(2)}\n`;
         });
 
         message += `\n*TOTALE: $${getCartTotal().toFixed(2)}*`;
 
         // 3. Encode and Open WhatsApp
         const encodedMessage = encodeURIComponent(message);
-
-        // REEMPLAZAR CON EL NUMERO REAL DEL NEGOCIO
-        // Formato internacional sin símbolos: 5491112345678 (Ejemplo Argentina Movil)
         const shopNumber = "393778317091";
-
         const whatsappUrl = `https://wa.me/${shopNumber}?text=${encodedMessage}`;
 
         window.open(whatsappUrl, '_blank');
-
-        // Optional: Clear cart or show success message?
+        setIsModalOpen(false);
         // clearCart(); 
     };
 
@@ -104,7 +212,7 @@ const CartPage = () => {
                             <div key={item.id} className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-all duration-300 flex flex-wrap sm:flex-nowrap gap-6 items-center shadow-lg shadow-black/20">
 
                                 {/* Image */}
-                                <div className="w-fit mx-auto sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
+                                <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
                                     <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
                                 </div>
 
@@ -116,14 +224,14 @@ const CartPage = () => {
                                 </div>
 
                                 {/* Controls */}
-                                <div className="flex flex-row-reverse sm:flex-col items-center sm:items-end gap-3 ml-auto sm:ml-0 flex-shrink-0">
+                                <div className="flex flex-row-reverse sm:flex-row items-center gap-4 ml-auto sm:ml-0 flex-shrink-0">
                                     {/* Remove */}
                                     <button
                                         onClick={() => {
                                             removeFromCart(item.id);
                                             toast.success(`${item.name} rimosso`);
                                         }}
-                                        className="text-text-muted hover:text-red-400 transition-colors p-2 -mr-2 opacity-50 group-hover:opacity-100"
+                                        className="text-text-muted hover:text-red-400 transition-colors p-2 -mr-2 sm:mr-0 opacity-50 group-hover:opacity-100"
                                     >
                                         <Trash2 size={18} />
                                     </button>
@@ -170,7 +278,6 @@ const CartPage = () => {
                                     <span>Subtotale</span>
                                     <span>${getCartTotal().toFixed(2)}</span>
                                 </div>
-                                {/* Removed Spedizione Gratuita as requested */}
                                 <div className="flex justify-between text-2xl font-bold text-text-primary pt-4 border-t border-white/10">
                                     <span>Totale</span>
                                     <span>${getCartTotal().toFixed(2)}</span>
@@ -178,18 +285,18 @@ const CartPage = () => {
                             </div>
 
                             {/* Form */}
-                            <form onSubmit={generateOrder} className="space-y-5">
+                            <form onSubmit={handlePreSubmit} onKeyDown={handleKeyDown} className="space-y-5">
                                 <div className="space-y-1">
                                     <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome Completo</label>
                                     <input
                                         type="text"
                                         name="nombre"
-                                        required
                                         value={formData.nombre}
                                         onChange={handleInputChange}
                                         placeholder="Il tuo nome"
-                                        className="w-full bg-background-dark/50 border border-white/10 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
+                                        className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
                                     />
+                                    {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre}</p>}
                                 </div>
 
                                 <div className="space-y-1">
@@ -197,42 +304,33 @@ const CartPage = () => {
                                     <input
                                         type="tel"
                                         name="telefono"
-                                        required
                                         value={formData.telefono}
                                         onChange={handleInputChange}
                                         placeholder="+39 ..."
-                                        className="w-full bg-background-dark/50 border border-white/10 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all"
+                                        className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
                                     />
+                                    {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono}</p>}
                                 </div>
 
-                                <div className="space-y-1">
-                                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Indirizzo / Consegna</label>
-                                    <textarea
-                                        name="direccion"
-                                        required
-                                        rows="2"
-                                        value={formData.direccion}
-                                        onChange={handleInputChange}
-                                        placeholder="Via Roma 1, Milano..."
-                                        className="w-full bg-background-dark/50 border border-white/10 rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none transition-all resize-none"
-                                    ></textarea>
-                                </div>
+                                {/* Address Autocomplete Component */}
+                                <AddressAutocomplete
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    errors={errors}
+                                    setErrors={setErrors}
+                                />
 
                                 <div className="space-y-1">
                                     <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Metodo</label>
                                     <div className="relative">
-                                        <select
-                                            name="metodoEnvio"
+                                        <Select
                                             value={formData.metodoEnvio}
-                                            onChange={handleInputChange}
-                                            className="w-full bg-background-dark/50 border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:border-accent focus:ring-1 focus:ring-accent focus:outline-none appearance-none cursor-pointer"
-                                        >
-                                            <option>Spedizione a domicilio</option>
-                                            <option>Ritiro al punto di incontro</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                                            <ChevronDown size={16} />
-                                        </div>
+                                            onChange={(val) => setFormData({ ...formData, metodoEnvio: val })}
+                                            options={[
+                                                { value: 'Spedizione a domicilio', label: 'Spedizione a domicilio' },
+                                                { value: 'Ritiro al punto di incontro', label: 'Ritiro al punto di incontro' }
+                                            ]}
+                                        />
                                     </div>
                                 </div>
 
@@ -249,6 +347,14 @@ const CartPage = () => {
 
                 </div>
             </div>
+
+            <OrderConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={confirmOrder}
+                formData={formData}
+                cartTotal={getCartTotal()}
+            />
         </div>
     );
 };
