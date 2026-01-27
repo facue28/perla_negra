@@ -9,6 +9,8 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [addressVerified, setAddressVerified] = useState(false);
+    const [validationError, setValidationError] = useState(null); // New validation state
+    const [isValidating, setIsValidating] = useState(false); // New loading state
     const wrapperRef = useRef(null);
 
     const API_KEY = import.meta.env.VITE_RADAR_KEY;
@@ -57,23 +59,76 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
         }
     };
 
+    // New: Validate CAP vs City
+    const validateLocation = async () => {
+        const { cap, citta, provincia } = formData;
+        if (!cap || !citta || cap.length < 5) return;
+
+        setIsValidating(true);
+        setValidationError(null);
+
+        try {
+            // Search specifically for the CAP and City combination
+            const response = await fetch(
+                `https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(`${cap} ${citta}`)}&country=IT&layers=postalCode,locality&limit=1`,
+                { headers: { 'Authorization': API_KEY } }
+            );
+            const data = await response.json();
+
+            if (!data.addresses || data.addresses.length === 0) {
+                setValidationError('Indirizzo non trovato o CAP non valido per questo comune.');
+                return;
+            }
+
+            const match = data.addresses[0];
+
+            // Loose comparison (case insensitive)
+            const cityMatch = match.city?.toLowerCase().includes(citta.toLowerCase()) ||
+                citta.toLowerCase().includes(match.city?.toLowerCase());
+
+            // Check matching (allow some flexibility)
+            if (!cityMatch && match.postalCode !== cap) {
+                setValidationError(`Il CAP ${cap} sembra non corrispondere a ${citta}.`);
+            } else {
+                setValidationError(null); // Valid
+            }
+
+        } catch (error) {
+            console.error("Validation error:", error);
+        } finally {
+            setIsValidating(false);
+        }
+    };
+
     const handleSelect = (item) => {
         // Radar Item Structure
         const props = item;
 
         // Helper to find province code by name
         const findProvinceCode = (apiProps) => {
-            const searchName = (apiProps.county || apiProps.state || '').toLowerCase();
-            if (!searchName) return '';
-
-            // 1. Try exact match on Code (Radar returns stateCode like 'RM')
+            // 1. Try direct match with stateCode (e.g., 'RM')
             if (apiProps.stateCode && apiProps.stateCode.length === 2) {
-                return apiProps.stateCode.toUpperCase();
+                const code = apiProps.stateCode.toUpperCase();
+                // Validate it exists in our list
+                const match = provinces.find(p => p.code === code);
+                if (match) return match.code;
             }
 
-            // 2. Search by Name
-            const match = provinces.find(p => searchName.includes(p.name.toLowerCase()) || p.name.toLowerCase().includes(searchName));
-            return match ? match.code : '';
+            // 2. Search by Name (County/Province name)
+            // Radar puts Province in 'county' often, but sometimes in 'state' or even 'city' for some regions
+            const searchTerms = [apiProps.county, apiProps.city, apiProps.state].filter(Boolean);
+
+            for (const term of searchTerms) {
+                const cleanTerm = term.toLowerCase();
+                // Find strict or partial match (e.g. "Città Metropolitana di Roma" contains "Roma")
+                const match = provinces.find(p =>
+                    p.name.toLowerCase() === cleanTerm ||
+                    cleanTerm.includes(p.name.toLowerCase())
+                );
+                if (match) return match.code;
+            }
+
+            return '';
         };
 
         const provinceCode = findProvinceCode(props);
@@ -81,7 +136,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
         // Auto-fill form data
         const newData = {
             ...formData,
-            indirizzo: props.addressLabel || props.street || '',
+            indirizzo: props.street || props.addressLabel || '', // Prioritize pure street name to avoid number duplication
             civico: props.number || '',
             cap: props.postalCode || '',
             citta: props.city || props.placeLabel || '',
@@ -92,7 +147,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
         };
 
         setFormData(newData);
-        setQuery(`${props.addressLabel || props.formattedAddress}`);
+        setQuery(`${props.street || props.addressLabel || props.formattedAddress}`); // Update input to show only street
         setShowSuggestions(false);
         setAddressVerified(true);
 
@@ -205,10 +260,14 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         type="text"
                         value={formData.cap}
                         onChange={(e) => handleManualChange('cap', e.target.value)}
+                        onBlur={validateLocation} // Trigger validation
                         placeholder="00100"
                         maxLength={5}
-                        className={`w-full bg-background-dark border ${errors.cap ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
+                        className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
                     />
+                    {/* Validation Feedback */}
+                    {isValidating && <span className="text-xs text-text-muted absolute right-3 mt-4">Verificando...</span>}
+                    {validationError && <p className="text-red-400 text-xs ml-1 mt-1">{validationError}</p>}
                     {errors.cap && <p className="text-red-400 text-xs ml-1">{errors.cap}</p>}
                 </div>
             </div>
@@ -223,6 +282,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         type="text"
                         value={formData.citta}
                         onChange={(e) => handleManualChange('citta', e.target.value)}
+                        onBlur={validateLocation} // Trigger validation
                         placeholder="Roma"
                         className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
                     />
