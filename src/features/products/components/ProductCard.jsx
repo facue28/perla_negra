@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
                 />
 
                 {/* Quick Add Button - Floating on Image */}
-                <div className="absolute bottom-4 left-4 right-4 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                <div className="absolute bottom-4 left-4 right-4 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto">
                     <button
                         onClick={handleQuickAdd}
                         className="w-full bg-accent text-background-dark py-2.5 rounded-full shadow-lg hover:bg-accent-hover active:scale-95 transition-all flex items-center justify-center gap-2 font-bold text-sm"
@@ -58,7 +58,7 @@ const ProductCard = ({ product }) => {
 
                 <div className="flex flex-col md:flex-row items-center justify-center mt-2 gap-2 md:gap-4">
                     <span className="text-accent font-bold text-base md:text-lg">${product.price.toFixed(2)}</span>
-                    <span className="bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
+                    <span className="hidden md:block bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
                         Ver
                     </span>
                 </div>
