@@ -2,18 +2,17 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const AgeVerification = () => {
-    const [isVerified, setIsVerified] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    // Lazy initialization: Check localStorage immediately
+    const [isVerified, setIsVerified] = useState(() => {
+        return localStorage.getItem('ageVerified') === 'true';
+    });
+    const [showModal, setShowModal] = useState(() => {
+        // Only show if NOT verified
+        return localStorage.getItem('ageVerified') !== 'true';
+    });
 
-    useEffect(() => {
-        // Check if user has already verified
-        const verified = localStorage.getItem('ageVerified');
-        if (verified === 'true') {
-            setIsVerified(true);
-        } else {
-            setShowModal(true);
-        }
-    }, []);
+    // Effect is no longer needed for initial check, only for updates if other tabs change it (optional)
+
 
     const handleAccept = () => {
         // Save verification ONLY when user accepts
