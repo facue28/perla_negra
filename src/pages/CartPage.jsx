@@ -8,6 +8,7 @@ import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete'
 import Select from '@/components/ui/Select';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
+import { products as masterProducts } from '@/features/products/data/products';
 
 const CartPage = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
@@ -150,11 +151,21 @@ const CartPage = () => {
         message += `\n*Consegna:* ${formData.metodoEnvio}\n\n`;
         message += `*DETTAGLIO DELL'ORDINE:*\n`;
 
+        let safeTotal = 0;
+
         cart.forEach(item => {
-            message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): $${(item.price * item.quantity).toFixed(2)}\n`;
+            // SECURITY CHECK: Look up price from master list
+            const masterProduct = masterProducts.find(p => p.id === item.id);
+            // Fallback to item.price only if not found (shouldn't happen)
+            const safePrice = masterProduct ? masterProduct.price : item.price;
+
+            const itemSubtotal = safePrice * item.quantity;
+            safeTotal += itemSubtotal;
+
+            message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): $${itemSubtotal.toFixed(2)}\n`;
         });
 
-        message += `\n*TOTALE: $${getCartTotal().toFixed(2)}*`;
+        message += `\n*TOTALE: $${safeTotal.toFixed(2)}*`;
 
         // 3. Encode and Open WhatsApp
         const encodedMessage = encodeURIComponent(message);
