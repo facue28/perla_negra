@@ -8,7 +8,7 @@ import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete'
 import Select from '@/components/ui/Select';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
-import { products as masterProducts } from '@/features/products/data/products';
+import { generateWhatsAppLink } from '@/features/cart/utils/whatsappGenerator';
 
 const CartPage = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
@@ -131,56 +131,8 @@ const CartPage = () => {
     };
 
     const confirmOrder = () => {
-        // 1. Generate Unique ID: #PN-{DDMM}-{RAND}
-        const date = new Date();
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const randomCode = Math.random().toString(36).substring(2, 5).toUpperCase();
-        const orderId = `PN-${day}${month}-${randomCode}`;
-
-        // 2. Construct the message
-        let message = `*ORDINE #${orderId}* 🖤\n\n`;
-        message += `*Cliente:* ${formData.nombre}\n`;
-        message += `*Telefono:* ${formData.telefono}\n`;
-
-        // Formatted Address Block
-        message += `*Indirizzo:*\n`;
-        message += `${formData.indirizzo} ${formData.civico}\n`;
-        if (formData.dettagli) message += `(${formData.dettagli})\n`;
-        message += `${formData.cap} ${formData.citta} (${formData.provincia})\n`;
-
-        // GPS Coordinates Link (New)
-        if (formData.latitude && formData.longitude) {
-            message += `📍 *Posizione GPS:* https://maps.google.com/?q=${formData.latitude},${formData.longitude}\n`;
-        }
-
-        if (formData.note) {
-            message += `\n*Note:* ${formData.note}\n`;
-        }
-
-        message += `\n*Consegna:* ${formData.metodoEnvio}\n\n`;
-        message += `*DETTAGLIO DELL'ORDINE:*\n`;
-
-        let safeTotal = 0;
-
-        cart.forEach(item => {
-            // SECURITY CHECK: Look up price from master list
-            const masterProduct = masterProducts.find(p => p.id === item.id);
-            // Fallback to item.price only if not found (shouldn't happen)
-            const safePrice = masterProduct ? masterProduct.price : item.price;
-
-            const itemSubtotal = safePrice * item.quantity;
-            safeTotal += itemSubtotal;
-
-            message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): $${itemSubtotal.toFixed(2)}\n`;
-        });
-
-        message += `\n*TOTALE: $${safeTotal.toFixed(2)}*`;
-
-        // 3. Encode and Open WhatsApp
-        const encodedMessage = encodeURIComponent(message);
-        const shopNumber = "393778317091";
-        const whatsappUrl = `https://wa.me/${shopNumber}?text=${encodedMessage}`;
+        const total = getCartTotal();
+        const { whatsappUrl } = generateWhatsAppLink(formData, cart, total);
 
         window.open(whatsappUrl, '_blank');
         setIsModalOpen(false);
@@ -234,7 +186,7 @@ const CartPage = () => {
 
                                 {/* Image */}
                                 <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                                    <img src={item.image} alt={item.name} className="w-full h-full object-contain rounded-lg" />
                                 </div>
 
                                 {/* Info */}
@@ -308,8 +260,9 @@ const CartPage = () => {
                             {/* Form */}
                             <form onSubmit={handlePreSubmit} onKeyDown={handleKeyDown} className="space-y-5">
                                 <div className="space-y-1">
-                                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome Completo</label>
+                                    <label htmlFor="checkout-name" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome Completo</label>
                                     <input
+                                        id="checkout-name"
                                         type="text"
                                         name="nombre"
                                         value={formData.nombre}
@@ -321,8 +274,9 @@ const CartPage = () => {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">WhatsApp</label>
+                                    <label htmlFor="checkout-phone" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">WhatsApp</label>
                                     <input
+                                        id="checkout-phone"
                                         type="tel"
                                         name="telefono"
                                         value={formData.telefono}
@@ -356,8 +310,9 @@ const CartPage = () => {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Note (Opzionale)</label>
+                                    <label htmlFor="checkout-notes" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Note (Opzionale)</label>
                                     <textarea
+                                        id="checkout-notes"
                                         name="note"
                                         value={formData.note}
                                         onChange={handleInputChange}

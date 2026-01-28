@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import bgShape from '@/assets/images/products-page.png';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
@@ -17,18 +16,12 @@ const ProductCard = ({ product }) => {
     return (
         <Link to={`/productos/${product.slug}`} className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] transition-all duration-300 h-full flex flex-col">
             {/* Image Container */}
-            <div className="aspect-square overflow-hidden bg-background relative p-4 flex-shrink-0">
-                {/* Circular Background Effect from Design */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity"
-                    style={{ backgroundImage: `url(${bgShape})` }}
-                ></div>
-
+            <div className="aspect-square overflow-hidden bg-neutral-800/30 relative p-4 flex-shrink-0">
                 {/* Actual Image Center */}
                 <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-contain relative z-10 group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain relative z-10 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                 />
 
                 {/* Quick Add Button - Floating on Image */}

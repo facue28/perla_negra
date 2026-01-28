@@ -1,112 +1,38 @@
-import { useState, useMemo, useEffect } from 'react';
-import { products } from '@/features/products/data/products';
+
+import { useProducts } from '@/hooks/useProducts';
+import { useProductFilters } from '@/features/products/hooks/useProductFilters';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductSearchBar from '@/features/products/components/ProductSearchBar';
 import ProductFilters from '@/features/products/components/ProductFilters';
 import Drawer from '@/components/ui/Drawer';
-import { Filter, Search } from 'lucide-react';
+import { Loader2, Filter, Search } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 
 const ProductListPage = () => {
-    // States for filters
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedSensations, setSelectedSensations] = useState([]);
-    const [sortOrder, setSortOrder] = useState('newest'); // 'asc', 'desc', 'newest', 'oldest'
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 200 }); // Ajustable range
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    // Data Fetching
+    const { products, loading, error } = useProducts();
 
-    // Collapsible sections state
-    const [expanded, setExpanded] = useState({
-        categories: false,
-        sensations: false,
-        price: true
-    });
-
-    const categories = [...new Set(products.map(p => p.category))];
-
-    // Dynamic sensations based on selected categories
-    const sensations = useMemo(() => {
-        const relevantProducts = selectedCategories.length > 0
-            ? products.filter(p => selectedCategories.includes(p.category))
-            : products;
-        return [...new Set(relevantProducts.map(p => p.sensation))];
-    }, [selectedCategories]);
-
-    // Auto-deselect sensations that are no longer available
-    useEffect(() => {
-        setSelectedSensations(prev => prev.filter(s => sensations.includes(s)));
-    }, [sensations]);
-
-    // Toggle logic
-    const toggleSection = (section) => {
-        setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
-    };
-
-    const handleCategoryChange = (category) => {
-        setSelectedCategories(prev => {
-            if (prev.includes(category)) {
-                return prev.filter(c => c !== category);
-            } else {
-                return [...prev, category];
-            }
-        });
-    };
-
-    const handleSensationChange = (sensation) => {
-        setSelectedSensations(prev => {
-            if (prev.includes(sensation)) {
-                return prev.filter(s => s !== sensation);
-            } else {
-                return [...prev, sensation];
-            }
-        });
-    };
-
-    const clearFilters = () => {
-        setSelectedCategories([]);
-        setSelectedSensations([]);
-        setSortOrder('newest');
-        setPriceRange({ min: 0, max: 200 });
-        setIsFilterOpen(false);
-    };
-
-    // Filtering and Sorting logic
-    const filteredAndSortedProducts = useMemo(() => {
-        let result = [...products];
-
-        // Filter by Category
-        if (selectedCategories.length > 0) {
-            result = result.filter(p => selectedCategories.includes(p.category));
-        }
-
-        // Filter by Sensation
-        if (selectedSensations.length > 0) {
-            result = result.filter(p => selectedSensations.includes(p.sensation));
-        }
-
-        // Filter by Price
-        result = result.filter(p => p.price >= priceRange.min && p.price <= priceRange.max);
-
-        // Sort
-        switch (sortOrder) {
-            case 'asc':
-                result.sort((a, b) => a.price - b.price);
-                break;
-            case 'desc':
-                result.sort((a, b) => b.price - a.price);
-                break;
-            case 'newest':
-                result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                break;
-            case 'oldest':
-                result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-                break;
-            default:
-                break;
-        }
-
-        return result;
-    }, [selectedCategories, selectedSensations, priceRange, sortOrder]);
+    // Use Custom Hook for Filtering
+    const {
+        selectedCategories,
+        setSelectedCategories,
+        selectedSensations,
+        sortOrder,
+        setSortOrder,
+        priceRange,
+        setPriceRange,
+        isFilterOpen,
+        setIsFilterOpen,
+        expanded,
+        toggleSection,
+        categories,
+        sensations,
+        handleCategoryChange,
+        handleSensationChange,
+        clearFilters,
+        filteredAndSortedProducts,
+        setSearchQuery
+    } = useProductFilters(products);
 
     const filterProps = {
         clearFilters,
@@ -128,14 +54,20 @@ const ProductListPage = () => {
 
                 {/* New Header Section - Full Width for Mobile */}
                 <div className="mb-6 md:hidden">
-                    <div className="mb-6 flex flex-col gap-4 border-b border-border/10 pb-4">
-                        <div>
-                            <h2 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h2>
-                            <p className="text-text-muted text-sm">
-                                Mostrando {filteredAndSortedProducts.length} risultati
-                            </p>
+                    {loading ? (
+                        <div className="flex justify-center py-12">
+                            <Loader2 className="animate-spin text-accent" size={32} />
                         </div>
-                    </div>
+                    ) : (
+                        <div className="mb-6 flex flex-col gap-4 border-b border-border/10 pb-4">
+                            <div>
+                                <h2 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h2>
+                                <p className="text-text-muted text-sm">
+                                    Mostrando {filteredAndSortedProducts.length} risultati
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     {/* Mobile Categories - Full Width */}
                     <div className="w-full overflow-x-auto no-scrollbar">
                         <div className="flex gap-2 pb-2">
@@ -166,7 +98,7 @@ const ProductListPage = () => {
 
                 {/* Mobile Search Bar - Added here to be above Filters */}
                 <div className="md:hidden mt-4 mb-8">
-                    <ProductSearchBar />
+                    <ProductSearchBar onSearch={setSearchQuery} id="product-search-mobile" />
                 </div>
 
                 {/* Mobile Filter Button - Floating Bottom Right */}
@@ -241,7 +173,7 @@ const ProductListPage = () => {
 
                         {/* Search Section - Desktop */}
                         <div className="w-full sm:max-w-md">
-                            <ProductSearchBar />
+                            <ProductSearchBar onSearch={setSearchQuery} id="product-search-desktop" />
                         </div>
                     </div>
 
@@ -258,14 +190,13 @@ const ProductListPage = () => {
 
 
 
+                        {/* // ... (other imports) */}
+
+                        {/* // Inside component */}
                         {filteredAndSortedProducts.length > 0 ? (
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-                                {filteredAndSortedProducts.map((product, index) => (
-                                    <div
-                                        key={product.id}
-                                        className="fade-in opacity-0 h-full"
-                                        style={{ animationDelay: `${index * 100}ms` }}
-                                    >
+                                {filteredAndSortedProducts.map((product) => (
+                                    <div key={product.id} className="h-full">
                                         <ProductCard product={product} />
                                     </div>
                                 ))}

@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { products } from '../data/products';
+import { useProducts } from '@/hooks/useProducts';
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch, id = "product-search" }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const searchRef = useRef(null);
     const navigate = useNavigate();
+    const { products } = useProducts();
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -26,23 +27,34 @@ const SearchBar = () => {
 
     // Search products in real-time
     useEffect(() => {
-        if (searchTerm.trim() === '') {
+        // If external onSearch is provided, delegate to it and skip local dropdown
+        if (onSearch) {
+            onSearch(searchTerm);
+            setIsOpen(false);
+            return;
+        }
+
+        // Standard Dropdown Logic
+        if (searchTerm.trim() === '' || !products || !Array.isArray(products)) {
             setSearchResults([]);
             setIsOpen(false);
             return;
         }
 
         const term = searchTerm.toLowerCase();
-        const results = products.filter(product =>
-            product.name.toLowerCase().includes(term) ||
-            product.category.toLowerCase().includes(term) ||
-            (product.description && product.description.toLowerCase().includes(term))
-        );
+        const results = products.filter(product => {
+            if (!product) return false;
+            const name = product.name?.toLowerCase() || '';
+            const category = product.category?.toLowerCase() || '';
+            const description = product.description?.toLowerCase() || '';
+
+            return name.includes(term) || category.includes(term) || description.includes(term);
+        });
 
         setSearchResults(results);
         setIsOpen(true);
         setSelectedIndex(-1);
-    }, [searchTerm]);
+    }, [searchTerm, products, onSearch]);
 
     // Handle keyboard navigation
     const handleKeyDown = (e) => {
@@ -94,6 +106,9 @@ const SearchBar = () => {
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
                 <input
+                    id={id}
+                    name="search"
+                    aria-label="Cerca prodotti"
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -126,7 +141,7 @@ const SearchBar = () => {
                                 <img
                                     src={product.image}
                                     alt={product.name}
-                                    className="w-full h-full object-contain p-1"
+                                    className="w-full h-full object-contain p-1 rounded-md"
                                 />
                             </div>
 

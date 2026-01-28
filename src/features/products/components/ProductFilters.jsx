@@ -97,6 +97,7 @@ const ProductFilters = ({
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
                                 <input
                                     type="number"
+                                    aria-label="Prezzo Minimo"
                                     value={priceRange.min}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, min: Number(e.target.value) }))}
                                     className="w-full bg-background-dark border border-border/30 rounded px-3 py-2 pl-6 text-sm text-text-primary focus:border-accent focus:outline-none"
@@ -108,6 +109,7 @@ const ProductFilters = ({
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
                                 <input
                                     type="number"
+                                    aria-label="Prezzo Massimo"
                                     value={priceRange.max}
                                     onChange={(e) => setPriceRange(prev => ({ ...prev, max: Number(e.target.value) }))}
                                     className="w-full bg-background-dark border border-border/30 rounded px-3 py-2 pl-6 text-sm text-text-primary focus:border-accent focus:outline-none"

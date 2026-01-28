@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { products } from '@/features/products/data/products';
+import { useProducts } from '@/hooks/useProducts';
 import { ChevronRight, ShoppingBag, Star, Heart, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
@@ -11,7 +11,7 @@ const ProductDetailPage = () => {
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
-    // Find product by slug
+    const { products, loading } = useProducts();
     const product = products.find(p => p.slug === slug);
 
     // Zoom State
@@ -27,6 +27,10 @@ const ProductDetailPage = () => {
             setQuantity(1);
         }
     }, [product]);
+
+    if (loading) {
+        return <div className="min-h-screen bg-background-dark flex items-center justify-center text-accent">Caricamento...</div>;
+    }
 
     if (!product) {
         return <div className="text-white text-center py-20">Prodotto non trovato</div>;
@@ -117,7 +121,7 @@ const ProductDetailPage = () => {
                             <img
                                 src={product.image}
                                 alt={product.name}
-                                className="w-full h-full object-contain transition-transform duration-200 ease-out"
+                                className="w-full h-full object-contain transition-transform duration-200 ease-out rounded-3xl"
                                 style={{
                                     transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
                                     transform: isHovering ? 'scale(2)' : 'scale(1)'

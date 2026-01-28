@@ -143,7 +143,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
             provincia: provinceCode,
             latitude: props.latitude,
             longitude: props.longitude
-            // Keep existing details/notes
+            // Keep existing details
         };
 
         setFormData(newData);
@@ -191,11 +191,13 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
 
             {/* 1. Address Search (Indirizzo) */}
             <div className="relative">
-                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                <label htmlFor="checkout-address" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                     Indirizzo (Inizia a scrivere...)
                 </label>
                 <div className="relative">
                     <input
+                        id="checkout-address"
+                        name="indirizzo"
                         type="text"
                         value={query || formData.indirizzo} // Fallback to formData if query empty
                         onChange={handleQueryChange}
@@ -239,10 +241,12 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
             <div className="grid grid-cols-2 gap-4">
                 {/* 2. Civico */}
                 <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                    <label htmlFor="checkout-civico" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                         N. Civico *
                     </label>
                     <input
+                        id="checkout-civico"
+                        name="civico"
                         type="text"
                         value={formData.civico}
                         onChange={(e) => handleManualChange('civico', e.target.value)}
@@ -253,10 +257,12 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
 
                 {/* 3. CAP */}
                 <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                    <label htmlFor="checkout-cap" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                         CAP *
                     </label>
                     <input
+                        id="checkout-cap"
+                        name="cap"
                         type="text"
                         value={formData.cap}
                         onChange={(e) => handleManualChange('cap', e.target.value)}
@@ -275,10 +281,12 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
             <div className="grid grid-cols-2 gap-4">
                 {/* 4. Comune */}
                 <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                    <label htmlFor="checkout-city" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                         Comune *
                     </label>
                     <input
+                        id="checkout-city"
+                        name="citta"
                         type="text"
                         value={formData.citta}
                         onChange={(e) => handleManualChange('citta', e.target.value)}
@@ -307,10 +315,12 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
 
             {/* 6. Dettagli */}
             <div className="space-y-1">
-                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                <label htmlFor="checkout-details" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                     Dettagli (Scala, Piano, Citofono)
                 </label>
                 <input
+                    id="checkout-details"
+                    name="dettagli"
                     type="text"
                     value={formData.dettagli}
                     onChange={(e) => handleManualChange('dettagli', e.target.value)}
@@ -319,19 +329,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                 />
             </div>
 
-            {/* 7. Note */}
-            <div className="space-y-1">
-                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
-                    Note per il corriere
-                </label>
-                <textarea
-                    rows="2"
-                    value={formData.note}
-                    onChange={(e) => handleManualChange('note', e.target.value)}
-                    placeholder="Lasciare in portineria..."
-                    className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all resize-none"
-                />
-            </div>
+
 
             {/* Soft Validation Warning */}
             {addressVerified && (formData.cap.length !== 5 || formData.provincia.length !== 2) && (
