@@ -29,6 +29,7 @@ const CartPage = () => {
     });
 
     const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // 1. Persistence: Load data on mount
     useEffect(() => {
@@ -91,6 +92,11 @@ const CartPage = () => {
             newErrors.provincia = "Provincia (2 lettere).";
         }
 
+        // Security: Anti-Phishing Check in Notes
+        if (formData.note && /(http|https|www\.|ftp)/i.test(formData.note)) {
+            newErrors.note = "Per sicurezza, non è consentito inserire link nelle note.";
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -117,7 +123,11 @@ const CartPage = () => {
             return;
         }
 
+        setIsSubmitting(true);
         setIsModalOpen(true);
+
+        // Anti-Spam Cooldown: Re-enable button after 60 seconds if they close modal without sending
+        setTimeout(() => setIsSubmitting(false), 60000);
     };
 
     const confirmOrder = () => {
@@ -345,12 +355,32 @@ const CartPage = () => {
                                     </div>
                                 </div>
 
+                                <div className="space-y-1">
+                                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Note (Opzionale)</label>
+                                    <textarea
+                                        name="note"
+                                        value={formData.note}
+                                        onChange={handleInputChange}
+                                        placeholder="Note per la consegna..."
+                                        rows="2"
+                                        className={`w-full bg-background-dark border ${errors.note ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all resize-none`}
+                                    />
+                                    {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note}</p>}
+                                </div>
+
                                 <button
                                     type="submit"
-                                    className="w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-3 transform active:scale-[0.98]"
+                                    disabled={isSubmitting}
+                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-3 transform active:scale-[0.98] ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    <span>Completa su WhatsApp</span>
-                                    <Send size={20} />
+                                    {isSubmitting ? (
+                                        <span>Attendere...</span>
+                                    ) : (
+                                        <>
+                                            <span>Completa su WhatsApp</span>
+                                            <Send size={20} />
+                                        </>
+                                    )}
                                 </button>
                             </form>
                         </div>
