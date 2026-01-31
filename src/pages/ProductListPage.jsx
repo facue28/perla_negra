@@ -49,7 +49,6 @@ const ProductListPage = () => {
         sensations,
         selectedSensations,
         handleSensationChange,
-        handleSensationChange,
         priceRange,
         setPriceRange,
         selectedUsage,
