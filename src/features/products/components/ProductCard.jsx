@@ -40,23 +40,39 @@ const ProductCard = ({ product }) => {
                 <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 opacity-50">
                     {/* Small logo placeholder if needed */}
                 </div>
+
+                {/* Badges for Sub-categories */}
+                {(product.usageArea || product.targetAudience) && (
+                    <div className="absolute top-3 right-3 z-20 flex flex-col gap-1 items-end">
+                        {product.usageArea && (
+                            <span className="bg-background-dark/80 backdrop-blur-sm text-accent border border-accent/30 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                                {product.usageArea.charAt(0).toUpperCase() + product.usageArea.slice(1).toLowerCase()}
+                            </span>
+                        )}
+                        {product.targetAudience && (
+                            <span className="bg-purple-900/80 backdrop-blur-sm text-white border border-purple-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                                {product.targetAudience.charAt(0).toUpperCase() + product.targetAudience.slice(1).toLowerCase()}
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Content */}
             <div className="p-3 md:p-4 text-center flex-grow flex flex-col justify-between">
                 <div>
-                    <h3 className="text-text-primary font-medium text-sm md:text-lg mb-1 group-hover:text-accent transition-colors line-clamp-1">{product.name}</h3>
+                    <h3 className="text-text-primary font-medium text-sm md:text-lg mb-1 group-hover:text-accent transition-colors">{product.name}</h3>
                     <p className="text-text-muted text-[10px] md:text-xs mb-2 md:mb-3 min-h-[2em] md:min-h-[3em] flex items-center justify-center line-clamp-2 leading-tight first-letter:uppercase">{product.subtitle}</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-center mt-2 gap-2 md:gap-4">
                     <span className="text-accent font-bold text-base md:text-lg">${product.price.toFixed(2)}</span>
                     <span className="hidden md:block bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
-                        Ver
+                        Vedi
                     </span>
                 </div>
             </div>
-        </Link>
+        </Link >
     );
 };
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from '@/features/products/hooks/useProducts';
 
 const SearchBar = ({ onSearch, id = "product-search" }) => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -47,8 +47,18 @@ const SearchBar = ({ onSearch, id = "product-search" }) => {
             const name = product.name?.toLowerCase() || '';
             const category = product.category?.toLowerCase() || '';
             const description = product.description?.toLowerCase() || '';
+            const brand = product.brand?.toLowerCase() || '';
+            const usageArea = product.usageArea?.toLowerCase() || '';
+            const targetAudience = product.targetAudience?.toLowerCase() || '';
 
-            return name.includes(term) || category.includes(term) || description.includes(term);
+            return (
+                name.includes(term) ||
+                category.includes(term) ||
+                description.includes(term) ||
+                brand.includes(term) ||
+                usageArea.includes(term) ||
+                targetAudience.includes(term)
+            );
         });
 
         setSearchResults(results);

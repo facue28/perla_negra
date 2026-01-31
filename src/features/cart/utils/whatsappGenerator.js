@@ -31,10 +31,10 @@ export const generateWhatsAppLink = (formData, cart, total) => {
 
     cart.forEach(item => {
         const itemSubtotal = item.price * item.quantity;
-        message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): $${itemSubtotal.toFixed(2)}\n`;
+        message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): €${itemSubtotal.toFixed(2)}\n`;
     });
 
-    message += `\n*TOTALE: $${total.toFixed(2)}*`;
+    message += `\n*TOTALE: €${total.toFixed(2)}*`;
 
     // 3. Encode and Return
     const encodedMessage = encodeURIComponent(message);

@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { useProducts } from '@/hooks/useProducts';
-import { ChevronRight, ShoppingBag, Star, Heart, Check, ChevronDown } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { useProducts } from '@/features/products/hooks/useProducts';
+import { ChevronRight, ShoppingBag, Star, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 
 const ProductDetailPage = () => {
     const { slug } = useParams();
-    const navigate = useNavigate();
+
     const { addToCart } = useCart();
 
     const { products, loading } = useProducts();
@@ -21,12 +21,10 @@ const ProductDetailPage = () => {
     // Product State (Restored)
     const [quantity, setQuantity] = useState(1);
 
-    // Reset quantity when product changes
+    // Reset quantity when slug changes (new product loaded)
     useEffect(() => {
-        if (product) {
-            setQuantity(1);
-        }
-    }, [product]);
+        setQuantity(1);
+    }, [slug]);
 
     if (loading) {
         return <div className="min-h-screen bg-background-dark flex items-center justify-center text-accent">Caricamento...</div>;
@@ -35,6 +33,11 @@ const ProductDetailPage = () => {
     if (!product) {
         return <div className="text-white text-center py-20">Prodotto non trovato</div>;
     }
+
+    const formatText = (text) => {
+        if (!text) return "";
+        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    };
 
     const handleAddToCart = () => {
         addToCart(product, quantity);
@@ -52,44 +55,79 @@ const ProductDetailPage = () => {
 
     // Helper to generate invented content
     const getMockData = (category) => {
-        // ... (unchanged part of getMockData content if needing to be present for context, but since this is big replace, I should trust line numbers or provide context)
-        // Wait, I am replacing the top part where galleryItems was defined.
         switch (category) {
-            case 'Lubricantes':
+            case 'Lubricantes': // Keeping category keys as they match DB potentially, but content must be IT
                 return {
-                    usage: "Aplicar una pequeña cantidad en la zona íntima y masajear suavemente. Compatible con preservativos de látex. Reaplicar según sea necesario para mantener la hidratación y el confort.",
+                    usage: "Applicare una piccola quantità sulla zona intima e massaggiare delicatamente. Compatibile con preservativi in lattice. Riapplicare secondo necessità per mantenere l'idratazione e il comfort.",
                     ingredients: "Aqua, Glycerin, Propylene Glycol, Hydroxyethylcellulose, Sodium Benzoate, Polysorbate 20, Disodium EDTA, Lactic Acid.",
-                    tips: "Para una experiencia más intensa, aplica un poco sobre las zonas erógenas antes del contacto. Conservar en un lugar fresco y seco, lejos de la luz solar directa.",
-                    sensation: "Hidratante • Sedoso • Base Agua"
+                    tips: "Per un'esperienza più intensa, applicane un po' sulle zone erogene prima del contatto. Conservare in un luogo fresco e asciutto, lontano dalla luce solare diretta.",
+                    sensation: "Idratante • Setoso • Base Acqua"
                 };
             case 'Fragancias':
                 return {
-                    usage: "Rociar sobre los puntos de pulso: muñecas, cuello y detrás de las orejas. Permitir que la fragancia se asiente sin frotar. Ideal per usarlo dopo la doccia.",
+                    usage: "Spruzzare sui punti di pulsazione: polsi, collo e dietro le orecchie. Lasciare che la fragranza si assesti senza strofinare. Ideale da usare dopo la doccia.",
                     ingredients: "Alcohol Denat, Aqua (Water), Parfum (Fragrance), Linalool, Limonene, Citronellol, Coumarin, Geraniol.",
-                    tips: "Las feromonas se activan con el calor corporal. Aplícalo 15 minutos antes de salir para que se mezcle con tu química natural.",
-                    sensation: "Seductor • Intenso • Floral/Amaderado"
+                    tips: "I feromoni si attivano con il calore corporeo. Applicalo 15 minuti prima di uscire per farlo fondere con la tua chimica naturale.",
+                    sensation: "Seducente • Intenso • Floreale/Legnoso"
                 };
             case 'Afrodisiacos':
                 return {
-                    usage: "Ingerir con abundante agua o mezclar con tu bebida favorita. No superar la dosis diaria recomendada. Efecto esperado en 30-45 minutos.",
-                    ingredients: "Extracto de Maca, Ginseng, L-Arginina, Vitaminas del complejo B, Zinc, Guaraná.",
-                    tips: "Combínalo con un ambiente relajado y estimulación previa para maximizar los efectos.",
-                    sensation: "Estimulante • Energético • Vigorizante"
+                    usage: "Assumere con abbondante acqua o mescolare con la tua bevanda preferita. Non superare la dose giornaliera raccomandata. Effetto previsto in 30-45 minuti.",
+                    ingredients: "Estratto di Maca, Ginseng, L-Arginina, Vitamine del complesso B, Zinco, Guaranà.",
+                    tips: "Combinalo con un ambiente rilassato e stimolazione preliminare per massimizzare gli effetti.",
+                    sensation: "Stimolante • Energetico • Vigorizzante"
                 };
             default:
                 return {
-                    usage: "Utilizar según las instrucciones del envase. Limpiar antes y después de cada uso con agua tibia y jabón neutro o un limpiador de juguetes específico.",
-                    ingredients: "Materiales seguros para el cuerpo, libres de ftalatos. Silicona de grado médico o ABS.",
-                    tips: "Explora diferentes ritmos y presiones. Comienza suavemente y aumenta la intensidad según tu comodidad.",
-                    sensation: "Placentero • Versátil • Seguro"
+                    usage: "Utilizzare secondo le istruzioni sulla confezione. Pulire prima e dopo ogni utilizzo con acqua tiepida e sapone neutro o un detergente specifico per giocattoli.",
+                    ingredients: "Materiali sicuri per il corpo, privi di ftalati. Silicone di grado medico o ABS.",
+                    tips: "Esplora diversi ritmi e pressioni. Inizia delicatamente e aumenta l'intensità in base al tuo comfort.",
+                    sensation: "Piacevole • Versatile • Sicuro"
                 };
         }
     };
 
-    const mockData = getMockData(product.category);
+    // Priority: DB fields -> Mock Fallback
+    const mockDataFallback = getMockData(product.category);
+
+    // Construct display data using DB fields if available, otherwise use mock
+    const displayData = {
+        usage: product.usage || mockDataFallback.usage,
+        ingredients: product.ingredients || mockDataFallback.ingredients,
+        tips: product.tips || mockDataFallback.tips,
+        sensation: product.sensation || mockDataFallback.sensation
+    };
+
+    // Structured Data for SEO (Rich Snippets)
+    // Structured Data for SEO (Rich Snippets)
+    const structuredData = {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": product.name,
+        "image": product.image,
+        "description": product.description,
+        "sku": product.code || product.slug,
+        "mpn": product.code || product.slug,
+        "brand": {
+            "@type": "Brand",
+            "name": product.brand || "Perla Negra"
+        },
+        "offers": {
+            "@type": "Offer",
+            "url": window.location.href,
+            "priceCurrency": "EUR",
+            "price": product.price,
+            "availability": "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition"
+        }
+    };
 
     return (
         <div className="bg-background-dark min-h-screen py-6 flex flex-col fade-in">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+            />
             <SEO
                 key={product.id}
                 title={product.name}
@@ -200,25 +238,21 @@ const ProductDetailPage = () => {
                                 <div className="border border-border/30 rounded-xl p-3 bg-background-dark/30 text-xs text-text-muted space-y-2">
                                     <div className="flex justify-between items-center border-b border-border/30 pb-2 w-full">
                                         <span>Sensazione</span>
-                                        <span className="text-text-primary font-medium text-right flex-1 ml-4">{mockData.sensation || "Standard"}</span>
+                                        <span className="text-text-primary font-medium text-right flex-1 ml-4">{formatText(displayData.sensation) || "Standard"}</span>
                                     </div>
-                                    {product.size && (
+                                    {(product.size || product.sizeFlOz) && (
                                         <div className="flex justify-between items-center border-b border-border/30 pb-2">
                                             <span>Formato</span>
                                             <div className="flex items-center gap-2 font-medium">
-                                                <span className="text-text-primary">{product.size}</span>
-                                                {product.sizeFlOz && (
-                                                    <>
-                                                        <span className="text-text-muted/30">|</span>
-                                                        <span className="text-text-primary">{product.sizeFlOz}</span>
-                                                    </>
-                                                )}
+                                                {product.size && <span className="text-text-primary">{product.size}</span>}
+                                                {product.size && product.sizeFlOz && <span className="text-text-muted/30">|</span>}
+                                                {product.sizeFlOz && <span className="text-text-primary">{product.sizeFlOz}</span>}
                                             </div>
                                         </div>
                                     )}
                                     <div className="flex justify-between items-center">
                                         <span>Marca</span>
-                                        <span className="text-text-primary font-medium">Perla Negra</span>
+                                        <span className="text-text-primary font-medium">{formatText(product.brand)}</span>
                                     </div>
                                     {product.code && (
                                         <div className="flex justify-between items-center pt-2 border-t border-border/30">
@@ -231,13 +265,13 @@ const ProductDetailPage = () => {
 
                             {/* Footer: Simple Badges */}
                             <div className="flex items-center justify-center gap-6 pt-4 mt-2 border-t border-border/10">
-                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 tracking-widest">
                                     <Check size={12} className="text-accent" />
-                                    <span>Discrezione Totale</span>
+                                    <span>Discrezione totale</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 tracking-widest">
                                     <Check size={12} className="text-accent" />
-                                    <span>Spedizione Veloce</span>
+                                    <span>Spedizione veloce</span>
                                 </div>
                             </div>
 
@@ -249,27 +283,31 @@ const ProductDetailPage = () => {
                 <div className="max-w-3xl mx-auto w-full mt-12 pb-20">
                     <div className="space-y-4">
                         <AccordionItem title="Descrizione Completa">
-                            <p className="text-text-muted leading-relaxed first-letter:uppercase">
-                                {product.details ? product.details : (product.description + " Una experiencia diseñada para el placer.")}
+                            <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line">
+                                {(product.descriptionAdditional ? product.descriptionAdditional : product.description)
+                                    .replace(/\s{4,}/g, '\n')
+                                    .split('\n')
+                                    .map(line => formatText(line))
+                                    .join('\n')}
                             </p>
                         </AccordionItem>
 
                         <AccordionItem title="Modi d'uso">
                             <p className="text-text-muted leading-relaxed italic">
-                                {mockData.usage}
+                                {displayData.usage}
                             </p>
                         </AccordionItem>
 
                         <AccordionItem title="Ingredienti">
                             <p className="text-text-muted leading-relaxed font-mono text-sm opacity-80">
-                                {mockData.ingredients}
+                                {displayData.ingredients}
                             </p>
                         </AccordionItem>
 
                         <AccordionItem title="Consigli Perla Negra">
                             <div className="bg-background-alt p-4 rounded-xl border-l-2 border-accent">
                                 <p className="text-text-muted leading-relaxed">
-                                    {mockData.tips}
+                                    {displayData.tips}
                                 </p>
                             </div>
                         </AccordionItem>

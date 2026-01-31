@@ -1,5 +1,5 @@
 
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from '@/features/products/hooks/useProducts';
 import { useProductFilters } from '@/features/products/hooks/useProductFilters';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductSearchBar from '@/features/products/components/ProductSearchBar';
@@ -31,7 +31,13 @@ const ProductListPage = () => {
         handleSensationChange,
         clearFilters,
         filteredAndSortedProducts,
-        setSearchQuery
+        setSearchQuery,
+        selectedUsage,
+        handleUsageChange,
+        usageAreas,
+        selectedTarget,
+        handleTargetChange,
+        targetAudiences
     } = useProductFilters(products);
 
     const filterProps = {
@@ -43,8 +49,15 @@ const ProductListPage = () => {
         sensations,
         selectedSensations,
         handleSensationChange,
+        handleSensationChange,
         priceRange,
-        setPriceRange
+        setPriceRange,
+        selectedUsage,
+        handleUsageChange,
+        usageAreas,
+        selectedTarget,
+        handleTargetChange,
+        targetAudiences
     };
 
     return (

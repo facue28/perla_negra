@@ -4,6 +4,8 @@ export const useProductFilters = (products) => {
     // States for filters
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedSensations, setSelectedSensations] = useState([]);
+    const [selectedUsage, setSelectedUsage] = useState([]); // 'anale', 'vaginale', 'orale' etc.
+    const [selectedTarget, setSelectedTarget] = useState([]); // 'uomo', 'donna', 'unisex'
     const [sortOrder, setSortOrder] = useState('newest'); // 'asc', 'desc', 'newest', 'oldest'
     const [priceRange, setPriceRange] = useState({ min: 0, max: 200 }); // Ajustable range
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -13,6 +15,8 @@ export const useProductFilters = (products) => {
     const [expanded, setExpanded] = useState({
         categories: false,
         sensations: false,
+        usage: false,
+        target: false,
         price: true
     });
 
@@ -22,12 +26,54 @@ export const useProductFilters = (products) => {
     }, [products]);
 
     // Dynamic sensations based on selected categories
+    // Dynamic sensations based on selected categories and other filters
     const sensations = useMemo(() => {
-        const relevantProducts = selectedCategories.length > 0
-            ? products.filter(p => selectedCategories.includes(p.category))
-            : products;
-        return [...new Set(relevantProducts.map(p => p.sensation))];
-    }, [selectedCategories, products]);
+        let relevantProducts = products || [];
+
+        // Filter by Category
+        if (selectedCategories.length > 0) {
+            relevantProducts = relevantProducts.filter(p => selectedCategories.includes(p.category));
+        }
+
+        // Filter by Usage Area (User Requirement: Context-aware sensations)
+        if (selectedUsage.length > 0) {
+            relevantProducts = relevantProducts.filter(p => selectedUsage.includes(p.usageArea));
+        }
+
+        // Filter by Target Audience
+        if (selectedTarget.length > 0) {
+            relevantProducts = relevantProducts.filter(p => selectedTarget.includes(p.targetAudience));
+        }
+
+        return [...new Set(relevantProducts.map(p => p.sensation).filter(Boolean))];
+    }, [selectedCategories, selectedUsage, selectedTarget, products]);
+
+    // Helper to get products currently relevant base on other filters (Concept: Cascading Filters)
+    // We want usageAreas to be visible if the products currently in view (filtered by category AND sensation) have usageAreas.
+    const relevantProductsForUsage = useMemo(() => {
+        let result = products || [];
+        // Filter by Category if selected
+        if (selectedCategories.length > 0) {
+            result = result.filter(p => selectedCategories.includes(p.category));
+        }
+        // Filter by Sensation if selected
+        if (selectedSensations.length > 0) {
+            result = result.filter(p => selectedSensations.includes(p.sensation));
+        }
+        return result;
+    }, [products, selectedCategories, selectedSensations]);
+
+
+    // Dynamic Usage Areas (only for Lubricants effectively, but generic logic)
+    const usageAreas = useMemo(() => {
+        // If no products remain after category/sensation filtering, or none of them have usageArea -> list is empty -> Filter UI hides.
+        return [...new Set(relevantProductsForUsage.map(p => p.usageArea).filter(Boolean))];
+    }, [relevantProductsForUsage]);
+
+    // Dynamic Target Audiences (for Fragrances etc)
+    const targetAudiences = useMemo(() => {
+        return [...new Set(relevantProductsForUsage.map(p => p.targetAudience).filter(Boolean))];
+    }, [relevantProductsForUsage]);
 
     // Auto-deselect sensations that are no longer available
     useEffect(() => {
@@ -59,9 +105,31 @@ export const useProductFilters = (products) => {
         });
     };
 
+    const handleUsageChange = (usage) => {
+        setSelectedUsage(prev => {
+            if (prev.includes(usage)) {
+                return prev.filter(u => u !== usage);
+            } else {
+                return [...prev, usage];
+            }
+        });
+    };
+
+    const handleTargetChange = (target) => {
+        setSelectedTarget(prev => {
+            if (prev.includes(target)) {
+                return prev.filter(t => t !== target);
+            } else {
+                return [...prev, target];
+            }
+        });
+    };
+
     const clearFilters = () => {
         setSelectedCategories([]);
         setSelectedSensations([]);
+        setSelectedUsage([]);
+        setSelectedTarget([]);
         setSortOrder('newest');
         setPriceRange({ min: 0, max: 200 });
         setIsFilterOpen(false);
@@ -78,6 +146,9 @@ export const useProductFilters = (products) => {
             result = result.filter(p =>
                 (p.name && p.name.toLowerCase().includes(query)) ||
                 (p.category && p.category.toLowerCase().includes(query)) ||
+                (p.brand && p.brand.toLowerCase().includes(query)) ||
+                (p.usageArea && p.usageArea.toLowerCase().includes(query)) ||
+                (p.targetAudience && p.targetAudience.toLowerCase().includes(query)) ||
                 (p.description && p.description.toLowerCase().includes(query))
             );
         }
@@ -90,6 +161,16 @@ export const useProductFilters = (products) => {
         // Filter by Sensation
         if (selectedSensations.length > 0) {
             result = result.filter(p => selectedSensations.includes(p.sensation));
+        }
+
+        // Filter by Usage Area
+        if (selectedUsage.length > 0) {
+            result = result.filter(p => selectedUsage.includes(p.usageArea));
+        }
+
+        // Filter by Target Audience
+        if (selectedTarget.length > 0) {
+            result = result.filter(p => selectedTarget.includes(p.targetAudience));
         }
 
         // Filter by Price
@@ -114,7 +195,7 @@ export const useProductFilters = (products) => {
         }
 
         return result;
-    }, [products, selectedCategories, selectedSensations, priceRange, sortOrder, searchQuery]);
+    }, [products, selectedCategories, selectedSensations, selectedUsage, selectedTarget, priceRange, sortOrder, searchQuery]);
 
     return {
         selectedCategories,
@@ -135,6 +216,14 @@ export const useProductFilters = (products) => {
         sensations,
         handleCategoryChange,
         handleSensationChange,
+        selectedUsage,
+        setSelectedUsage,
+        selectedTarget,
+        setSelectedTarget,
+        handleUsageChange,
+        handleTargetChange,
+        usageAreas,
+        targetAudiences,
         clearFilters,
         filteredAndSortedProducts
     };

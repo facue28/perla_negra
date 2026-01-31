@@ -136,6 +136,7 @@ const CartPage = () => {
 
         window.open(whatsappUrl, '_blank');
         setIsModalOpen(false);
+        setIsSubmitting(false); // Fix: Reset loading state
         // clearCart(); 
     };
 
@@ -193,7 +194,7 @@ const CartPage = () => {
                                 <div className="flex-grow min-w-[140px]">
                                     <h3 className="text-xl font-serif text-text-primary mb-1">{item.name}</h3>
                                     <p className="text-text-muted text-sm mb-2 italic">{item.subtitle || "Prodotto esclusivo"}</p>
-                                    <div className="text-accent font-bold text-lg">${item.price.toFixed(2)}</div>
+                                    <div className="text-accent font-bold text-lg">€{item.price.toFixed(2)}</div>
                                 </div>
 
                                 {/* Controls */}
@@ -249,11 +250,11 @@ const CartPage = () => {
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between text-text-muted">
                                     <span>Subtotale</span>
-                                    <span>${getCartTotal().toFixed(2)}</span>
+                                    <span>€{getCartTotal().toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-2xl font-bold text-text-primary pt-4 border-t border-white/10">
                                     <span>Totale</span>
-                                    <span>${getCartTotal().toFixed(2)}</span>
+                                    <span>€{getCartTotal().toFixed(2)}</span>
                                 </div>
                             </div>
 

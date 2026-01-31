@@ -10,6 +10,12 @@ const ProductFilters = ({
     sensations,
     selectedSensations,
     handleSensationChange,
+    selectedUsage,
+    handleUsageChange,
+    usageAreas = [],
+    selectedTarget,
+    handleTargetChange,
+    targetAudiences = [],
     priceRange,
     setPriceRange,
     isMobile = false
@@ -48,37 +54,107 @@ const ProductFilters = ({
                 </div>
             )}
 
-            {/* Sensation Filter */}
-            <div className="border-b border-border/20 py-4">
-                <button
-                    onClick={() => toggleSection('sensations')}
-                    className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
-                >
-                    <span>Sensazione</span>
-                    {expanded.sensations ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
+            {/* Sensation Filter - Only show if available */}
+            {sensations.length > 0 && (
+                <div className="border-b border-border/20 py-4">
+                    <button
+                        onClick={() => toggleSection('sensations')}
+                        className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
+                    >
+                        <span>Sensazione</span>
+                        {expanded.sensations ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
 
-                {expanded.sensations && (
-                    <div className="space-y-2 mt-3 animate-slideDown">
-                        {sensations.map(sens => (
-                            <label key={sens} className="flex items-center space-x-3 cursor-pointer group">
-                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedSensations.includes(sens) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
-                                    {selectedSensations.includes(sens) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
-                                </div>
-                                <input
-                                    type="checkbox"
-                                    className="hidden"
-                                    checked={selectedSensations.includes(sens)}
-                                    onChange={() => handleSensationChange(sens)}
-                                />
-                                <span className={`text-sm ${selectedSensations.includes(sens) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
-                                    {sens}
-                                </span>
-                            </label>
-                        ))}
-                    </div>
-                )}
-            </div>
+                    {expanded.sensations && (
+                        <div className="space-y-2 mt-3 animate-slideDown">
+                            {sensations.map(sens => (
+                                <label key={sens} className="flex items-center space-x-3 cursor-pointer group">
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedSensations.includes(sens) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedSensations.includes(sens) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedSensations.includes(sens)}
+                                        onChange={() => handleSensationChange(sens)}
+                                    />
+                                    <span className={`text-sm ${selectedSensations.includes(sens) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                        {sens.charAt(0).toUpperCase() + sens.slice(1).toLowerCase()}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Usage Area Filter - Only show if available (e.g. Lubricants) */}
+            {usageAreas.length > 0 && (
+                <div className="border-b border-border/20 py-4">
+                    <button
+                        onClick={() => toggleSection('usage')}
+                        className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
+                    >
+                        <span>Zona d'uso</span>
+                        {expanded.usage ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {expanded.usage && (
+                        <div className="space-y-2 mt-3 animate-slideDown">
+                            {usageAreas.map(item => (
+                                <label key={item} className="flex items-center space-x-3 cursor-pointer group">
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedUsage.includes(item) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedUsage.includes(item) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedUsage.includes(item)}
+                                        onChange={() => handleUsageChange(item)}
+                                    />
+                                    <span className={`text-sm ${selectedUsage.includes(item) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                        {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Target Audience Filter - Only show if available (e.g. Fragrances) */}
+            {targetAudiences.length > 0 && (
+                <div className="border-b border-border/20 py-4">
+                    <button
+                        onClick={() => toggleSection('target')}
+                        className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
+                    >
+                        <span>Per chi?</span>
+                        {expanded.target ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {expanded.target && (
+                        <div className="space-y-2 mt-3 animate-slideDown">
+                            {targetAudiences.map(item => (
+                                <label key={item} className="flex items-center space-x-3 cursor-pointer group">
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedTarget.includes(item) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedTarget.includes(item) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedTarget.includes(item)}
+                                        onChange={() => handleTargetChange(item)}
+                                    />
+                                    <span className={`text-sm ${selectedTarget.includes(item) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                        {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Price Range Filter */}
             <div className="py-4">

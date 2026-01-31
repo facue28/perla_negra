@@ -1,9 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { useEffect } from 'react';
 
-const SEO = ({ title, description, image, type = 'website' }) => {
+const SEO = ({ title, description, image, url, type = 'website' }) => {
     const siteTitle = 'Perla Negra';
     const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+    const currentUrl = url || window.location.href;
 
     // Force title update manually to guarantee it works on SPA navigation
     useEffect(() => {
@@ -15,8 +16,10 @@ const SEO = ({ title, description, image, type = 'website' }) => {
             {/* Standard metadata */}
             <title>{fullTitle}</title>
             <meta name="description" content={description} />
+            <link rel="canonical" href={currentUrl} />
 
             {/* Open Graph / Facebook */}
+            <meta property="og:url" content={currentUrl} />
             <meta property="og:type" content={type} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />
