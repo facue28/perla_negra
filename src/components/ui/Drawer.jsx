@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 
 const Drawer = ({ isOpen, onClose, title, children, side = 'right' }) => {
 
@@ -14,6 +14,8 @@ const Drawer = ({ isOpen, onClose, title, children, side = 'right' }) => {
         }
         return () => { document.body.style.overflow = 'unset'; };
     }, [isOpen]);
+
+    const controls = useDragControls();
 
     const sideVariants = {
         right: {
@@ -58,24 +60,41 @@ const Drawer = ({ isOpen, onClose, title, children, side = 'right' }) => {
                         animate={currentVariant.animate}
                         exit={currentVariant.exit}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        drag={side === 'bottom' ? "y" : false}
+                        dragControls={controls}
+                        dragListener={false} // Disable auto-listener to enable scroll in body
+                        dragConstraints={{ top: 0 }}
+                        dragElastic={{ top: 0, bottom: 0.5 }}
+                        onDragEnd={(e, { offset, velocity }) => {
+                            if (offset.y > 100 || velocity.y > 400) {
+                                onClose();
+                            }
+                        }}
                         className={`fixed z-50 bg-background-alt shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] flex flex-col ${currentVariant.style}`}
                     >
-                        {/* Drag Handle (Visible only for bottom sheet) */}
-                        {side === 'bottom' && (
-                            <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
-                                <div className="w-12 h-1.5 bg-border/30 rounded-full" />
-                            </div>
-                        )}
+                        {/* Drag Handle Area (Header & Handle) */}
+                        <div
+                            className="touch-none"
+                            onPointerDown={(e) => controls.start(e)}
+                            style={{ cursor: side === 'bottom' ? 'grab' : 'auto' }}
+                        >
+                            {/* Drag Handle (Visual) */}
+                            {side === 'bottom' && (
+                                <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
+                                    <div className="w-12 h-1.5 bg-border/30 rounded-full" />
+                                </div>
+                            )}
 
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-border/10">
-                            <h2 className="text-xl font-bold font-serif text-text-primary">{title}</h2>
-                            <button
-                                onClick={onClose}
-                                className="p-2 -mr-2 text-text-muted hover:text-accent transition-colors rounded-full hover:bg-white/5"
-                            >
-                                <X size={24} />
-                            </button>
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-border/10">
+                                <h2 className="text-xl font-bold font-serif text-text-primary">{title}</h2>
+                                <button
+                                    onClick={onClose}
+                                    className="p-2 -mr-2 text-text-muted hover:text-accent transition-colors rounded-full hover:bg-white/5"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Content - Scrollable */}
