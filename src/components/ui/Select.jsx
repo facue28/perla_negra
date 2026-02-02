@@ -76,7 +76,7 @@ const Select = ({ value, onChange, options, placeholder = "Seleziona", className
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent flex items-center justify-between transition-colors ${isOpen ? 'border-accent' : ''} ${className}`}
+                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 flex items-center justify-between transition-all ${isOpen ? 'border-accent ring-1 ring-accent/50' : ''} ${className}`}
             >
                 <span className="truncate">
                     {selectedOption ? selectedOption.label : placeholder}

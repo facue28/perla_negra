@@ -287,7 +287,7 @@ const CartPage = () => {
                                         value={formData.nombre}
                                         onChange={handleInputChange}
                                         placeholder="Il tuo nome"
-                                        className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
+                                        className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
                                     {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre}</p>}
                                 </div>
@@ -301,7 +301,7 @@ const CartPage = () => {
                                         value={formData.telefono}
                                         onChange={handleInputChange}
                                         placeholder="+39 ..."
-                                        className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
+                                        className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
                                     {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono}</p>}
                                 </div>
@@ -337,7 +337,7 @@ const CartPage = () => {
                                         onChange={handleInputChange}
                                         placeholder="Note per la consegna..."
                                         rows="2"
-                                        className={`w-full bg-background-dark border ${errors.note ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all resize-none`}
+                                        className={`w-full bg-background-dark border ${errors.note ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all resize-none`}
                                     />
                                     {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note}</p>}
                                 </div>

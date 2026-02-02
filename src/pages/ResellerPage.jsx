@@ -236,7 +236,7 @@ const ResellerPage = () => {
                                             name="nombre"
                                             value={formData.nombre}
                                             onChange={handleInputChange}
-                                            className={`w-full bg-black/40 border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="Mario"
                                         />
                                     </div>
@@ -249,7 +249,7 @@ const ResellerPage = () => {
                                         name="cognome"
                                         value={formData.cognome}
                                         onChange={handleInputChange}
-                                        className={`w-full bg-black/40 border ${errors.cognome ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                        className={`w-full bg-background-dark border ${errors.cognome ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         placeholder="Rossi"
                                     />
                                     {errors.cognome && <p className="text-red-500 text-xs mt-1 ml-2">{errors.cognome}</p>}
@@ -267,7 +267,7 @@ const ResellerPage = () => {
                                             name="email"
                                             value={formData.email}
                                             onChange={handleInputChange}
-                                            className={`w-full bg-black/40 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="mario@azienda.com"
                                         />
                                     </div>
@@ -283,7 +283,7 @@ const ResellerPage = () => {
                                             name="telefono"
                                             value={formData.telefono}
                                             onChange={handleInputChange}
-                                            className={`w-full bg-black/40 border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="+39 333 1234567"
                                         />
                                     </div>
@@ -305,7 +305,7 @@ const ResellerPage = () => {
                                                 if (errors.provincia) setErrors({ ...errors, provincia: null });
                                             }}
                                             placeholder="Seleziona"
-                                            className={`w-full bg-black/40 border ${errors.provincia ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            className={`w-full bg-background-dark border ${errors.provincia ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         />
                                     </div>
                                     {errors.provincia && <p className="text-red-500 text-xs mt-1 ml-2">{errors.provincia}</p>}
@@ -317,7 +317,7 @@ const ResellerPage = () => {
                                         name="citta"
                                         value={formData.citta}
                                         onChange={handleInputChange}
-                                        className={`w-full bg-black/40 border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         placeholder="Milano"
                                     />
                                     {errors.citta && <p className="text-red-500 text-xs mt-1 ml-2">{errors.citta}</p>}
@@ -335,7 +335,7 @@ const ResellerPage = () => {
                                         if (errors.conoscenza) setErrors({ ...errors, conoscenza: null });
                                     }}
                                     placeholder="Seleziona un'opzione"
-                                    className={`w-full bg-black/40 border ${errors.conoscenza ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                    className={`w-full bg-background-dark border ${errors.conoscenza ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                 />
                                 {errors.conoscenza && <p className="text-red-500 text-xs mt-1 ml-2">{errors.conoscenza}</p>}
                             </div>
@@ -350,7 +350,7 @@ const ResellerPage = () => {
                                         rows="3"
                                         value={formData.messaggio}
                                         onChange={handleInputChange}
-                                        className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all resize-none"
+                                        className="w-full bg-background-dark border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none"
                                         placeholder="Raccontaci del tuo business..."
                                     ></textarea>
                                 </div>

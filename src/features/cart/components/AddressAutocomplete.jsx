@@ -202,7 +202,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         value={query || formData.indirizzo} // Fallback to formData if query empty
                         onChange={handleQueryChange}
                         placeholder="Es. Via Roma"
-                        className={`w-full bg-background-dark border ${errors.indirizzo ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
+                        className={`w-full bg-background-dark border ${errors.indirizzo ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                     />
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
 
@@ -251,7 +251,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         value={formData.civico}
                         onChange={(e) => handleManualChange('civico', e.target.value)}
                         placeholder="12/A"
-                        className={`w-full bg-background-dark border ${errors.civico ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
+                        className={`w-full bg-background-dark border ${errors.civico ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                     />
                 </div>
 
@@ -269,7 +269,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         onBlur={validateLocation} // Trigger validation
                         placeholder="00100"
                         maxLength={5}
-                        className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
+                        className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                     />
                     {/* Validation Feedback */}
                     {isValidating && <span className="text-xs text-text-muted absolute right-3 mt-4">Verificando...</span>}
@@ -292,7 +292,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                         onChange={(e) => handleManualChange('citta', e.target.value)}
                         onBlur={validateLocation} // Trigger validation
                         placeholder="Roma"
-                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all`}
+                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                     />
                     {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta}</p>}
                 </div>
@@ -325,7 +325,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
                     value={formData.dettagli}
                     onChange={(e) => handleManualChange('dettagli', e.target.value)}
                     placeholder="Scala A, Int 4..."
-                    className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent transition-all"
+                    className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all"
                 />
             </div>
 

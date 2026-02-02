@@ -183,7 +183,7 @@ const ContactPage = () => {
                                                     name="nombre"
                                                     value={formData.nombre}
                                                     onChange={handleChange}
-                                                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                    className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
                                                     placeholder="Il tuo nome"
                                                     required
                                                 />
@@ -197,7 +197,7 @@ const ContactPage = () => {
                                                 name="apellido"
                                                 value={formData.apellido}
                                                 onChange={handleChange}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
                                                 placeholder="Il tuo cognome"
                                             />
                                         </div>
@@ -213,7 +213,7 @@ const ContactPage = () => {
                                                 name="email"
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
                                                 placeholder="latua@email.com"
                                                 required
                                             />
@@ -230,7 +230,7 @@ const ContactPage = () => {
                                                 rows={5}
                                                 value={formData.mensaje}
                                                 onChange={handleChange}
-                                                className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all resize-none placeholder:text-white/20"
+                                                className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none placeholder:text-white/20"
                                                 placeholder="Come possiamo aiutarti?"
                                                 required
                                             ></textarea>
