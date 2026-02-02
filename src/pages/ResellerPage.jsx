@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Send, MapPin, Building2, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
+import { Send, MapPin, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
@@ -385,15 +385,6 @@ const ResellerPage = () => {
                                         </>
                                     )}
                                 </motion.button>
-
-                                {/* TEMP: Test Button */}
-                                <button
-                                    type="button"
-                                    onClick={() => setIsSuccess(true)}
-                                    className="w-full text-xs text-text-muted hover:text-accent underline py-2"
-                                >
-                                    [Admin] Test Animazione (Click per vedere l'effetto)
-                                </button>
                             </div>
 
                             <p className="text-center text-xs text-text-muted mt-4">

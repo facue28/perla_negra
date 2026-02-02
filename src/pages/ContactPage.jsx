@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 import { motion } from 'framer-motion';
-import { Mail, User, MessageSquare, Send, MapPin, Phone } from 'lucide-react';
+import { Mail, User, MessageSquare, Send, MapPin } from 'lucide-react';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
