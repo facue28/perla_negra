@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/ui/SEO';
 import InstagramSection from '@/components/layout/InstagramSection';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const MotionLink = motion(Link);
 
@@ -44,11 +44,19 @@ const HomePage = () => {
         return () => clearInterval(timer);
     }, []);
 
+    const { scrollY } = useScroll();
+    const yBg = useTransform(scrollY, [0, 1000], [0, 400]); // Moves background slower than scroll
+    const yText = useTransform(scrollY, [0, 500], [0, 100]); // Adds slight float to text too
+
     return (
         <>
             <div className="flex-grow relative bg-background-dark text-white pt-10 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
                 {/* Background Carousel */}
-                <div className="absolute inset-0 z-0">
+                {/* Background Carousel - Parallax Wrapper */}
+                <motion.div
+                    style={{ y: yBg }}
+                    className="absolute inset-0 z-0 h-[120%] -top-[10%]" // Made taller to avoid gaps on scroll
+                >
                     {backgrounds.map((bg, index) => (
                         <div
                             key={bg}
@@ -63,7 +71,7 @@ const HomePage = () => {
                     ))}
                     {/* Gradient Overlay for Text Readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
-                </div>
+                </motion.div>
 
                 {/* Content */}
                 <motion.div
@@ -71,6 +79,7 @@ const HomePage = () => {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
+                    style={{ y: yText }} // Text moves slightly for depth
                 >
                     <SEO
                         title="Home"
