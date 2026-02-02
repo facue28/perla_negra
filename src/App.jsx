@@ -1,4 +1,3 @@
-
 import { Suspense } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppProviders from '@/app/providers/AppProviders';

@@ -10,6 +10,7 @@ const ProductListPage = lazy(() => import('@/pages/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const CartPage = lazy(() => import('@/pages/CartPage'));
+const ResellerPage = lazy(() => import('@/pages/ResellerPage'));
 
 // Legal Pages (Lazy)
 const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
@@ -27,6 +28,7 @@ export const AppRoutes = () => {
                 <Route path="productos/:slug" element={<ProductDetailPage />} />
                 <Route path="contacto" element={<ContactPage />} />
                 <Route path="carrito" element={<CartPage />} />
+                <Route path="revendedores" element={<ResellerPage />} />
 
                 {/* Legal Routes */}
                 <Route path="termini" element={<TermsPage />} />
