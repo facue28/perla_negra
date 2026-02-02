@@ -75,11 +75,11 @@ const ResellerPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!validateForm()) {
-            toast.error("Per favore correggi gli errori nel modulo.", {
+            toast.error("Per favorere correggi gli errori nel modulo.", {
                 style: { backgroundColor: '#fee2e2', color: '#dc2626' }
             });
             return;
@@ -87,25 +87,41 @@ const ResellerPage = () => {
 
         setIsSubmitting(true);
 
-        // Simulate network delay for UX
-        setTimeout(() => {
-            const message = `*Richiesta Rivenditore Perla Negra*%0A%0A` +
-                `👤 *Nome:* ${formData.nombre} ${formData.cognome}%0A` +
-                `📧 *Email:* ${formData.email}%0A` +
-                `📱 *Telefono:* ${formData.telefono}%0A` +
-                `📍 *Città:* ${formData.citta} (${formData.provincia})%0A` +
-                `🔍 *Vi ho conosciuto tramite:* ${formData.conoscenza}%0A%0A` +
-                `💬 *Messaggio:* ${formData.messaggio || 'Nessun messaggio'}`;
+        try {
+            const response = await fetch("https://formsubmit.co/ajax/panteranegrait@gmail.com", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _subject: `Nuova Candidatura Rivenditore: ${formData.nombre} ${formData.cognome}`,
+                    _template: "table",
+                    _captcha: "false",
+                    Nome: formData.nombre,
+                    Cognome: formData.cognome,
+                    Email: formData.email,
+                    Telefono: formData.telefono,
+                    Citta: `${formData.citta} (${formData.provincia})`,
+                    Conosciuto_Tramite: formData.conoscenza,
+                    Messaggio: formData.messaggio
+                })
+            });
 
-            const whatsappUrl = `https://wa.me/393519183656?text=${message}`; // Replace with actual business number if different
-
-            window.open(whatsappUrl, '_blank');
+            if (response.ok) {
+                toast.success("Candidatura inviata con successo!");
+                setFormData({
+                    nombre: '', cognome: '', email: '', telefono: '+39',
+                    provincia: '', citta: '', conoscenza: '', messaggio: ''
+                });
+            } else {
+                toast.error("Si è verificato un errore.", { description: "Riprova più tardi." });
+            }
+        } catch (error) {
+            toast.error("Errore di connessione.");
+        } finally {
             setIsSubmitting(false);
-            toast.success("Richiesta pronta per l'invio su WhatsApp!");
-
-            // Optional: Reset form
-            // setFormData({...});
-        }, 1500);
+        }
     };
 
     const provinceOptions = [
@@ -335,7 +351,7 @@ const ResellerPage = () => {
                         </motion.button>
 
                         <p className="text-center text-xs text-text-muted mt-4">
-                            Cliccando su invia, verrai reindirizzato su WhatsApp per finalizzare la richiesta.
+                            Ti contatteremo al più presto.
                         </p>
                     </form>
                 </motion.div>

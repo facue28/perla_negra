@@ -14,12 +14,45 @@ const ContactPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        toast.success("Messaggio inviato!", {
-            description: "Grazie per averci contattato. Ti risponderemo a breve."
-        });
-        // Here you would typically send the data to a backend
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch("https://formsubmit.co/ajax/panteranegrait@gmail.com", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    _subject: `Nuovo Messaggio da Contatti: ${formData.nombre}`,
+                    _template: "table",
+                    _captcha: "false" // Optional: disable captcha if desired, or keep it true
+                })
+            });
+
+            if (response.ok) {
+                toast.success("Messaggio inviato!", {
+                    description: "Grazie per averci contattato. Ti risponderemo a breve."
+                });
+                setFormData({ nombre: '', apellido: '', email: '', mensaje: '' });
+            } else {
+                toast.error("Si è verificato un errore.", {
+                    description: "Per favore riprova o scrivici su WhatsApp."
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Errore di connessione.", {
+                description: "Controlla la tua connessione internet."
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -101,9 +134,10 @@ const ContactPage = () => {
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4">
                         <button
                             type="submit"
-                            className="bg-accent text-background-dark px-12 py-3 rounded-full font-bold text-lg hover:bg-accent-hover transition-all transform hover:scale-105 shadow-lg shadow-accent/20"
+                            disabled={isSubmitting}
+                            className={`bg-accent text-background-dark px-12 py-3 rounded-full font-bold text-lg hover:bg-accent-hover transition-all transform hover:scale-105 shadow-lg shadow-accent/20 flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed scale-100' : ''}`}
                         >
-                            Invia messaggio
+                            {isSubmitting ? 'Invio in corso...' : 'Invia messaggio'}
                         </button>
 
                         <div className="bg-background-alt p-6 rounded-3xl max-w-sm border border-border/10">
