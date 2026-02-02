@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Send, MapPin, Building2, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import Select from '@/components/ui/Select';
@@ -20,6 +20,10 @@ const ResellerPage = () => {
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Parallax Logic
+    const { scrollY } = useScroll();
+    const yBg = useTransform(scrollY, [0, 1000], [0, 200]);
 
     // Fade-in animation for content
     const containerVariants = {
@@ -123,26 +127,29 @@ const ResellerPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-background-dark flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-background-dark flex flex-col lg:flex-row overflow-hidden relative">
             <SEO
                 title="Diventa Rivenditore"
                 description="Unisciti alla rete Perla Negra. Porta l'eleganza e la seduzione nel tuo business."
             />
 
-            {/* Left Column: Image & Inspiration */}
+            {/* Left Column: Image & Inspiration (Parallax) */}
             <div className="lg:w-1/2 relative min-h-[40vh] lg:min-h-screen overflow-hidden group">
-                {/* Background Image */}
-                <div className="absolute inset-0">
+                {/* Background Image Wrapper with Parallax */}
+                <motion.div
+                    style={{ y: yBg }}
+                    className="absolute inset-0 h-[120%] -top-[10%]"
+                >
                     <img
                         src="/hero/reseller.png"
                         alt="Perla Negra Business"
                         className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000 ease-out"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/20 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-background-dark" />
-                </div>
+                </motion.div>
 
                 {/* Content Overlay */}
-                <div className="absolute inset-0 flex flex-col justify-end lg:justify-center p-8 lg:p-16 z-10">
+                <div className="absolute inset-0 flex flex-col justify-end lg:justify-center p-8 lg:p-16 z-10 pointer-events-none">
                     <motion.div
                         initial="hidden"
                         whileInView="visible"
@@ -150,11 +157,11 @@ const ResellerPage = () => {
                         variants={containerVariants}
                     >
                         <h1 className="text-4xl lg:text-6xl font-serif text-white mb-6 drop-shadow-lg">
-                            Comenzá tu <br />
-                            <span className="text-accent italic">emprendimiento</span>
+                            Inizia il tuo <br />
+                            <span className="text-accent italic">Business</span>
                         </h1>
                         <p className="text-text-muted text-lg lg:text-xl max-w-md leading-relaxed mb-8">
-                            Sumate a los miles de emprendedores que ya nos eligen, potenciando sus negocios y multiplicando sus ingresos.
+                            Unisciti alle migliaia di imprenditori che ci scelgono, potenziando il loro business e moltiplicando i profitti con l'eleganza di Perla Negra.
                         </p>
                         <div className="hidden lg:flex items-center gap-4 text-sm text-white/50 uppercase tracking-widest">
                             <span>Esclusività</span>
