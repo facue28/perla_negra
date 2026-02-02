@@ -13,7 +13,7 @@ const Navbar = () => {
     const navLinks = [
         { name: 'HOME', path: '/' },
         { name: 'PRODOTTI', path: '/productos' },
-        { name: 'BUSINESS', path: '/revendedores' },
+        { name: 'RIVENDITORI', path: '/revendedores' },
         { name: 'CHI SONO', path: '/chi-sono' },
         { name: 'CONTATTI', path: '/contacto' },
     ];
