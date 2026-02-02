@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '@/features/products/hooks/useProducts';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ShoppingBag, Star, Check, ChevronDown } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
@@ -26,6 +27,20 @@ const ProductDetailPage = () => {
     useEffect(() => {
         setQuantity(1);
     }, [slug]);
+
+    // Sticky Mobile Bar Logic
+    const [showStickyBar, setShowStickyBar] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            // Show when scrolled past 500px (roughly past main image/hero on mobile)
+            const threshold = 500;
+            setShowStickyBar(window.scrollY > threshold);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     if (loading) {
         return <div className="min-h-screen bg-background-dark flex items-center justify-center text-accent">Caricamento...</div>;
@@ -318,6 +333,36 @@ const ProductDetailPage = () => {
                 </div>
 
             </div>
+
+            {/* Smart Sticky Mobile Bar */}
+            <AnimatePresence>
+                {showStickyBar && (
+                    <motion.div
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:hidden shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)]"
+                    >
+                        <div className="flex items-center gap-4">
+                            {/* Product Info (Compact) */}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-sm font-serif text-text-primary truncate leading-tight">{product.name}</h3>
+                                <div className="text-accent font-bold text-base">€{product.price.toFixed(2)}</div>
+                            </div>
+
+                            {/* Action Button */}
+                            <button
+                                onClick={handleAddToCart}
+                                className="bg-accent text-background-dark px-6 py-3 rounded-full font-bold text-sm shadow-[0_0_15px_rgba(63,255,193,0.3)] active:scale-95 transition-transform flex items-center gap-2"
+                            >
+                                <span>Aggiungi</span>
+                                <ShoppingBag size={16} />
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
