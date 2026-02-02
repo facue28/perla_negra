@@ -143,7 +143,7 @@ const CartPage = () => {
 
     if (cart.length === 0) {
         return (
-            <div className="min-h-screen bg-background-dark flex items-center justify-center p-4 fade-in">
+            <div className="min-h-screen bg-background-dark flex items-center justify-center p-4 pt-24 fade-in">
                 <SEO title="Carrello Vuoto" description="Il tuo carrello è vuoto." />
 
                 <div className="bg-background-alt/50 backdrop-blur-3xl p-12 rounded-[2.5rem] border border-white/5 text-center max-w-lg w-full shadow-2xl shadow-black/40 relative overflow-hidden group">
@@ -173,7 +173,7 @@ const CartPage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background-dark py-12 px-4 sm:px-6 lg:px-8 fade-in">
+        <div className="min-h-screen bg-background-dark pt-24 pb-12 px-4 sm:px-6 lg:px-8 fade-in">
             <SEO title="Carrello" description="Completa il tuo ordine su Perla Negra." />
 
             <div className="max-w-7xl mx-auto">

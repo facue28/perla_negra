@@ -60,7 +60,7 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="bg-background-dark py-20 text-text-primary min-h-screen relative overflow-hidden">
+        <div className="bg-background-dark pt-24 pb-20 text-text-primary min-h-screen relative overflow-hidden">
             <SEO title="Contatti" description="Contattaci per qualsiasi domanda o richiesta. Riservatezza garantita." />
 
             {/* Background Elements */}

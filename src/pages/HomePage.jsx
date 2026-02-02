@@ -51,7 +51,7 @@ const HomePage = () => {
 
     return (
         <>
-            <div className="flex-grow relative bg-background-dark text-white pt-10 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
+            <div className="flex-grow relative bg-background-dark text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
                 {/* Background Carousel */}
                 {/* Background Carousel - Parallax Wrapper */}
                 <motion.div

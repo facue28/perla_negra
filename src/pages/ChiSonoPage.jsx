@@ -7,7 +7,7 @@ import SEO from '@/components/ui/SEO';
 
 const ChiSonoPage = () => {
     return (
-        <div className="bg-background-dark h-[calc(100vh-80px)] w-full flex items-center justify-center p-4 overflow-y-auto md:overflow-hidden">
+        <div className="bg-background-dark h-[calc(100vh-80px)] w-full flex items-center justify-center p-4 pt-24 overflow-y-auto md:overflow-hidden">
             <SEO title="Chi Sono" description="La storia di Noelia e Perla Negra. Un viaggio di passione e imprenditorialità." />
 
             <div className="max-w-6xl w-full h-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-center">

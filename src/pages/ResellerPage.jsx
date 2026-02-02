@@ -148,7 +148,7 @@ const ResellerPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-background-dark flex flex-col lg:flex-row overflow-hidden relative">
+        <div className="min-h-screen bg-background-dark flex flex-col lg:flex-row overflow-hidden relative pt-24">
             <SEO
                 title="Diventa Rivenditore"
                 description="Unisciti alla rete Perla Negra. Porta l'eleganza e la seduzione nel tuo business."
