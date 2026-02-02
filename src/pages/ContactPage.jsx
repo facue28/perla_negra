@@ -60,7 +60,6 @@ const ContactPage = () => {
     };
 
     return (
-    return (
         <div className="bg-background-dark py-20 text-text-primary min-h-screen relative overflow-hidden">
             <SEO title="Contatti" description="Contattaci per qualsiasi domanda o richiesta. Riservatezza garantita." />
 
@@ -274,7 +273,6 @@ const ContactPage = () => {
                 </div>
             </div>
         </div>
-    );
     );
 };
 
