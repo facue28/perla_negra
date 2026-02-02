@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
@@ -17,8 +17,28 @@ const Navbar = () => {
         { name: 'CONTATTI', path: '/contacto' },
     ];
 
+    const [isHidden, setIsHidden] = useState(false);
+    const { scrollY } = useScroll();
+
+    useMotionValueEvent(scrollY, "change", (latest) => {
+        const previous = scrollY.getPrevious();
+        if (latest > previous && latest > 150) {
+            setIsHidden(true);
+        } else {
+            setIsHidden(false);
+        }
+    });
+
     return (
-        <nav className="bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-border/10 transition-all duration-300">
+        <motion.nav
+            variants={{
+                visible: { y: 0 },
+                hidden: { y: "-100%" },
+            }}
+            animate={isHidden ? "hidden" : "visible"}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="bg-background-dark/80 backdrop-blur-md sticky top-0 z-50 border-b border-border/10 transition-colors duration-300"
+        >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
 
@@ -101,7 +121,7 @@ const Navbar = () => {
                     </div>
                 </div>
             )}
-        </nav>
+        </motion.nav>
     );
 };
 
