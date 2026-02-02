@@ -15,7 +15,8 @@ const ResellerPage = () => {
         provincia: '',
         citta: '',
         conoscenza: '',
-        messaggio: ''
+        messaggio: '',
+        trap: '' // Honeypot
     });
 
     const [errors, setErrors] = useState({});
@@ -98,6 +99,7 @@ const ResellerPage = () => {
                     _subject: `Nuova Candidatura Rivenditore: ${formData.nombre} ${formData.cognome}`,
                     _template: "table",
                     _captcha: "false",
+                    _honey: formData.trap,
                     Nome: formData.nombre,
                     Cognome: formData.cognome,
                     Email: formData.email,
@@ -331,6 +333,17 @@ const ResellerPage = () => {
                                 />
                             </div>
                         </div>
+
+                        {/* Honeypot Trap - Invisible to humans */}
+                        <input
+                            type="text"
+                            name="trap"
+                            value={formData.trap}
+                            onChange={handleInputChange}
+                            style={{ display: 'none' }}
+                            tabIndex="-1"
+                            autoComplete="off"
+                        />
 
                         {/* Submit Button */}
                         <motion.button

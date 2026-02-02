@@ -7,7 +7,8 @@ const ContactPage = () => {
         nombre: '',
         apellido: '',
         email: '',
-        mensaje: ''
+        mensaje: '',
+        trap: '' // Honeypot for bots
     });
 
     const handleChange = (e) => {
@@ -31,7 +32,8 @@ const ContactPage = () => {
                     ...formData,
                     _subject: `Nuovo Messaggio da Contatti: ${formData.nombre}`,
                     _template: "table",
-                    _captcha: "false" // Optional: disable captcha if desired, or keep it true
+                    _captcha: "false",
+                    _honey: formData.trap // FormSubmit will reject if this is not empty
                 })
             });
 
@@ -130,6 +132,17 @@ const ContactPage = () => {
                             required
                         ></textarea>
                     </div>
+
+                    {/* Honeypot Trap - Invisible to humans */}
+                    <input
+                        type="text"
+                        name="trap"
+                        value={formData.trap}
+                        onChange={handleChange}
+                        style={{ display: 'none' }}
+                        tabIndex="-1"
+                        autoComplete="off"
+                    />
 
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4">
                         <button
