@@ -129,7 +129,7 @@ const ProductListPage = () => {
                     isOpen={isFilterOpen}
                     onClose={() => setIsFilterOpen(false)}
                     title="Designa i tuoi gusti"
-                    side="right"
+                    side="bottom"
                 >
                     <ProductFilters {...filterProps} isMobile={true} />
                     <div className="mt-8 pt-4 border-t border-border/10">
