@@ -370,9 +370,14 @@ const ProductDetailPage = () => {
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:hidden shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)]"
+                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:pb-4 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)] md:max-w-4xl md:mx-auto md:bottom-8 md:rounded-2xl md:border md:left-4 md:right-4"
                     >
                         <div className="flex items-center gap-4">
+                            {/* Product Image (Desktop Only) */}
+                            <div className="hidden md:block w-12 h-12 rounded-lg bg-white/5 p-1 flex-shrink-0">
+                                <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+                            </div>
+
                             {/* Product Info (Compact) */}
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-sm font-serif text-text-primary truncate leading-tight">{product.name}</h3>
