@@ -170,7 +170,7 @@ const Navbar = () => {
                                 <motion.div key={link.name} variants={linkVariants} className="w-full text-center">
                                     <Link
                                         to={link.path}
-                                        className="block text-4xl font-serif text-text-primary hover:text-accent transition-colors py-2"
+                                        className="block text-3xl font-serif text-text-primary hover:text-accent transition-colors py-2"
                                         onClick={() => setIsOpen(false)}
                                     >
                                         {link.name}
