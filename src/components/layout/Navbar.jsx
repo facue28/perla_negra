@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
@@ -55,12 +56,29 @@ const Navbar = () => {
                             <User size={20} />
                         </button>
                         <Link to="/carrito" className="text-text-primary hover:text-accent transition-colors relative" aria-label="Carrello">
-                            <ShoppingBag size={20} />
-                            {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-accent text-background-dark text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                                    {cartCount}
-                                </span>
-                            )}
+                            {/* Animated Container for Icon */}
+                            <motion.div
+                                key={cartCount} // Re-triggers animation when count changes
+                                initial={{ scale: 1 }}
+                                animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <ShoppingBag size={20} />
+                            </motion.div>
+
+                            <AnimatePresence>
+                                {cartCount > 0 && (
+                                    <motion.span
+                                        key="badge"
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0 }}
+                                        className="absolute -top-2 -right-2 bg-accent text-background-dark text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center"
+                                    >
+                                        {cartCount}
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
                         </Link>
                     </div>
                 </div>

@@ -7,6 +7,7 @@ import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 import Reveal from '@/components/ui/Reveal';
+import { Skeleton } from '@/components/ui/Skeleton';
 
 const ProductDetailPage = () => {
     const { slug } = useParams();
@@ -43,7 +44,34 @@ const ProductDetailPage = () => {
     }, []);
 
     if (loading) {
-        return <div className="min-h-screen bg-background-dark flex items-center justify-center text-accent">Caricamento...</div>;
+        return (
+            <div className="min-h-screen bg-background-dark py-6 flex flex-col pt-24">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+                        {/* Image Skeleton */}
+                        <Skeleton className="h-[500px] w-full rounded-3xl" />
+                        {/* Content Skeleton */}
+                        <div className="space-y-6 pt-8">
+                            <Skeleton className="h-10 w-3/4" />
+                            <Skeleton className="h-6 w-1/2 opacity-70" />
+                            <div className="flex justify-between py-6">
+                                <Skeleton className="h-8 w-24" />
+                                <Skeleton className="h-8 w-16 rounded-full" />
+                            </div>
+                            <div className="space-y-2">
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-2/3" />
+                            </div>
+                            <div className="flex gap-4 pt-4">
+                                <Skeleton className="h-12 w-32 rounded-full" />
+                                <Skeleton className="h-12 flex-grow rounded-full" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (!product) {

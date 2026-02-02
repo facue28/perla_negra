@@ -5,7 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import AgeVerification from '@/features/legal/components/AgeVerification';
 import CookieConsent from '@/features/legal/components/CookieConsent';
-import ScrollToTop from './ScrollToTop';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 import PageTransition from '@/components/ui/PageTransition';
 
 const MainLayout = () => {
