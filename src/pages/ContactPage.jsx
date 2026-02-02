@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
+import { motion } from 'framer-motion';
+import { Mail, User, MessageSquare, Send, MapPin, Phone } from 'lucide-react';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -58,140 +60,221 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="bg-background-dark py-16 text-text-primary min-h-screen">
+    return (
+        <div className="bg-background-dark py-20 text-text-primary min-h-screen relative overflow-hidden">
             <SEO title="Contatti" description="Contattaci per qualsiasi domanda o richiesta. Riservatezza garantita." />
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                <div className="text-center mb-12">
-                    <h2 className="text-sm font-bold tracking-widest uppercase text-text-muted mb-2 animate-pulse">Contatti</h2>
-                    <p className="text-text-muted text-sm">Scrivici con discrezione. Rispondiamo appena possibile.</p>
-                </div>
+            {/* Background Elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-accent/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[120px]" />
+            </div>
 
-                <div className="mb-10">
-                    <h1 className="text-5xl font-serif font-bold mb-4">Parliamo</h1>
-                    <p className="text-text-muted mb-6">
-                        Un messaggio, una domanda o una richiesta: siamo qui per ascoltarti.
-                        <br />
-                        <span className="text-accent text-sm">La tua privacy è importante per noi.</span>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center mb-16"
+                >
+                    <span className="text-accent text-sm font-bold tracking-[0.2em] uppercase mb-4 block">Contatti</span>
+                    <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 text-white">
+                        Parliamo
+                    </h1>
+                    <p className="text-text-muted text-lg max-w-2xl mx-auto leading-relaxed">
+                        Siamo qui per ascoltarti con la massima discrezione.
+                        Che sia una domanda sui prodotti o una richiesta di collaborazione.
                     </p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                    {/* Contact Info Side */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2, duration: 0.8 }}
+                        className="lg:col-span-5 space-y-8"
+                    >
+                        <div className="bg-white/5 backdrop-blur-md p-8 rounded-3xl border border-white/10 hover:border-accent/30 transition-colors">
+                            <h3 className="text-2xl font-serif text-white mb-6">Mettiti in contatto</h3>
+                            <ul className="space-y-6">
+                                <li className="flex items-start gap-4 group">
+                                    <div className="bg-accent/10 p-3 rounded-xl text-accent group-hover:bg-accent group-hover:text-background-dark transition-all">
+                                        <Mail size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-text-muted font-bold uppercase tracking-wider mb-1">Email</p>
+                                        <a href="mailto:info@perlanegra.it" className="text-white hover:text-accent transition-colors text-lg">
+                                            panteranegrait@gmail.com
+                                        </a>
+                                    </div>
+                                </li>
+                                <li className="flex items-start gap-4 group">
+                                    <div className="bg-accent/10 p-3 rounded-xl text-accent group-hover:bg-accent group-hover:text-background-dark transition-all">
+                                        <MapPin size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-text-muted font-bold uppercase tracking-wider mb-1">Sede</p>
+                                        <p className="text-white text-lg">Italia</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-accent/20 to-transparent p-8 rounded-3xl border border-accent/20">
+                            <h4 className="flex items-center gap-2 text-accent font-bold text-xl mb-4">
+                                <span className="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                                Discrezione Totale
+                            </h4>
+                            <p className="text-text-muted text-sm leading-relaxed mb-4">
+                                Sappiamo quanto sia importante la privacy.
+                            </p>
+                            <ul className="text-sm text-white/80 space-y-2 list-disc list-inside">
+                                <li>Spedizioni anonime al 100%</li>
+                                <li>Nessun riferimento sul pacco</li>
+                                <li>Dati trattati con massima sicurezza</li>
+                            </ul>
+                        </div>
+                    </motion.div>
+
+                    {/* Form Side */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.4, duration: 0.8 }}
+                        className="lg:col-span-7"
+                    >
+                        <div className="bg-background-alt/50 backdrop-blur-xl p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden">
+
+                            {/* Decorative gradient inside form */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
+
+                            {isSuccess ? (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                >
+                                    <div className="w-24 h-24 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-8 text-accent ring-8 ring-accent/5">
+                                        <Send size={40} />
+                                    </div>
+                                    <h3 className="text-4xl font-serif text-white mb-6">Messaggio Inviato!</h3>
+                                    <p className="text-text-muted text-lg mb-10 max-w-md mx-auto">
+                                        Grazie per averci contattato. Abbiamo ricevuto la tua richiesta e ti risponderemo il prima possibile.
+                                    </p>
+                                    <button
+                                        onClick={() => setIsSuccess(false)}
+                                        className="inline-block px-8 py-3 rounded-full border border-white/10 hover:bg-white/5 text-white font-medium transition-all"
+                                    >
+                                        Invia un altro messaggio
+                                    </button>
+                                </motion.div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label htmlFor="nombre" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Nome</label>
+                                            <div className="relative group">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
+                                                <input
+                                                    type="text"
+                                                    id="nombre"
+                                                    name="nombre"
+                                                    value={formData.nombre}
+                                                    onChange={handleChange}
+                                                    className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                    placeholder="Il tuo nome"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label htmlFor="apellido" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Cognome</label>
+                                            <input
+                                                type="text"
+                                                id="apellido"
+                                                name="apellido"
+                                                value={formData.apellido}
+                                                onChange={handleChange}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                placeholder="Il tuo cognome"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label htmlFor="email" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Email</label>
+                                        <div className="relative group">
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                placeholder="latua@email.com"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label htmlFor="mensaje" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Messaggio</label>
+                                        <div className="relative group">
+                                            <MessageSquare className="absolute left-4 top-5 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
+                                            <textarea
+                                                id="mensaje"
+                                                name="mensaje"
+                                                rows={5}
+                                                value={formData.mensaje}
+                                                onChange={handleChange}
+                                                className="w-full bg-black/40 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all resize-none placeholder:text-white/20"
+                                                placeholder="Come possiamo aiutarti?"
+                                                required
+                                            ></textarea>
+                                        </div>
+                                    </div>
+
+                                    {/* Honeypot Trap */}
+                                    <input
+                                        type="text"
+                                        name="trap"
+                                        value={formData.trap}
+                                        onChange={handleChange}
+                                        style={{ display: 'none' }}
+                                        tabIndex="-1"
+                                        autoComplete="off"
+                                    />
+
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className={`w-full bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-3 uppercase tracking-widest ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                                    >
+                                        {isSubmitting ? 'Invio in corso...' : (
+                                            <>
+                                                <span>Invia Messaggio</span>
+                                                <Send size={20} />
+                                            </>
+                                        )}
+                                    </motion.button>
+
+                                    <p className="text-center text-xs text-text-muted/60 mt-4">
+                                        Rispondiamo solitamente entro 24h.
+                                    </p>
+                                </form>
+                            )}
+                        </div>
+                    </motion.div>
                 </div>
-
-                {isSuccess ? (
-                    <div className="bg-background-alt p-12 rounded-3xl border border-white/5 text-center animate-fade-in-up">
-                        <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6 text-accent">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        </div>
-                        <h3 className="text-3xl font-serif text-white mb-4">Messaggio Inviato!</h3>
-                        <p className="text-text-muted text-lg mb-8 max-w-md mx-auto">
-                            Grazie per averci contattato. Abbiamo ricevuto la tua richiesta e ti risponderemo il prima possibile.
-                        </p>
-                        <button
-                            onClick={() => setIsSuccess(false)}
-                            className="text-accent text-sm font-bold tracking-widest uppercase hover:underline"
-                        >
-                            Invia un altro messaggio
-                        </button>
-                    </div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* ... Existing Form Fields ... */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label htmlFor="nombre" className="text-sm text-text-muted ml-2">Nome</label>
-                                <input
-                                    type="text"
-                                    id="nombre"
-                                    name="nombre"
-                                    value={formData.nombre}
-                                    onChange={handleChange}
-                                    className="w-full bg-background-alt border-none rounded-2xl px-6 py-4 text-text-primary focus:ring-2 focus:ring-accent focus:outline-none transition-all"
-                                    placeholder=""
-                                    required
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label htmlFor="apellido" className="text-sm text-text-muted ml-2">Cognome</label>
-                                <input
-                                    type="text"
-                                    id="apellido"
-                                    name="apellido"
-                                    value={formData.apellido}
-                                    onChange={handleChange}
-                                    className="w-full bg-background-alt border-none rounded-2xl px-6 py-4 text-text-primary focus:ring-2 focus:ring-accent focus:outline-none transition-all"
-                                    placeholder=""
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm text-text-muted ml-2">Email</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full bg-background-alt border-none rounded-full px-6 py-4 text-text-primary focus:ring-2 focus:ring-accent focus:outline-none transition-all"
-                                placeholder=""
-                                required
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label htmlFor="mensaje" className="text-sm text-text-muted ml-2">Messaggio</label>
-                            <textarea
-                                id="mensaje"
-                                name="mensaje"
-                                rows={6}
-                                value={formData.mensaje}
-                                onChange={handleChange}
-                                className="w-full bg-background-alt border-none rounded-3xl px-6 py-4 text-text-primary focus:ring-2 focus:ring-accent focus:outline-none transition-all resize-none"
-                                placeholder=""
-                                required
-                            ></textarea>
-                        </div>
-
-                        {/* Honeypot Trap - Invisible to humans */}
-                        <input
-                            type="text"
-                            name="trap"
-                            value={formData.trap}
-                            onChange={handleChange}
-                            style={{ display: 'none' }}
-                            tabIndex="-1"
-                            autoComplete="off"
-                        />
-
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4">
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`bg-accent text-background-dark px-12 py-3 rounded-full font-bold text-lg hover:bg-accent-hover transition-all transform hover:scale-105 shadow-lg shadow-accent/20 flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed scale-100' : ''}`}
-                            >
-                                {isSubmitting ? 'Invio in corso...' : 'Invia messaggio'}
-                            </button>
-
-                            <div className="bg-background-alt p-6 rounded-3xl max-w-sm border border-border/10">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-accent font-bold">Discrezione</span>
-                                    <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                                </div>
-                                <ul className="text-xs text-text-muted space-y-1 list-disc list-inside">
-                                    <li>Risposte private e curate</li>
-                                    <li>Linguaggio inclusivo</li>
-                                    <li>Consigli d'uso e ingredienti</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="text-xs text-text-muted mt-8">
-                            <p>Rispondiamo entro 24-48 ore lavorative.</p>
-                            <p>Nessun dato viene condiviso con terze parti.</p>
-                        </div>
-                    </form>
-                )}
             </div>
         </div>
+    );
     );
 };
 
