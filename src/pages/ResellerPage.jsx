@@ -76,6 +76,8 @@ const ResellerPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const [isSuccess, setIsSuccess] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -114,8 +116,9 @@ const ResellerPage = () => {
                 toast.success("Candidatura inviata con successo!");
                 setFormData({
                     nombre: '', cognome: '', email: '', telefono: '+39',
-                    provincia: '', citta: '', conoscenza: '', messaggio: ''
+                    provincia: '', citta: '', conoscenza: '', messaggio: '', trap: ''
                 });
+                setIsSuccess(true); // Trigger success view
             } else {
                 toast.error("Si è verificato un errore.", { description: "Riprova più tardi." });
             }
@@ -193,184 +196,205 @@ const ResellerPage = () => {
             </div>
 
             {/* Right Column: Form */}
-            <div className="lg:w-1/2 p-4 lg:p-12 xl:p-20 flex items-center justify-center bg-background-dark">
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2, duration: 0.6 }}
-                    className="w-full max-w-lg bg-background-alt/30 backdrop-blur-sm p-8 rounded-3xl border border-white/5 shadow-2xl"
-                >
-                    <h2 className="text-2xl font-serif text-white mb-2">Candidatura Partner</h2>
-                    <p className="text-text-muted text-sm mb-8">Compila il modulo per ricevere il catalogo B2B.</p>
+            <div className="lg:w-1/2 p-4 lg:p-12 flex items-center justify-center overflow-y-auto">
+                <div className="w-full max-w-lg pt-16 lg:pt-0">
+                    <div className="mb-8">
+                        <h2 className="text-3xl font-serif text-white mb-2">Diventa Partner</h2>
+                        <p className="text-text-muted">Compila il modulo per candidarti come rivenditore ufficiale.</p>
+                    </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Name & Surname Row */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome</label>
-                                <div className="relative">
-                                    <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                    {isSuccess ? (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-background-alt/50 backdrop-blur-md p-10 rounded-3xl border border-white/5 text-center"
+                        >
+                            <div className="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6 text-accent">
+                                <CheckCircle size={40} />
+                            </div>
+                            <h3 className="text-2xl font-serif text-white mb-4">Candidatura Inviata!</h3>
+                            <p className="text-text-muted mb-8 leading-relaxed">
+                                Grazie per il tuo interesse. Il nostro team esaminerà la tua richiesta e ti contatterà al più presto per discutere le opportunità di collaborazione.
+                            </p>
+                            <button
+                                onClick={() => setIsSuccess(false)}
+                                className="px-8 py-3 bg-white/5 hover:bg-white/10 rounded-full text-white text-sm font-bold tracking-wider transition-colors"
+                            >
+                                TORNA AL MODULO
+                            </button>
+                        </motion.div>
+                    ) : (
+                        <form onSubmit={handleSubmit} className="space-y-5 bg-background-alt/30 p-8 rounded-3xl backdrop-blur-sm border border-white/5 shadow-2xl">
+                            {/* ... Existing Form Fields ... */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Nome</label>
+                                    <div className="relative">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+                                        <input
+                                            type="text"
+                                            name="nombre"
+                                            value={formData.nombre}
+                                            onChange={handleInputChange}
+                                            className={`w-full bg-black/40 border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            placeholder="Mario"
+                                        />
+                                    </div>
+                                    {errors.nombre && <p className="text-red-500 text-xs mt-1 ml-2">{errors.nombre}</p>}
+                                </div>
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Cognome</label>
                                     <input
                                         type="text"
-                                        name="nombre"
-                                        value={formData.nombre}
+                                        name="cognome"
+                                        value={formData.cognome}
                                         onChange={handleInputChange}
-                                        placeholder="Mario"
-                                        className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
+                                        className={`w-full bg-black/40 border ${errors.cognome ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                        placeholder="Rossi"
                                     />
+                                    {errors.cognome && <p className="text-red-500 text-xs mt-1 ml-2">{errors.cognome}</p>}
                                 </div>
-                                {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre}</p>}
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Cognome</label>
-                                <input
-                                    type="text"
-                                    name="cognome"
-                                    value={formData.cognome}
-                                    onChange={handleInputChange}
-                                    placeholder="Rossi"
-                                    className={`w-full bg-background-dark border ${errors.cognome ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
-                                />
-                                {errors.cognome && <p className="text-red-400 text-xs ml-1">{errors.cognome}</p>}
-                            </div>
-                        </div>
 
-                        {/* Email */}
-                        <div className="space-y-1">
-                            <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Email</label>
-                            <div className="relative">
-                                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="mario.rossi@email.com"
-                                    className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
-                                />
-                            </div>
-                            {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email}</p>}
-                        </div>
+                            {/* Contact Info */}
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Email</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            className={`w-full bg-black/40 border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            placeholder="mario@azienda.com"
+                                        />
+                                    </div>
+                                    {errors.email && <p className="text-red-500 text-xs mt-1 ml-2">{errors.email}</p>}
+                                </div>
 
-                        {/* Phone */}
-                        <div className="space-y-1">
-                            <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">WhatsApp</label>
-                            <div className="relative">
-                                <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                                <input
-                                    type="tel"
-                                    name="telefono"
-                                    value={formData.telefono}
-                                    onChange={handleInputChange}
-                                    placeholder="+39 333 1234567"
-                                    className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
-                                />
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Telefono</label>
+                                    <div className="relative">
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
+                                        <input
+                                            type="tel"
+                                            name="telefono"
+                                            value={formData.telefono}
+                                            onChange={handleInputChange}
+                                            className={`w-full bg-black/40 border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                            placeholder="+39 333 1234567"
+                                        />
+                                    </div>
+                                    {errors.telefono && <p className="text-red-500 text-xs mt-1 ml-2">{errors.telefono}</p>}
+                                </div>
                             </div>
-                            {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono}</p>}
-                        </div>
 
-                        {/* Location Row */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Provincia</label>
-                                <Select
-                                    value={formData.provincia}
-                                    onChange={(val) => {
-                                        setFormData(prev => ({ ...prev, provincia: val }));
-                                        if (errors.provincia) setErrors(prev => ({ ...prev, provincia: null }));
-                                    }}
-                                    options={provinceOptions}
-                                    placeholder="Seleziona..."
-                                    error={errors.provincia}
-                                />
-                                {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia}</p>}
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Città</label>
-                                <div className="relative">
-                                    <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                            {/* Location */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Provincia</label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4 z-10" />
+                                        <Select
+                                            options={provinceOptions}
+                                            value={formData.provincia}
+                                            onChange={(val) => {
+                                                setFormData({ ...formData, provincia: val });
+                                                if (errors.provincia) setErrors({ ...errors, provincia: null });
+                                            }}
+                                            placeholder="Seleziona"
+                                            className={`w-full bg-black/40 border ${errors.provincia ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
+                                        />
+                                    </div>
+                                    {errors.provincia && <p className="text-red-500 text-xs mt-1 ml-2">{errors.provincia}</p>}
+                                </div>
+                                <div>
+                                    <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Città</label>
                                     <input
                                         type="text"
                                         name="citta"
                                         value={formData.citta}
                                         onChange={handleInputChange}
+                                        className={`w-full bg-black/40 border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
                                         placeholder="Milano"
-                                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all`}
                                     />
+                                    {errors.citta && <p className="text-red-500 text-xs mt-1 ml-2">{errors.citta}</p>}
                                 </div>
-                                {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta}</p>}
                             </div>
-                        </div>
 
-                        {/* Source */}
-                        <div className="space-y-1">
-                            <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Come ci hai conosciuto?</label>
-                            <Select
-                                value={formData.conoscenza}
-                                onChange={(val) => {
-                                    setFormData(prev => ({ ...prev, conoscenza: val }));
-                                    if (errors.conoscenza) setErrors(prev => ({ ...prev, conoscenza: null }));
-                                }}
-                                options={sourceOptions}
-                                placeholder="Seleziona un'opzione..."
-                                error={errors.conoscenza}
-                            />
-                            {errors.conoscenza && <p className="text-red-400 text-xs ml-1">{errors.conoscenza}</p>}
-                        </div>
-
-                        {/* Message */}
-                        <div className="space-y-1">
-                            <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Messaggio (Opzionale)</label>
-                            <div className="relative">
-                                <MessageSquare size={16} className="absolute left-4 top-4 text-text-muted" />
-                                <textarea
-                                    name="messaggio"
-                                    value={formData.messaggio}
-                                    onChange={handleInputChange}
-                                    placeholder="Raccontaci del tuo business..."
-                                    rows="3"
-                                    className={`w-full bg-background-dark border ${errors.messaggio ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent transition-all resize-none`}
+                            {/* Source */}
+                            <div>
+                                <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Come ci hai conosciuto?</label>
+                                <Select
+                                    options={sourceOptions}
+                                    value={formData.conoscenza}
+                                    onChange={(val) => {
+                                        setFormData({ ...formData, conoscenza: val });
+                                        if (errors.conoscenza) setErrors({ ...errors, conoscenza: null });
+                                    }}
+                                    placeholder="Seleziona un'opzione"
+                                    className={`w-full bg-black/40 border ${errors.conoscenza ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all`}
                                 />
+                                {errors.conoscenza && <p className="text-red-500 text-xs mt-1 ml-2">{errors.conoscenza}</p>}
                             </div>
-                        </div>
 
-                        {/* Honeypot Trap - Invisible to humans */}
-                        <input
-                            type="text"
-                            name="trap"
-                            value={formData.trap}
-                            onChange={handleInputChange}
-                            style={{ display: 'none' }}
-                            tabIndex="-1"
-                            autoComplete="off"
-                        />
+                            {/* Message */}
+                            <div>
+                                <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Messaggio / Note</label>
+                                <div className="relative">
+                                    <MessageSquare className="absolute left-4 top-4 text-text-muted w-4 h-4" />
+                                    <textarea
+                                        name="messaggio"
+                                        rows="3"
+                                        value={formData.messaggio}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:ring-1 focus:ring-accent focus:border-accent focus:outline-none transition-all resize-none"
+                                        placeholder="Raccontaci del tuo business..."
+                                    ></textarea>
+                                </div>
+                            </div>
 
-                        {/* Submit Button */}
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            type="submit"
-                            disabled={isSubmitting}
-                            className={`w-full mt-6 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
-                        >
-                            {isSubmitting ? (
-                                <span>Invio in corso...</span>
-                            ) : (
-                                <>
-                                    <span>INVIA CANDIDATURA</span>
-                                    <Send size={20} />
-                                </>
-                            )}
-                        </motion.button>
+                            {/* Honeypot Trap - Invisible to humans */}
+                            <input
+                                type="text"
+                                name="trap"
+                                value={formData.trap}
+                                onChange={handleInputChange}
+                                style={{ display: 'none' }}
+                                tabIndex="-1"
+                                autoComplete="off"
+                            />
 
-                        <p className="text-center text-xs text-text-muted mt-4">
-                            Ti contatteremo al più presto.
-                        </p>
-                    </form>
-                </motion.div>
+                            {/* Submit Button */}
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`w-full bg-accent text-background-dark font-bold py-4 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-2 uppercase tracking-widest ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-hover'}`}
+                            >
+                                {isSubmitting ? (
+                                    <span>Invio in corso...</span>
+                                ) : (
+                                    <>
+                                        <Send size={18} />
+                                        <span>Invia Candidatura</span>
+                                    </>
+                                )}
+                            </motion.button>
+
+                            <p className="text-center text-xs text-text-muted mt-4">
+                                Ti contatteremo al più presto.
+                            </p>
+                        </form>
+                    )}
+                </div>
             </div>
         </div>
     );
 };
 
 export default ResellerPage;
+```
