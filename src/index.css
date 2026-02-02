@@ -7,7 +7,8 @@
     --color-background-alt: #141414;
 
     --color-text-primary: #FFFFFF;
-    --color-text-muted: #B1B5B4;
+    --color-text-muted: rgba(177, 181, 180, 0.85);
+    /* Improved from #B1B5B4 for better contrast */
 
     --color-accent: #3FFFC1;
     --color-accent-hover: #32cc9a;
@@ -145,12 +146,13 @@ input:-webkit-autofill:active {
 }
 
 /* Hide number input arrows/spinners */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 input[type=number] {
-  -moz-appearance: textfield; /* Firefox */
+    -moz-appearance: textfield;
+    /* Firefox */
 }

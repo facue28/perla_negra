@@ -23,9 +23,11 @@ const Navbar = () => {
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious();
+        // Only hide when scrolling DOWN and past 150px
+        // Show when scrolling UP or at top
         if (latest > previous && latest > 150) {
             setIsHidden(true);
-        } else {
+        } else if (latest < previous || latest <= 150) {
             setIsHidden(false);
         }
     });

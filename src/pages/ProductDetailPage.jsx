@@ -181,7 +181,7 @@ const ProductDetailPage = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow flex flex-col">
 
                 {/* Breadcrumbs */}
-                <nav className="flex items-center text-sm text-text-muted mb-4 space-x-2 flex-shrink-0">
+                <nav className="flex items-center text-sm text-text-muted mb-4 space-x-2 flex-shrink-0 pt-24">
                     <Link to="/" className="hover:text-accent">Home</Link>
                     <ChevronRight size={14} />
                     <Link to="/productos" className="hover:text-accent">Prodotti</Link>
@@ -190,10 +190,10 @@ const ProductDetailPage = () => {
                 </nav>
 
                 {/* Top Section: Fit to Screen Layout (Desktop) / Scroll (Mobile) */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch lg:h-[calc(100vh-140px)] h-auto min-h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-stretch lg:h-[calc(100vh-140px)] h-auto min-h-[600px]">
 
-                    {/* Left: Main Image Card */}
-                    <div className="w-full h-full">
+                    {/* Left: Main Image Card - 40% width on desktop */}
+                    <div className="w-full h-full lg:col-span-5">
                         <div
                             className="bg-background-alt rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair h-full w-full flex items-center justify-center p-8"
                             onMouseMove={handleMouseMove}
@@ -212,8 +212,8 @@ const ProductDetailPage = () => {
                         </div>
                     </div>
 
-                    {/* Right: Info Card */}
-                    <div className="flex flex-col h-full overflow-hidden">
+                    {/* Right: Info Card - 60% width on desktop */}
+                    <div className="flex flex-col h-full overflow-hidden lg:col-span-7">
                         {/* Unified Card - Compact No-Scroll */}
                         <div className="bg-background-alt px-8 py-6 rounded-3xl border border-border/20 flex flex-col h-full justify-center">
 

@@ -31,7 +31,33 @@ export const ProductProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        fetchProducts();
+        let isMounted = true;
+
+        const loadProducts = async () => {
+            setLoading(true);
+            try {
+                const data = await productService.getProducts();
+                if (isMounted) {
+                    setProducts(data);
+                    setError(null);
+                }
+            } catch {
+                console.error("Error fetching products");
+                if (isMounted) {
+                    setError(true);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadProducts();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const value = {
