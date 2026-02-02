@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SEO from '@/components/ui/SEO';
 import InstagramSection from '@/components/layout/InstagramSection';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import B2BTeaserSection from '@/components/layout/B2BTeaserSection';
 
 const MotionLink = motion(Link);
 
@@ -111,6 +112,9 @@ const HomePage = () => {
                     </motion.div>
                 </motion.div>
             </div>
+            {/* B2B Teaser Section */}
+            <B2BTeaserSection />
+
             <InstagramSection />
         </>
     );
