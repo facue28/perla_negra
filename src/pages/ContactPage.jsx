@@ -163,23 +163,13 @@ const ContactPage = () => {
                         />
 
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4">
-                            <div className="flex flex-col gap-2">
-                                <button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    className={`bg-accent text-background-dark px-12 py-3 rounded-full font-bold text-lg hover:bg-accent-hover transition-all transform hover:scale-105 shadow-lg shadow-accent/20 flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed scale-100' : ''}`}
-                                >
-                                    {isSubmitting ? 'Invio in corso...' : 'Invia messaggio'}
-                                </button>
-                                {/* TEMP: Test Button */}
-                                <button
-                                    type="button"
-                                    onClick={() => setIsSuccess(true)}
-                                    className="text-xs text-text-muted hover:text-accent underline"
-                                >
-                                    [Admin] Test Animazione
-                                </button>
-                            </div>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className={`bg-accent text-background-dark px-12 py-3 rounded-full font-bold text-lg hover:bg-accent-hover transition-all transform hover:scale-105 shadow-lg shadow-accent/20 flex items-center gap-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed scale-100' : ''}`}
+                            >
+                                {isSubmitting ? 'Invio in corso...' : 'Invia messaggio'}
+                            </button>
 
                             <div className="bg-background-alt p-6 rounded-3xl max-w-sm border border-border/10">
                                 <div className="flex items-center gap-2 mb-2">
