@@ -5,6 +5,7 @@ import { ChevronRight, ShoppingBag, Star, Check, ChevronDown } from 'lucide-reac
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
+import Reveal from '@/components/ui/Reveal';
 
 const ProductDetailPage = () => {
     const { slug } = useParams();
@@ -281,37 +282,39 @@ const ProductDetailPage = () => {
 
                 {/* Bottom Section: Accordions */}
                 <div className="max-w-3xl mx-auto w-full mt-12 pb-20">
-                    <div className="space-y-4">
-                        <AccordionItem title="Descrizione Completa">
-                            <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line">
-                                {(product.descriptionAdditional ? product.descriptionAdditional : product.description)
-                                    .replace(/\s{4,}/g, '\n')
-                                    .split('\n')
-                                    .map(line => formatText(line))
-                                    .join('\n')}
-                            </p>
-                        </AccordionItem>
-
-                        <AccordionItem title="Modi d'uso">
-                            <p className="text-text-muted leading-relaxed italic">
-                                {displayData.usage}
-                            </p>
-                        </AccordionItem>
-
-                        <AccordionItem title="Ingredienti">
-                            <p className="text-text-muted leading-relaxed font-mono text-sm opacity-80">
-                                {displayData.ingredients}
-                            </p>
-                        </AccordionItem>
-
-                        <AccordionItem title="Consigli Perla Negra">
-                            <div className="bg-background-alt p-4 rounded-xl border-l-2 border-accent">
-                                <p className="text-text-muted leading-relaxed">
-                                    {displayData.tips}
+                    <Reveal width="100%">
+                        <div className="space-y-4">
+                            <AccordionItem title="Descrizione Completa">
+                                <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line">
+                                    {(product.descriptionAdditional ? product.descriptionAdditional : product.description)
+                                        .replace(/\s{4,}/g, '\n')
+                                        .split('\n')
+                                        .map(line => formatText(line))
+                                        .join('\n')}
                                 </p>
-                            </div>
-                        </AccordionItem>
-                    </div>
+                            </AccordionItem>
+
+                            <AccordionItem title="Modi d'uso">
+                                <p className="text-text-muted leading-relaxed italic">
+                                    {displayData.usage}
+                                </p>
+                            </AccordionItem>
+
+                            <AccordionItem title="Ingredienti">
+                                <p className="text-text-muted leading-relaxed font-mono text-sm opacity-80">
+                                    {displayData.ingredients}
+                                </p>
+                            </AccordionItem>
+
+                            <AccordionItem title="Consigli Perla Negra">
+                                <div className="bg-background-alt p-4 rounded-xl border-l-2 border-accent">
+                                    <p className="text-text-muted leading-relaxed">
+                                        {displayData.tips}
+                                    </p>
+                                </div>
+                            </AccordionItem>
+                        </div>
+                    </Reveal>
                 </div>
 
             </div>

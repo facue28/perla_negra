@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/features/cart/context/CartContext';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ArrowLeft, Send, ChevronDown, ShoppingBag } from 'lucide-react';
@@ -182,54 +183,71 @@ const CartPage = () => {
 
                     {/* Left Col: Cart Items (Span 7) */}
                     <div className="lg:col-span-7 space-y-6">
-                        {cart.map((item) => (
-                            <div key={item.id} className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-all duration-300 flex flex-wrap sm:flex-nowrap gap-6 items-center shadow-lg shadow-black/20">
-
-                                {/* Image */}
-                                <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-contain rounded-lg" />
-                                </div>
-
-                                {/* Info */}
-                                <div className="flex-grow min-w-[140px]">
-                                    <h3 className="text-xl font-serif text-text-primary mb-1">{item.name}</h3>
-                                    <p className="text-text-muted text-sm mb-2 italic">{item.subtitle || "Prodotto esclusivo"}</p>
-                                    <div className="text-accent font-bold text-lg">€{item.price.toFixed(2)}</div>
-                                </div>
-
-                                {/* Controls */}
-                                <div className="flex flex-row-reverse sm:flex-row items-center gap-4 ml-auto sm:ml-0 flex-shrink-0">
-                                    {/* Remove */}
-                                    <button
-                                        onClick={() => {
-                                            removeFromCart(item.id);
-                                            toast.success(`${item.name} rimosso`);
-                                        }}
-                                        className="text-text-muted hover:text-red-400 transition-colors p-2 -mr-2 sm:mr-0 opacity-50 group-hover:opacity-100"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-
-                                    {/* Quantity */}
-                                    <div className="flex items-center gap-3 bg-background-dark rounded-full px-3 py-1.5 border border-white/10">
-                                        <button
-                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                            className="text-text-muted hover:text-white disabled:opacity-30 transition-colors"
-                                            disabled={item.quantity <= 1}
-                                        >
-                                            <Minus size={14} />
-                                        </button>
-                                        <span className="text-text-primary font-bold text-sm min-w-[1.5rem] text-center">{item.quantity}</span>
-                                        <button
-                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                            className="text-text-muted hover:text-white transition-colors"
-                                        >
-                                            <Plus size={14} />
-                                        </button>
+                        <AnimatePresence mode="popLayout">
+                            {cart.map((item) => (
+                                <motion.div
+                                    key={item.id}
+                                    layout
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, height: 0, marginBottom: 0, overflow: 'hidden' }}
+                                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                                    className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-colors duration-300 flex flex-wrap sm:flex-nowrap gap-6 items-center shadow-lg shadow-black/20"
+                                >
+                                    {/* Image */}
+                                    <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-contain rounded-lg" />
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+
+                                    {/* Info */}
+                                    <div className="flex-grow min-w-[140px]">
+                                        <h3 className="text-xl font-serif text-text-primary mb-1">{item.name}</h3>
+                                        <p className="text-text-muted text-sm mb-2 italic">{item.subtitle || "Prodotto esclusivo"}</p>
+                                        <div className="text-accent font-bold text-lg">€{item.price.toFixed(2)}</div>
+                                    </div>
+
+                                    {/* Controls */}
+                                    <div className="flex flex-row-reverse sm:flex-row items-center gap-4 ml-auto sm:ml-0 flex-shrink-0">
+                                        {/* Remove */}
+                                        <button
+                                            onClick={() => {
+                                                removeFromCart(item.id);
+                                                toast.success(`${item.name} rimosso`);
+                                            }}
+                                            className="text-text-muted hover:text-red-400 transition-colors p-2 -mr-2 sm:mr-0 opacity-50 group-hover:opacity-100"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+
+                                        {/* Quantity */}
+                                        <div className="flex items-center gap-3 bg-background-dark rounded-full px-3 py-1.5 border border-white/10">
+                                            <button
+                                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                className="text-text-muted hover:text-white disabled:opacity-30 transition-colors"
+                                                disabled={item.quantity <= 1}
+                                            >
+                                                <Minus size={14} />
+                                            </button>
+                                            <motion.span
+                                                key={item.quantity}
+                                                initial={{ scale: 1.2, color: '#3FFFC1' }}
+                                                animate={{ scale: 1, color: '#FFFFFF' }}
+                                                transition={{ duration: 0.15 }}
+                                                className="text-text-primary font-bold text-sm min-w-[1.5rem] text-center"
+                                            >
+                                                {item.quantity}
+                                            </motion.span>
+                                            <button
+                                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                className="text-text-muted hover:text-white transition-colors"
+                                            >
+                                                <Plus size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
 
                         <div className="pt-6">
                             <Link to="/productos" className="inline-flex items-center gap-2 text-text-muted hover:text-accent transition-colors text-sm group">

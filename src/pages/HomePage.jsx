@@ -2,6 +2,32 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/ui/SEO';
 import InstagramSection from '@/components/layout/InstagramSection';
+import { motion } from 'framer-motion';
+
+const MotionLink = motion(Link);
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.3 // Wait for page transition
+        }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.28,
+            ease: [0.22, 1, 0.36, 1]
+        }
+    }
+};
 
 const HomePage = () => {
     const [currentBg, setCurrentBg] = useState(0);
@@ -40,24 +66,41 @@ const HomePage = () => {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-20 flex flex-col items-center justify-center">
+                <motion.div
+                    className="relative z-20 flex flex-col items-center justify-center"
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                >
                     <SEO
                         title="Home"
                         description="Perla Negra - Intimità Elegante. Scopri la nostra collezione esclusiva di prodotti per il benessere sessuale."
                     />
-                    <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg">INTIMITÀ <span className="text-accent">ELEGANTE</span></h1>
-                    <p className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md">
+                    <motion.h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg" variants={itemVariants}>
+                        INTIMITÀ <span className="text-accent">ELEGANTE</span>
+                    </motion.h1>
+                    <motion.p className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md" variants={itemVariants}>
                         Scopri Perla Negra. Piacere, eleganza e discrezione in ogni dettaglio.
-                    </p>
-                    <div className="flex gap-4">
-                        <Link to="/productos" className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold hover:bg-accent-hover transition-colors shadow-lg hover:shadow-accent/20">
+                    </motion.p>
+                    <motion.div className="flex gap-4" variants={itemVariants}>
+                        <MotionLink
+                            to="/productos"
+                            className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
+                            whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }} // accent-hover hex
+                            whileTap={{ scale: 0.98 }}
+                        >
                             VEDI PRODOTTI
-                        </Link>
-                        <Link to="/chi-sono" className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium hover:border-accent hover:text-accent transition-colors backdrop-blur-sm bg-black/10">
+                        </MotionLink>
+                        <MotionLink
+                            to="/chi-sono"
+                            className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
+                            whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
+                            whileTap={{ scale: 0.98 }}
+                        >
                             CHI SIAMO
-                        </Link>
-                    </div>
-                </div>
+                        </MotionLink>
+                    </motion.div>
+                </motion.div>
             </div>
             <InstagramSection />
         </>

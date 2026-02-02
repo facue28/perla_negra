@@ -2,6 +2,9 @@ import { Link } from 'react-router-dom';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const MotionLink = motion(Link);
 
 const ProductCard = ({ product }) => {
     const { addToCart } = useCart();
@@ -14,31 +17,48 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <Link to={`/productos/${product.slug}`} className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 hover:border-accent/50 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] transition-all duration-300 h-full flex flex-col">
+        <MotionLink
+            to={`/productos/${product.slug}`}
+            className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 transition-colors duration-300 h-full flex flex-col"
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
+            variants={{
+                rest: { y: 0, boxShadow: "0 0 0 rgba(0,0,0,0)" },
+                hover: {
+                    y: -4,
+                    borderColor: "rgba(63,255,193,0.5)",
+                    boxShadow: "0 0 20px rgba(63,255,193,0.15)",
+                    transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
+                },
+                tap: { scale: 0.98, transition: { duration: 0.12 } }
+            }}
+        >
             {/* Image Container */}
             <div className="aspect-square overflow-hidden bg-neutral-800/30 relative p-4 flex-shrink-0">
                 {/* Actual Image Center */}
-                <img
+                <motion.img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-contain relative z-10 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                    className="w-full h-full object-contain relative z-10 rounded-2xl"
+                    variants={{
+                        rest: { scale: 1 },
+                        hover: { scale: 1.05, transition: { duration: 0.24, ease: [0.22, 1, 0.36, 1] } }
+                    }}
                 />
 
                 {/* Quick Add Button - Floating on Image */}
                 <div className="absolute bottom-4 left-4 right-4 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto">
-                    <button
+                    <motion.button
                         onClick={handleQuickAdd}
-                        className="w-full bg-accent text-background-dark py-2.5 rounded-full shadow-lg hover:bg-accent-hover active:scale-95 transition-all flex items-center justify-center gap-2 font-bold text-sm"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="w-full bg-accent text-background-dark py-2.5 rounded-full shadow-lg hover:bg-accent-hover transition-colors flex items-center justify-center gap-2 font-bold text-sm"
                         title="Aggiungi al carrello"
                     >
                         <ShoppingCart size={16} className="fill-current" />
                         <span>Aggiungi al carrello</span>
-                    </button>
-                </div>
-
-                {/* Overlay Logo/Brand (Optional decorative) */}
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 opacity-50">
-                    {/* Small logo placeholder if needed */}
+                    </motion.button>
                 </div>
 
                 {/* Badges for Sub-categories */}
@@ -72,8 +92,9 @@ const ProductCard = ({ product }) => {
                     </span>
                 </div>
             </div>
-        </Link >
+        </MotionLink>
     );
 };
+
 
 export default ProductCard;
