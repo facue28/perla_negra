@@ -368,22 +368,33 @@ const ResellerPage = () => {
                             />
 
                             {/* Submit Button */}
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                disabled={isSubmitting}
-                                className={`w-full bg-accent text-background-dark font-bold py-4 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-2 uppercase tracking-widest ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-hover'}`}
-                            >
-                                {isSubmitting ? (
-                                    <span>Invio in corso...</span>
-                                ) : (
-                                    <>
-                                        <Send size={18} />
-                                        <span>Invia Candidatura</span>
-                                    </>
-                                )}
-                            </motion.button>
+                            <div className="space-y-2">
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className={`w-full bg-accent text-background-dark font-bold py-4 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-2 uppercase tracking-widest ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-hover'}`}
+                                >
+                                    {isSubmitting ? (
+                                        <span>Invio in corso...</span>
+                                    ) : (
+                                        <>
+                                            <Send size={18} />
+                                            <span>Invia Candidatura</span>
+                                        </>
+                                    )}
+                                </motion.button>
+
+                                {/* TEMP: Test Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSuccess(true)}
+                                    className="w-full text-xs text-text-muted hover:text-accent underline py-2"
+                                >
+                                    [Admin] Test Animazione (Click per vedere l'effetto)
+                                </button>
+                            </div>
 
                             <p className="text-center text-xs text-text-muted mt-4">
                                 Ti contatteremo al più presto.
