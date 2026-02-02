@@ -71,12 +71,12 @@ const Select = ({ value, onChange, options, placeholder = "Seleziona", className
     };
 
     return (
-        <div className={`relative ${className}`} ref={dropdownRef} onKeyDown={handleKeyDown}>
+        <div className="relative w-full" ref={dropdownRef} onKeyDown={handleKeyDown}>
             {/* Trigger Button */}
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent flex items-center justify-between transition-colors ${isOpen ? 'border-accent' : ''}`}
+                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent flex items-center justify-between transition-colors ${isOpen ? 'border-accent' : ''} ${className}`}
             >
                 <span className="truncate">
                     {selectedOption ? selectedOption.label : placeholder}
