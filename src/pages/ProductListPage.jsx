@@ -60,7 +60,7 @@ const ProductListPage = () => {
     };
 
     return (
-        <div className="bg-background-dark min-h-screen py-8 fade-in">
+        <div className="bg-background-dark min-h-screen pt-24 pb-8 fade-in">
             <SEO title="Catalogo" description="Esplora la nostra selezione di prodotti premium. Lubrificanti, profumi e accessori." />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
