@@ -397,4 +397,3 @@ const ResellerPage = () => {
 };
 
 export default ResellerPage;
-```
