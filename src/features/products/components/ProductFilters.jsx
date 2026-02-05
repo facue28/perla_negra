@@ -6,9 +6,6 @@ const FILTER_LABEL_MAP = {
     'Gioco': {
         usageArea: 'Tipo di gioco'
     },
-    'Gioco': {
-        usageArea: 'Tipo di gioco'
-    },
     'Fragranza': {
         usageArea: 'Tipo di fragranza'
     }
