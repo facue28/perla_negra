@@ -162,7 +162,7 @@ const ResellerPage = () => {
                     className="absolute inset-0 h-[120%] -top-[10%]"
                 >
                     <img
-                        src="/hero/reseller.png"
+                        src="/hero/reseller.webp"
                         alt="Perla Negra Business"
                         className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000 ease-out"
                     />

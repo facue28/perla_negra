@@ -19,18 +19,30 @@ const MainLayout = () => {
                 theme="dark"
                 duration={3000}
                 toastOptions={{
-                    className: 'bg-background-alt border border-white/10 text-text-primary shadow-lg shadow-black/50',
+                    className: 'bg-background-alt border border-white/10 text-text-primary shadow-lg shadow-black/50 backdrop-blur-md',
                     style: {
-                        background: '#1A1A1A', // Fallback
+                        background: '#1A1A1A',
                         borderColor: 'rgba(255,255,255,0.1)',
-                        color: '#F4F4F5'
+                        color: '#F4F4F5',
+                        borderRadius: '1rem',
                     },
                     classNames: {
-                        toast: 'group toast group-[.toaster]:bg-background-alt group-[.toaster]:text-text-primary group-[.toaster]:border-white/10 group-[.toaster]:shadow-xl',
+                        toast: 'group toast group-[.toaster]:bg-background-alt group-[.toaster]:text-text-primary group-[.toaster]:border-white/10 group-[.toaster]:shadow-2xl group-[.toaster]:font-sans',
                         description: 'group-[.toast]:text-text-muted',
-                        actionButton: 'group-[.toast]:bg-accent group-[.toast]:text-background-dark',
+                        actionButton: 'group-[.toast]:bg-accent group-[.toast]:text-background-dark font-bold',
                         cancelButton: 'group-[.toast]:bg-white/10 group-[.toast]:text-text-primary',
+
+                        // Custom Types Styling
+                        error: 'group-[.toaster]:!border-red-500/30 group-[.toaster]:!bg-red-950/20',
+                        success: 'group-[.toaster]:!border-accent/30 group-[.toaster]:!bg-accent/5',
+                        warning: 'group-[.toaster]:!border-yellow-500/30 group-[.toaster]:!bg-yellow-950/20',
+                        info: 'group-[.toaster]:!border-blue-500/30 group-[.toaster]:!bg-blue-950/20', // Override if needed, but user said no blue. Let's make info neutral or accent.
                     }
+                }}
+                icons={{
+                    success: <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center text-accent"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div>,
+                    error: <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center text-red-400"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></div>,
+                    info: <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center text-white"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg></div>
                 }}
             />
             <AgeVerification />

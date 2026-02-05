@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ShoppingBag, User, Menu, X } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const location = useLocation();
 
     const { getCartCount } = useCart();
     const cartCount = getCartCount();
 
     const navLinks = [
-        { name: 'HOME', path: '/' },
         { name: 'PRODOTTI', path: '/productos' },
         { name: 'RIVENDITORI', path: '/revendedores' },
         { name: 'CHI SONO', path: '/chi-sono' },
@@ -110,7 +110,7 @@ const Navbar = () => {
                             <Link
                                 key={link.name}
                                 to={link.path}
-                                className="text-sm font-medium text-text-muted hover:text-accent transition-colors tracking-wide"
+                                className={`text-sm font-medium transition-colors tracking-wide ${location.pathname === link.path ? 'text-accent' : 'text-text-muted hover:text-accent'}`}
                             >
                                 {link.name}
                             </Link>
@@ -119,10 +119,10 @@ const Navbar = () => {
 
                     {/* Icons */}
                     <div className="flex items-center space-x-6">
-                        <Link to="/admin" className="text-text-primary hover:text-accent transition-colors hidden sm:block" aria-label="Account">
+                        <Link to="/admin" className={`hover:text-accent transition-colors hidden sm:block ${location.pathname === '/admin' ? 'text-accent' : 'text-text-primary'}`} aria-label="Account">
                             <User size={20} />
                         </Link>
-                        <Link to="/carrito" className="text-text-primary hover:text-accent transition-colors relative" aria-label="Carrello" onClick={() => setIsOpen(false)}>
+                        <Link to="/carrito" className={`hover:text-accent transition-colors relative ${location.pathname === '/carrito' ? 'text-accent' : 'text-text-primary'}`} aria-label="Carrello" onClick={() => setIsOpen(false)}>
                             {/* Animated Container for Icon */}
                             <motion.div
                                 key={cartCount}
@@ -172,7 +172,7 @@ const Navbar = () => {
                                 <motion.div key={link.name} variants={linkVariants} className="w-full text-center">
                                     <Link
                                         to={link.path}
-                                        className="block text-3xl font-serif text-text-primary hover:text-accent transition-colors py-2"
+                                        className={`block text-3xl font-serif transition-colors py-2 ${location.pathname === link.path ? 'text-accent' : 'text-text-primary hover:text-accent'}`}
                                         onClick={() => setIsOpen(false)}
                                     >
                                         {link.name}
