@@ -2,7 +2,7 @@ import { useState, useEffect, useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ShoppingBag, Star, Check, ChevronDown } from 'lucide-react';
+import { ChevronRight, ShoppingBag, Star, Check } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
@@ -30,6 +30,18 @@ const ProductDetailPage = () => {
     // Zoom State
     const [isHovering, setIsHovering] = useState(false);
     const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+
+    // Image Gallery State
+    const [activeImage, setActiveImage] = useState(null);
+    const [image2Error, setImage2Error] = useState(false); // 🆕 Track if secondary image is broken
+
+    // Initialize active image when product loads
+    useEffect(() => {
+        if (product) {
+            setActiveImage(product.image);
+            setImage2Error(false); // Reset error state ONLY when changing products
+        }
+    }, [slug]); // ⚡ Fix: Use slug instead of product object to avoid re-renders resetting state
 
     // Product State (Restored)
     const [quantity, setQuantity] = useState(1);
@@ -230,9 +242,9 @@ const ProductDetailPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-stretch lg:h-[calc(100vh-140px)] lg:max-h-[700px] h-auto min-h-[600px]">
 
                     {/* Left: Main Image Card - 40% width on desktop */}
-                    <div className="w-full h-full lg:col-span-5">
+                    <div className="w-full h-full lg:col-span-5 flex flex-col gap-4">
                         <div
-                            className="bg-background-alt rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair h-full w-full flex items-center justify-center p-3"
+                            className="bg-white rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair flex-grow w-full flex items-center justify-center p-0 h-[500px] lg:h-auto"
                             onMouseMove={handleMouseMove}
                             onMouseEnter={() => setIsHovering(true)}
                             onMouseLeave={() => setIsHovering(false)}
@@ -245,12 +257,41 @@ const ProductDetailPage = () => {
                                 transition: 'transform 0.2s ease-out'
                             }}>
                                 <img
-                                    src={product.image}
+                                    src={activeImage || product.image}
                                     alt={product.name}
-                                    className="w-full h-full object-cover rounded-3xl border border-accent/10 block"
+                                    className="w-full h-full object-contain rounded-3xl block mix-blend-multiply"
                                 />
                             </div>
                         </div>
+
+                        {/* Thumbnails Gallery - Only show if image2 exists AND is valid */}
+                        {product.image2 && !image2Error && (
+                            <div className="flex gap-3 justify-center h-20 flex-shrink-0">
+                                {/* Thumb 1 */}
+                                <button
+                                    onClick={() => setActiveImage(product.image)}
+                                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
+                                >
+                                    <img src={product.image} alt="Vista principal" className="w-full h-full object-contain p-0 bg-white mix-blend-multiply" />
+                                </button>
+
+                                {/* Thumb 2 */}
+                                <button
+                                    onClick={() => setActiveImage(product.image2)}
+                                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image2 ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
+                                >
+                                    <img
+                                        src={product.image2}
+                                        alt="Vista secundaria"
+                                        className="w-full h-full object-contain p-0 bg-white mix-blend-multiply"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            setImage2Error(true);
+                                        }}
+                                    />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Info Card - 60% width on desktop */}

@@ -27,17 +27,25 @@ const ProductCard = memo(({ product }) => {
             className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 transition-all duration-300 h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] hover:border-accent/40"
         >
             {/* Image Container */}
-            <div className="aspect-square overflow-hidden bg-neutral-800/30 relative p-4 flex-shrink-0">
+            <div className="aspect-square overflow-hidden bg-white relative p-0 flex-shrink-0">
                 {/* Actual Image Center */}
                 <div className="w-full h-full relative z-10 transition-transform duration-500 ease-out group-hover:scale-105">
+                    {/* Primary Image */}
                     <LazyLoadImage
                         src={product.image}
                         alt={product.name}
                         effect="blur"
-                        className="w-full h-full object-contain rounded-2xl"
+                        onError={(e) => {
+                            e.target.onError = null;
+                            if (product.fallbackImage) {
+                                e.target.src = product.fallbackImage;
+                            }
+                        }}
+                        className="w-full h-full object-contain mix-blend-multiply transition-opacity duration-300"
                         wrapperClassName="w-full h-full !block"
                     />
                 </div>
+
 
                 {/* Quick Add Button - Floating on Image */}
                 <div className="absolute bottom-4 left-4 right-4 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto">
