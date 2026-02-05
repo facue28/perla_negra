@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +8,16 @@ import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 import Reveal from '@/components/ui/Reveal';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import ProductCard from '@/features/products/components/ProductCard';
+import { trackViewItem, trackAddToCart } from '@/lib/analytics';
+import AccordionItem from '@/components/ui/AccordionItem';
+
+// Helper function to properly capitalize product names
+const toTitleCase = (str) => {
+    if (!str) return '';
+    return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+};
 
 const ProductDetailPage = () => {
     const { slug } = useParams();
@@ -32,6 +42,11 @@ const ProductDetailPage = () => {
     // Sticky Mobile Bar Logic
     const [showStickyBar, setShowStickyBar] = useState(false);
 
+    // Force scroll to top instantly on mount to prevent "stuck at bottom"
+    useLayoutEffect(() => {
+        window.scrollTo(0, 0);
+    }, [slug]);
+
     useEffect(() => {
         const handleScroll = () => {
             // Show when scrolled past 500px (roughly past main image/hero on mobile)
@@ -42,6 +57,13 @@ const ProductDetailPage = () => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    // Track View Item - Must be before any conditional returns (Rules of Hooks)
+    useEffect(() => {
+        if (product) {
+            trackViewItem(product);
+        }
+    }, [product]);
 
     if (loading) {
         return (
@@ -85,8 +107,9 @@ const ProductDetailPage = () => {
 
     const handleAddToCart = () => {
         addToCart(product, quantity);
-        toast.success(`Aggiunto al carrello: ${product.name}`, {
-            description: `${quantity} x ${product.name}`
+        trackAddToCart(product, quantity); // Analytics
+        toast.success(`Aggiunto al carrello: ${product.name} `, {
+            description: `${quantity} x ${product.name} `
         });
     };
 
@@ -114,12 +137,26 @@ const ProductDetailPage = () => {
                     tips: "I feromoni si attivano con il calore corporeo. Applicalo 15 minuti prima di uscire per farlo fondere con la tua chimica naturale.",
                     sensation: "Seducente • Intenso • Floreale/Legnoso"
                 };
-            case 'Afrodisiacos':
+            case 'Vigorizzanti': // Formerly Afrodisiacos
                 return {
                     usage: "Assumere con abbondante acqua o mescolare con la tua bevanda preferita. Non superare la dose giornaliera raccomandata. Effetto previsto in 30-45 minuti.",
                     ingredients: "Estratto di Maca, Ginseng, L-Arginina, Vitamine del complesso B, Zinco, Guaranà.",
                     tips: "Combinalo con un ambiente rilassato e stimolazione preliminare per massimizzare gli effetti.",
                     sensation: "Stimolante • Energetico • Vigorizzante"
+                };
+            case 'Olio commestibile':
+                return {
+                    usage: "Versare una piccola quantità sulle mani o direttamente sul corpo. Massaggiare dolcemente. Essendo commestibile, è sicuro per baci e giochi orali.",
+                    ingredients: "Glicerina vegetale, Aroma naturale, Acqua, Saccarina sodica (dolcificante), Coloranti alimentari.",
+                    tips: "Soffia delicatamente sulla zona applicata per attivare un piacevole effetto calore che intensifica la sensazione.",
+                    sensation: "Gustoso • Riscaldante • Scivoloso"
+                };
+            case 'Gioco':
+                return {
+                    usage: "Seguire le regole incluse nella confezione. Stabilire un 'safe word' o limiti chiari con il partner prima di iniziare per garantire un'esperienza divertente e sicura.",
+                    ingredients: "Carta di alta qualità, cartone rinforzato, dadi in resina, accessori in tessuto satinato.",
+                    tips: "Create l'atmosfera giusta con musica e luci soffuse. Usate il gioco come pretesto per esplorare nuove fantasie e rompere la routine.",
+                    sensation: "Divertente • Intrigante • Complice"
                 };
             default:
                 return {
@@ -167,7 +204,7 @@ const ProductDetailPage = () => {
     };
 
     return (
-        <div className="bg-background-dark min-h-screen py-6 flex flex-col fade-in">
+        <div className="bg-background-dark min-h-screen py-6 flex flex-col">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -175,7 +212,7 @@ const ProductDetailPage = () => {
             <SEO
                 key={product.id}
                 title={product.name}
-                description={`Acquista ${product.name} - ${product.subtitle || product.category}`}
+                description={`Acquista ${product.name} - ${product.subtitle || product.category} `}
                 image={product.image}
             />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow flex flex-col">
@@ -190,41 +227,45 @@ const ProductDetailPage = () => {
                 </nav>
 
                 {/* Top Section: Fit to Screen Layout (Desktop) / Scroll (Mobile) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-stretch lg:h-[calc(100vh-140px)] h-auto min-h-[600px]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-stretch lg:h-[calc(100vh-140px)] lg:max-h-[700px] h-auto min-h-[600px]">
 
                     {/* Left: Main Image Card - 40% width on desktop */}
                     <div className="w-full h-full lg:col-span-5">
                         <div
-                            className="bg-background-alt rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair h-full w-full flex items-center justify-center p-8"
+                            className="bg-background-alt rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair h-full w-full flex items-center justify-center p-3"
                             onMouseMove={handleMouseMove}
                             onMouseEnter={() => setIsHovering(true)}
                             onMouseLeave={() => setIsHovering(false)}
                         >
-                            <img
-                                src={product.image}
-                                alt={product.name}
-                                className="w-full h-full object-contain transition-transform duration-200 ease-out rounded-3xl"
-                                style={{
-                                    transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                                    transform: isHovering ? 'scale(2)' : 'scale(1)'
-                                }}
-                            />
+                            <div style={{
+                                width: '100%',
+                                height: '100%',
+                                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}% `,
+                                transform: isHovering ? 'scale(2)' : 'scale(1)',
+                                transition: 'transform 0.2s ease-out'
+                            }}>
+                                <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-full h-full object-cover rounded-3xl border border-accent/10 block"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Right: Info Card - 60% width on desktop */}
                     <div className="flex flex-col h-full overflow-hidden lg:col-span-7">
                         {/* Unified Card - Compact No-Scroll */}
-                        <div className="bg-background-alt px-8 py-6 rounded-3xl border border-border/20 flex flex-col h-full justify-center">
+                        <div className="bg-background-alt px-8 py-3 rounded-2xl border border-border/20 flex flex-col h-full justify-center">
 
                             {/* Header Group */}
                             <div className="mb-4 flex-shrink-0">
-                                <h1 className="text-3xl lg:text-4xl font-serif text-text-primary mb-1 line-clamp-1 leading-tight">{product.name}</h1>
+                                <h1 className="text-3xl lg:text-4xl font-serif text-text-primary mb-1 line-clamp-1 leading-tight">{toTitleCase(product.name)}</h1>
                                 <p className="text-lg text-text-muted font-light italic line-clamp-2">{product.subtitle}</p>
                             </div>
 
                             {/* Price & Rating */}
-                            <div className="flex items-center justify-between mb-6 flex-shrink-0">
+                            <div className="flex items-center justify-between mb-4 flex-shrink-0">
                                 <div className="text-3xl font-bold text-accent">
                                     ${product.price.toFixed(2)}
                                 </div>
@@ -243,9 +284,9 @@ const ProductDetailPage = () => {
                                 </p>
 
                                 {/* Interactive Section: Quantity + Add to Cart Row */}
-                                <div className="flex gap-4 items-stretch">
+                                <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center lg:justify-center">
                                     {/* Quantity */}
-                                    <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px]">
+                                    <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px] h-[52px]">
                                         <button
                                             onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                             className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
@@ -262,19 +303,37 @@ const ProductDetailPage = () => {
                                     </div>
 
                                     {/* Add Button */}
-                                    <button
+                                    <motion.button
                                         onClick={handleAddToCart}
-                                        className="flex-grow py-3 rounded-full font-bold text-base transition-all flex items-center justify-center gap-2 bg-accent text-background-dark hover:bg-accent-hover shadow-[0_0_15px_rgba(63,255,193,0.3)] hover:shadow-[0_0_25px_rgba(63,255,193,0.5)] transform active:scale-95"
+                                        layout
+                                        whileHover={{
+                                            scale: 1.05,
+                                            backgroundColor: "#32cc9a",
+                                            boxShadow: "0 10px 30px -10px rgba(63,255,193,0.6)",
+                                            transition: { duration: 0.2, ease: "easeOut" }
+                                        }}
+                                        whileTap={{
+                                            scale: 0.95,
+                                            backgroundColor: "#2bb589",
+                                            transition: { type: "spring", stiffness: 300, damping: 20 }
+                                        }}
+                                        className="w-full lg:w-auto lg:min-w-[280px] py-3 rounded-full font-bold text-base flex items-center justify-center gap-2 bg-accent text-background-dark shadow-[0_0_15px_rgba(63,255,193,0.3)] origin-center"
                                     >
-                                        <span>Aggiungi</span>
-                                        <ShoppingBag size={18} />
-                                    </button>
+                                        <motion.span layout className="flex items-center gap-2">
+                                            <span>Aggiungi</span>
+                                            <ShoppingBag size={18} />
+                                        </motion.span>
+                                    </motion.button>
                                 </div>
 
-                                {/* Link */}
-                                <div className="flex justify-center -mt-2">
-                                    <Link to="/productos" className="text-text-muted hover:text-accent text-xs underline underline-offset-4 transition-colors">
-                                        Continua a esplorare
+                                {/* Enhanced Explore CTA */}
+                                <div className="flex justify-center mt-6">
+                                    <Link
+                                        to="/productos"
+                                        className="group flex items-center gap-2 px-6 py-3 border-2 border-accent/30 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium"
+                                    >
+                                        <span>Continua a esplorare</span>
+                                        <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                     </Link>
                                 </div>
 
@@ -307,13 +366,13 @@ const ProductDetailPage = () => {
                                 </div>
                             </div>
 
-                            {/* Footer: Simple Badges */}
-                            <div className="flex items-center justify-center gap-6 pt-4 mt-2 border-t border-border/10">
-                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 tracking-widest">
-                                    <Check size={12} className="text-accent" />
-                                    <span>Discrezione totale</span>
+                            {/* Footer: Enhanced Shipping Discretion */}
+                            <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-border/10">
+                                <div className="flex items-center justify-center gap-2 bg-accent/10 border border-accent/20 rounded-lg py-2 px-3">
+                                    <Check size={14} className="text-accent flex-shrink-0" />
+                                    <span className="text-xs text-accent font-medium tracking-wide">Pacco anonimo - Nessuna etichetta esterna</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] text-text-muted/70 tracking-widest">
+                                <div className="flex items-center justify-center gap-2 text-[10px] text-text-muted/60">
                                     <Check size={12} className="text-accent" />
                                     <span>Spedizione veloce</span>
                                 </div>
@@ -324,7 +383,7 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Bottom Section: Accordions */}
-                <div className="max-w-3xl mx-auto w-full mt-12 pb-20">
+                <div className="max-w-3xl mx-auto w-full mt-12 pb-12">
                     <Reveal width="100%">
                         <div className="space-y-4">
                             <AccordionItem title="Descrizione Completa">
@@ -337,11 +396,7 @@ const ProductDetailPage = () => {
                                 </p>
                             </AccordionItem>
 
-                            <AccordionItem title="Modi d'uso">
-                                <p className="text-text-muted leading-relaxed italic">
-                                    {displayData.usage}
-                                </p>
-                            </AccordionItem>
+
 
                             <AccordionItem title="Ingredienti">
                                 <p className="text-text-muted leading-relaxed font-mono text-sm opacity-80">
@@ -359,6 +414,28 @@ const ProductDetailPage = () => {
                         </div>
                     </Reveal>
                 </div>
+
+                {/* Related Products Section */}
+                {products.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
+                    <div className="border-t border-border/10 pt-16 pb-24">
+                        <h2 className="text-3xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+                            {products
+                                .filter(p => p.category === product.category && p.slug !== product.slug)
+                                .slice(0, 4)
+                                .map(relatedProduct => (
+                                    <div key={relatedProduct.id} className="h-full">
+                                        {/* Import ProductCard if not already valid in scope? It is not imported at top yet! 
+                                            Wait, it is NOT imported. I need to check imports. 
+                                            ProductCard IS imported in ProductListPage, but I am in DetailPage.
+                                            I need to add import ProductCard at top.
+                                        */}
+                                        <ProductCard product={relatedProduct} />
+                                    </div>
+                                ))}
+                        </div>
+                    </div>
+                )}
 
             </div>
 
@@ -400,30 +477,5 @@ const ProductDetailPage = () => {
     );
 };
 
-// Simple Accordion Component
-const AccordionItem = ({ title, children }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-        <div className="border-b border-border/20">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full py-6 flex items-center justify-between group"
-            >
-                <h3 className={`text-xl font-serif transition-colors ${isOpen ? 'text-accent' : 'text-text-primary group-hover:text-accent'}`}>
-                    {title}
-                </h3>
-                <ChevronDown
-                    className={`text-text-muted transition-transform duration-300 ${isOpen ? 'rotate-180 text-accent' : ''}`}
-                />
-            </button>
-            <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0'}`}
-            >
-                {children}
-            </div>
-        </div>
-    );
-};
-
 export default ProductDetailPage;
+

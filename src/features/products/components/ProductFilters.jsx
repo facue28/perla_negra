@@ -1,6 +1,19 @@
 import { Filter, ChevronUp, ChevronDown, Minus } from 'lucide-react';
 import Select from '@/components/ui/Select';
 
+// Category-specific filter label mapping
+const FILTER_LABEL_MAP = {
+    'Gioco': {
+        usageArea: 'Tipo di gioco'
+    },
+    'Gioco': {
+        usageArea: 'Tipo di gioco'
+    },
+    'Fragranza': {
+        usageArea: 'Tipo di fragranza'
+    }
+};
+
 const ProductFilters = ({
     clearFilters,
     sortOrder,
@@ -10,16 +23,30 @@ const ProductFilters = ({
     sensations,
     selectedSensations,
     handleSensationChange,
-    selectedUsage,
-    handleUsageChange,
-    usageAreas = [],
+
+
+    selectedProductFilters,
+    handleProductFilterChange,
+    gameTypes = [],
+    flavorOptions = [],
+    usageOptions = [],
     selectedTarget,
     handleTargetChange,
     targetAudiences = [],
     priceRange,
     setPriceRange,
-    isMobile = false
+    isMobile = false,
+    selectedCategories = []  // Category context for intelligent labels
 }) => {
+    // Get contextual label for usage area based on selected category
+    const getUsageAreaLabel = () => {
+        // Only apply custom label if a single category is selected
+        if (selectedCategories.length === 1) {
+            const category = selectedCategories[0];
+            return FILTER_LABEL_MAP[category]?.usageArea || "Zona d'uso";
+        }
+        return "Zona d'uso";  // Default label
+    };
     return (
         <div className="space-y-6">
             {!isMobile && (
@@ -54,8 +81,8 @@ const ProductFilters = ({
                 </div>
             )}
 
-            {/* Sensation Filter - Only show if available */}
-            {sensations.length > 0 && (
+            {/* Sensation Filter - Only show if available AND not Olio Commestibile */}
+            {sensations.length > 0 && !selectedCategories.some(c => c.toLowerCase() === 'olio commestibile') && (
                 <div className="border-b border-border/20 py-4">
                     <button
                         onClick={() => toggleSection('sensations')}
@@ -88,31 +115,99 @@ const ProductFilters = ({
                 </div>
             )}
 
-            {/* Usage Area Filter - Only show if available (e.g. Lubricants) */}
-            {usageAreas.length > 0 && (
+            {/* Game Types Filter - Only show when gameTypes exist */}
+            {gameTypes.length > 0 && (
+                <div className="border-b border-border/20 py-4">
+                    <button
+                        onClick={() => toggleSection('games')}
+                        className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
+                    >
+                        <span>Tipo di gioco</span>
+                        {expanded.games ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {expanded.games && (
+                        <div className="space-y-2 mt-3 animate-slideDown">
+                            {gameTypes.map(game => (
+                                <label key={game} className="flex items-center space-x-3 cursor-pointer group">
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedProductFilters.includes(game) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedProductFilters.includes(game) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedProductFilters.includes(game)}
+                                        onChange={() => handleProductFilterChange(game)}
+                                    />
+                                    <span className={`text-sm ${selectedProductFilters.includes(game) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                        {game.charAt(0).toUpperCase() + game.slice(1).toLowerCase()}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Flavors Filter (Gusti) - Olii e Massaggi */}
+            {flavorOptions.length > 0 && (
+                <div className="border-b border-border/20 py-4">
+                    <button
+                        onClick={() => toggleSection('flavors')}
+                        className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
+                    >
+                        <span>Gusti</span>
+                        {expanded.flavors ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </button>
+
+                    {expanded.flavors && (
+                        <div className="space-y-2 mt-3 animate-slideDown">
+                            {flavorOptions.map(item => (
+                                <label key={item} className="flex items-center space-x-3 cursor-pointer group">
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedProductFilters.includes(item) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedProductFilters.includes(item) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={selectedProductFilters.includes(item)}
+                                        onChange={() => handleProductFilterChange(item)}
+                                    />
+                                    <span className={`text-sm ${selectedProductFilters.includes(item) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                        {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Usage Area Filter - Generic for others */}
+            {usageOptions.length > 0 && (
                 <div className="border-b border-border/20 py-4">
                     <button
                         onClick={() => toggleSection('usage')}
                         className="w-full flex items-center justify-between text-text-primary font-medium hover:text-accent transition-colors mb-2"
                     >
-                        <span>Zona d'uso</span>
+                        <span>{getUsageAreaLabel()}</span>
                         {expanded.usage ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </button>
 
                     {expanded.usage && (
                         <div className="space-y-2 mt-3 animate-slideDown">
-                            {usageAreas.map(item => (
+                            {usageOptions.map(item => (
                                 <label key={item} className="flex items-center space-x-3 cursor-pointer group">
-                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedUsage.includes(item) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
-                                        {selectedUsage.includes(item) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedProductFilters.includes(item) ? 'bg-accent border-accent select-none' : 'border-text-muted group-hover:border-accent'}`}>
+                                        {selectedProductFilters.includes(item) && <div className="w-2 h-2 bg-background-dark rounded-sm" />}
                                     </div>
                                     <input
                                         type="checkbox"
                                         className="hidden"
-                                        checked={selectedUsage.includes(item)}
-                                        onChange={() => handleUsageChange(item)}
+                                        checked={selectedProductFilters.includes(item)}
+                                        onChange={() => handleProductFilterChange(item)}
                                     />
-                                    <span className={`text-sm ${selectedUsage.includes(item) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
+                                    <span className={`text-sm ${selectedProductFilters.includes(item) ? 'text-accent' : 'text-text-muted group-hover:text-text-primary'}`}>
                                         {item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()}
                                     </span>
                                 </label>

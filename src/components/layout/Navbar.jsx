@@ -80,7 +80,7 @@ const Navbar = () => {
             }}
             animate={isHidden ? "hidden" : "visible"}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrollY.get() > 50 || isOpen ? 'bg-background-dark/90 backdrop-blur-md border-b border-border/10' : 'bg-transparent border-transparent'}`}
+            className="fixed top-0 w-full z-50 bg-background-dark/90 backdrop-blur-md border-b border-border/10 transition-all duration-300"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20 relative z-50">
@@ -119,9 +119,9 @@ const Navbar = () => {
 
                     {/* Icons */}
                     <div className="flex items-center space-x-6">
-                        <button className="text-text-primary hover:text-accent transition-colors hidden sm:block" aria-label="Account">
+                        <Link to="/admin" className="text-text-primary hover:text-accent transition-colors hidden sm:block" aria-label="Account">
                             <User size={20} />
-                        </button>
+                        </Link>
                         <Link to="/carrito" className="text-text-primary hover:text-accent transition-colors relative" aria-label="Carrello" onClick={() => setIsOpen(false)}>
                             {/* Animated Container for Icon */}
                             <motion.div
@@ -182,9 +182,9 @@ const Navbar = () => {
                             ))}
 
                             <motion.div variants={linkVariants} className="pt-8 flex flex-col gap-6 items-center w-full">
-                                <Link to="/login" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors" onClick={() => setIsOpen(false)}>
+                                <Link to="/admin" className="flex items-center gap-2 text-text-muted hover:text-white transition-colors" onClick={() => setIsOpen(false)}>
                                     <User size={20} />
-                                    <span className="text-lg">Accedi</span>
+                                    <span className="text-lg">Acceso Admin</span>
                                 </Link>
 
                                 <div className="text-xs text-text-muted/40 tracking-widest uppercase mt-8">

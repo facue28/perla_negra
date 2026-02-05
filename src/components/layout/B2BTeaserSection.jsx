@@ -4,7 +4,7 @@ import { ArrowRight, TrendingUp } from 'lucide-react';
 
 const B2BTeaserSection = () => {
     return (
-        <section className="py-24 bg-gradient-to-b from-background-dark to-background-alt/30 relative overflow-hidden">
+        <section id="b2b-section" className="py-24 bg-gradient-to-b from-background-dark to-background-alt/30 relative overflow-hidden">
             {/* Decorative Background Elements */}
             <div className="absolute top-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />

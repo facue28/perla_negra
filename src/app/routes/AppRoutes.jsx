@@ -1,7 +1,8 @@
 import { lazy } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Outlet } from 'react-router-dom';
 import MainLayout from '@/components/layout/MainLayout';
 import NotFoundPage from '@/pages/NotFoundPage';
+import AdminLayout from '@/components/layout/AdminLayout'; // Import AdminLayout
 
 // Lazy Loaded Pages
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -16,6 +17,16 @@ const ResellerPage = lazy(() => import('@/pages/ResellerPage'));
 const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
 const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
 const ResponsibleUsePage = lazy(() => import('@/pages/legal/ResponsibleUsePage'));
+
+// Admin Pages
+const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
+const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
+const AdminProductList = lazy(() => import('@/pages/admin/AdminProductList'));
+const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
+const AdminCouponList = lazy(() => import('@/pages/admin/AdminCouponList'));
+const AdminCouponForm = lazy(() => import('@/pages/admin/AdminCouponForm'));
+const AdminOrderList = lazy(() => import('@/pages/admin/AdminOrderList'));
+import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 
 export const AppRoutes = () => {
     return (
@@ -38,6 +49,27 @@ export const AppRoutes = () => {
 
                 {/* 404 */}
                 <Route path="*" element={<NotFoundPage />} />
+            </Route>
+
+            {/* Admin Routes (Separate Layout potentially) */}
+            <Route path="/admin/login" element={<LoginPage />} />
+
+            {/* Protected Admin Zone */}
+            <Route path="/admin" element={
+                <ProtectedRoute>
+                    <AdminLayout>
+                        <Outlet />
+                    </AdminLayout>
+                </ProtectedRoute>
+            }>
+                <Route index element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProductList />} />
+                <Route path="products/new" element={<AdminProductForm />} />
+                <Route path="products/:id" element={<AdminProductForm />} />
+                <Route path="coupons" element={<AdminCouponList />} />
+                <Route path="coupons/new" element={<AdminCouponForm />} />
+                <Route path="coupons/:id" element={<AdminCouponForm />} />
+                <Route path="orders" element={<AdminOrderList />} />
             </Route>
         </Routes>
     );

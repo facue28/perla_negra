@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { productService } from '../services/productService';
+import { createContext, useContext, useMemo } from 'react';
+import { useProductsLogic } from '../hooks/useProductsLogic';
 
 const ProductContext = createContext();
 
@@ -12,60 +12,14 @@ export const useProductContext = () => {
 };
 
 export const ProductProvider = ({ children }) => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { products, loading, error, refetch } = useProductsLogic();
 
-    const fetchProducts = async () => {
-        setLoading(true);
-        try {
-            const data = await productService.getProducts();
-            setProducts(data);
-            setError(null);
-        } catch {
-            console.error("Error fetching products");
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const loadProducts = async () => {
-            setLoading(true);
-            try {
-                const data = await productService.getProducts();
-                if (isMounted) {
-                    setProducts(data);
-                    setError(null);
-                }
-            } catch {
-                console.error("Error fetching products");
-                if (isMounted) {
-                    setError(true);
-                }
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        loadProducts();
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
-
-    const value = {
+    const value = useMemo(() => ({
         products,
         loading,
         error,
-        refetch: fetchProducts
-    };
+        refetch
+    }), [products, loading, error, refetch]);
 
     return (
         <ProductContext.Provider value={value}>

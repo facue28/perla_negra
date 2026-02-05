@@ -4,6 +4,7 @@ import SEO from '@/components/ui/SEO';
 import InstagramSection from '@/components/layout/InstagramSection';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import B2BTeaserSection from '@/components/layout/B2BTeaserSection';
+import InfiniteMarquee from '@/components/ui/InfiniteMarquee';
 
 const MotionLink = motion(Link);
 
@@ -33,9 +34,11 @@ const itemVariants = {
 const HomePage = () => {
     const [currentBg, setCurrentBg] = useState(0);
     const backgrounds = [
-        '/hero/silk.png',
-        '/hero/feather.png',
-        '/hero/glass.png'
+        '/hero/silk.webp',
+        '/hero/feather.webp',
+        '/hero/glass.webp',
+        '/hero/liquid.webp',
+        '/hero/smoke.webp'
     ];
 
     useEffect(() => {
@@ -66,6 +69,7 @@ const HomePage = () => {
                             <img
                                 src={bg}
                                 alt=""
+                                aria-hidden="true"
                                 className="w-full h-full object-cover opacity-60"
                             />
                         </div>
@@ -107,11 +111,15 @@ const HomePage = () => {
                             whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
                             whileTap={{ scale: 0.98 }}
                         >
-                            CHI SIAMO
+                            CHI SONO
                         </MotionLink>
                     </motion.div>
                 </motion.div>
             </div>
+
+            {/* Infinite Marquee - Visual Separator */}
+            <InfiniteMarquee />
+
             {/* B2B Teaser Section */}
             <B2BTeaserSection />
 

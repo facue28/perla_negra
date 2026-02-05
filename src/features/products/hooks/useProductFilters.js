@@ -4,7 +4,7 @@ export const useProductFilters = (products) => {
     // States for filters
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedSensations, setSelectedSensations] = useState([]);
-    const [selectedUsage, setSelectedUsage] = useState([]); // 'anale', 'vaginale', 'orale' etc.
+    const [selectedProductFilters, setSelectedProductFilters] = useState([]); // Formerly usage: 'anale', 'vaginale', 'orale', flavors etc.
     const [selectedTarget, setSelectedTarget] = useState([]); // 'uomo', 'donna', 'unisex'
     const [sortOrder, setSortOrder] = useState('newest'); // 'asc', 'desc', 'newest', 'oldest'
     const [priceRange, setPriceRange] = useState({ min: 0, max: 200 }); // Ajustable range
@@ -16,6 +16,8 @@ export const useProductFilters = (products) => {
         categories: false,
         sensations: false,
         usage: false,
+        flavors: false,
+        games: false,
         target: false,
         price: true
     });
@@ -25,9 +27,50 @@ export const useProductFilters = (products) => {
         return [...new Set(products.map(p => p.category))];
     }, [products]);
 
+    // Game-specific values (from Gioco category)
+    const GAME_VALUES = ['Dadi', 'Carte', 'Roulette'];
+
+    // Helper: Split selectedProductFilters into Games, Flavors, and Usage Area for isolated filtering
+    // Must be defined BEFORE sensations memo to use as dependency
+    const { selectedGames, selectedFlavors, selectedUsage } = useMemo(() => {
+        const games = [];
+        const flavors = [];
+        const usage = [];
+
+        selectedProductFilters.forEach(val => {
+            if (GAME_VALUES.includes(val)) {
+                games.push(val);
+            } else {
+                // Check if any product with this filter value is an Oil
+                // Loop over products is safe as this runs deeply
+                const matchesOil = products?.some(p => {
+                    const pVal = p.productFilter?.trim() || p.usageArea?.trim();
+                    return pVal && pVal.toLowerCase() === val.toLowerCase() && p.category === 'Olio commestibile';
+                });
+
+                if (matchesOil) {
+                    flavors.push(val);
+                } else {
+                    usage.push(val); // Default fallback if not Oil or Game -> Usage
+                }
+            }
+        });
+        return { selectedGames: games, selectedFlavors: flavors, selectedUsage: usage };
+    }, [selectedProductFilters, products]);
+
     // Dynamic sensations based on selected categories
     // Dynamic sensations based on selected categories and other filters
     const sensations = useMemo(() => {
+        // STRICT FACET RULE: If Flavors (Oils) or Games are selected, HIDE Sensations entirely.
+        if (selectedFlavors.length > 0 || selectedGames.length > 0) {
+            return [];
+        }
+
+        // STRICT CATEGORY RULE: Games do NOT use sensations.
+        if (selectedCategories.includes('Gioco')) {
+            return [];
+        }
+
         let relevantProducts = products || [];
 
         // Filter by Category
@@ -35,9 +78,9 @@ export const useProductFilters = (products) => {
             relevantProducts = relevantProducts.filter(p => selectedCategories.includes(p.category));
         }
 
-        // Filter by Usage Area (User Requirement: Context-aware sensations)
-        if (selectedUsage.length > 0) {
-            relevantProducts = relevantProducts.filter(p => selectedUsage.includes(p.usageArea));
+        // Filter by Product Filter (Usage Area / Flavor / Game Type)
+        if (selectedProductFilters.length > 0) {
+            relevantProducts = relevantProducts.filter(p => selectedProductFilters.includes(p.productFilter));
         }
 
         // Filter by Target Audience
@@ -46,34 +89,163 @@ export const useProductFilters = (products) => {
         }
 
         return [...new Set(relevantProducts.map(p => p.sensation).filter(Boolean))];
-    }, [selectedCategories, selectedUsage, selectedTarget, products]);
+    }, [selectedCategories, selectedProductFilters, selectedTarget, products, selectedFlavors, selectedGames]);
 
     // Helper to get products currently relevant base on other filters (Concept: Cascading Filters)
-    // We want usageAreas to be visible if the products currently in view (filtered by category AND sensation) have usageAreas.
-    const relevantProductsForUsage = useMemo(() => {
+    // Products filtered here determine which filter options are visible
+    // Game-specific values (from Gioco category)
+
+
+    // Helper for robust deduplication and normalization
+    const getUniqueOptions = (productList, allowedValues, excludeValues = []) => {
+        const optionsMap = new Map(); // Key (lowercase) -> DisplayValue
+
+        productList.forEach(p => {
+            const rawValue = p.productFilter?.trim() || p.usageArea?.trim();
+            if (!rawValue) return;
+
+            // If we have an allow-list, strict check
+            if (allowedValues && !allowedValues.includes(rawValue)) return;
+
+            // If we have an exclude-list, strict check
+            if (excludeValues.length > 0 && excludeValues.includes(rawValue)) return;
+
+            const key = rawValue.toLowerCase();
+            // Store the first variation we see (or could force Title Case here)
+            if (!optionsMap.has(key)) {
+                // Capitalize first letter just in case
+                const display = rawValue.charAt(0).toUpperCase() + rawValue.slice(1);
+                optionsMap.set(key, display);
+            }
+        });
+
+        return Array.from(optionsMap.values()).sort();
+    };
+
+
+
+    // commonBaseProducts: Filtered by Category and Sensation (Base for both specific lists)
+    const commonBaseProducts = useMemo(() => {
         let result = products || [];
-        // Filter by Category if selected
         if (selectedCategories.length > 0) {
             result = result.filter(p => selectedCategories.includes(p.category));
         }
-        // Filter by Sensation if selected
         if (selectedSensations.length > 0) {
             result = result.filter(p => selectedSensations.includes(p.sensation));
         }
         return result;
     }, [products, selectedCategories, selectedSensations]);
 
+    // Helper to get products currently relevant based on other filters (Concept: Cascading Filters)
+    // This one includes ALL selectedProductFilters, used for downstream filters like Target Audience
+    const relevantProductsForProductFilter = useMemo(() => {
+        let result = commonBaseProducts;
+        if (selectedProductFilters.length > 0) {
+            const normalizedFilters = selectedProductFilters.map(f => f.toLowerCase());
+            result = result.filter(p => {
+                const trimmed = p.productFilter?.trim();
+                const trimmedUsage = p.usageArea?.trim();
+                const val = trimmed || trimmedUsage;
+                return val && normalizedFilters.includes(val.toLowerCase());
+            });
+        }
+        return result;
+    }, [commonBaseProducts, selectedProductFilters]);
 
-    // Dynamic Usage Areas (only for Lubricants effectively, but generic logic)
-    const usageAreas = useMemo(() => {
-        // If no products remain after category/sensation filtering, or none of them have usageArea -> list is empty -> Filter UI hides.
-        return [...new Set(relevantProductsForUsage.map(p => p.usageArea).filter(Boolean))];
-    }, [relevantProductsForUsage]);
+
+    // productsForGames: Used to calculate available Game options.
+    // FILTER: Base + Selected Usage Areas (Cascading).
+    // DO NOT FILTER by Selected Games (to keep other game options visible - Multi-select OR logic).
+    // productsForGames: Used to calculate available Game options.
+    // FILTER: Base + Selected General Options (Cascading).
+    // DO NOT FILTER by Selected Games (to keep other game options visible - Multi-select OR logic).
+    // --- FACETED OPTIONS GENERATION ---
+
+    // 1. Products relevant for GAME OPTIONS
+    // STRICT FACET RULE: Hide games if flavors or usage are selected
+    const productsForGames = useMemo(() => {
+        if (selectedFlavors.length > 0 || selectedUsage.length > 0) {
+            return [];
+        }
+
+        // Show all game products from the base set
+        return commonBaseProducts.filter(p => p.category === 'Gioco');
+    }, [commonBaseProducts, selectedFlavors, selectedUsage]);
+
+    // 2. Products relevant for FLAVOR OPTIONS
+    // STRICT FACET RULE: Hide flavors if games or usage are selected
+    const productsForFlavors = useMemo(() => {
+        if (selectedGames.length > 0 || selectedUsage.length > 0) {
+            return [];
+        }
+
+        // Show all oil products from the base set
+        return commonBaseProducts.filter(p => p.category === 'Olio commestibile');
+    }, [commonBaseProducts, selectedGames, selectedUsage]);
+
+
+    // 3. Products relevant for USAGE OPTIONS
+    // STRICT FACET RULE: Hide usage if flavors or games are selected
+    const productsForUsage = useMemo(() => {
+        if (selectedFlavors.length > 0 || selectedGames.length > 0) {
+            return [];
+        }
+
+        // Show all non-game, non-oil products from the base set
+        return commonBaseProducts.filter(p =>
+            p.category !== 'Gioco' && p.category !== 'Olio commestibile'
+        );
+    }, [commonBaseProducts, selectedFlavors, selectedGames]);
+
+
+    // Dynamic Game Types
+    const gameTypes = useMemo(() => {
+        return getUniqueOptions(productsForGames, GAME_VALUES, []);
+    }, [productsForGames]);
+
+    // Dynamic Flavor Options (Oils)
+    const flavorOptions = useMemo(() => {
+        // Collect Only flavors (oils)
+        // We iterate productsForFlavors but ONLY keep items that are effectively flavors
+        const optionsMap = new Set();
+        productsForFlavors.forEach(p => {
+            const val = p.productFilter?.trim() || p.usageArea?.trim();
+            if (val && p.category === 'Olio commestibile') {
+                optionsMap.add(val.charAt(0).toUpperCase() + val.slice(1).toLowerCase());
+            }
+        });
+        return Array.from(optionsMap).sort();
+    }, [productsForFlavors]);
+
+    // Dynamic Usage Options (Others)
+    const usageOptions = useMemo(() => {
+        // Collect anything that is NOT a Game AND NOT a Flavor
+        const optionsMap = new Set();
+        productsForUsage.forEach(p => {
+            const val = p.productFilter?.trim() || p.usageArea?.trim();
+            if (!val) return;
+
+            const isGame = p.category === 'Gioco' || GAME_VALUES.includes(val);
+            const isFlavor = p.category === 'Olio commestibile';
+
+            if (!isGame && !isFlavor) {
+                optionsMap.add(val.charAt(0).toUpperCase() + val.slice(1).toLowerCase());
+            }
+        });
+        return Array.from(optionsMap).sort();
+    }, [productsForUsage]);
+
+
+
+
+
+
+
 
     // Dynamic Target Audiences (for Fragrances etc)
     const targetAudiences = useMemo(() => {
-        return [...new Set(relevantProductsForUsage.map(p => p.targetAudience).filter(Boolean))];
-    }, [relevantProductsForUsage]);
+        return [...new Set(relevantProductsForProductFilter.map(p => p.targetAudience?.trim()).filter(Boolean))];
+    }, [relevantProductsForProductFilter]);
 
     // Auto-deselect sensations that are no longer available
     useEffect(() => {
@@ -105,12 +277,12 @@ export const useProductFilters = (products) => {
         });
     };
 
-    const handleUsageChange = (usage) => {
-        setSelectedUsage(prev => {
-            if (prev.includes(usage)) {
-                return prev.filter(u => u !== usage);
+    const handleProductFilterChange = (filter) => {
+        setSelectedProductFilters(prev => {
+            if (prev.includes(filter)) {
+                return prev.filter(u => u !== filter);
             } else {
-                return [...prev, usage];
+                return [...prev, filter];
             }
         });
     };
@@ -128,7 +300,7 @@ export const useProductFilters = (products) => {
     const clearFilters = () => {
         setSelectedCategories([]);
         setSelectedSensations([]);
-        setSelectedUsage([]);
+        setSelectedProductFilters([]);
         setSelectedTarget([]);
         setSortOrder('newest');
         setPriceRange({ min: 0, max: 200 });
@@ -163,14 +335,25 @@ export const useProductFilters = (products) => {
             result = result.filter(p => selectedSensations.includes(p.sensation));
         }
 
-        // Filter by Usage Area
-        if (selectedUsage.length > 0) {
-            result = result.filter(p => selectedUsage.includes(p.usageArea));
+        // Filter by Product Filter (Usage Area) (Case Insensitive & Trimmed match)
+        if (selectedProductFilters.length > 0) {
+            // Normalize selection to lowercase for matching
+            const normalizedSelection = selectedProductFilters.map(u => u.toLowerCase());
+
+            result = result.filter(p => {
+                const val = (p.productFilter || p.usageArea)?.trim().toLowerCase();
+                return val && normalizedSelection.includes(val);
+            });
         }
 
-        // Filter by Target Audience
+        // Filter by Target Audience (Case Insensitive & Trimmed match)
         if (selectedTarget.length > 0) {
-            result = result.filter(p => selectedTarget.includes(p.targetAudience));
+            const normalizedSelection = selectedTarget.map(t => t.toLowerCase());
+
+            result = result.filter(p => {
+                const productTarget = p.targetAudience?.trim().toLowerCase();
+                return productTarget && normalizedSelection.includes(productTarget);
+            });
         }
 
         // Filter by Price
@@ -195,7 +378,7 @@ export const useProductFilters = (products) => {
         }
 
         return result;
-    }, [products, selectedCategories, selectedSensations, selectedUsage, selectedTarget, priceRange, sortOrder, searchQuery]);
+    }, [products, selectedCategories, selectedSensations, selectedProductFilters, selectedTarget, priceRange, sortOrder, searchQuery]);
 
     return {
         selectedCategories,
@@ -216,13 +399,15 @@ export const useProductFilters = (products) => {
         sensations,
         handleCategoryChange,
         handleSensationChange,
-        selectedUsage,
-        setSelectedUsage,
+        selectedProductFilters,
+        setSelectedProductFilters,
         selectedTarget,
         setSelectedTarget,
-        handleUsageChange,
+        handleProductFilterChange,
         handleTargetChange,
-        usageAreas,
+        gameTypes,
+        flavorOptions,
+        usageOptions,
         targetAudiences,
         clearFilters,
         filteredAndSortedProducts

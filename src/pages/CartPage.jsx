@@ -10,9 +10,14 @@ import Select from '@/components/ui/Select';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
 import { generateWhatsAppLink } from '@/features/cart/utils/whatsappGenerator';
+import { trackPurchase } from '@/lib/analytics';
+import { couponService } from '@/features/cart/services/couponService';
+import { createOrder } from '@/features/orders/services/orderService';
+import { logger } from '@/lib/logger';
+import { Loader2 } from 'lucide-react';
 
 const CartPage = () => {
-    const { cart, removeFromCart, updateQuantity, getCartTotal, clearCart } = useCart();
+    const { cart, removeFromCart, updateQuantity, getCartTotal, getCartSubtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
 
     const [formData, setFormData] = useState({
         nombre: '',
@@ -26,11 +31,34 @@ const CartPage = () => {
         note: '',
         metodoEnvio: 'Spedizione a domicilio',
         latitude: null,
-        longitude: null
+        longitude: null,
+        // SECURITY: Honeypot field (hidden from users, bots will fill it)
+        website: '' // Should always be empty for real users
     });
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentOrderNumber, setCurrentOrderNumber] = useState(null);
+    const [lastSubmitTime, setLastSubmitTime] = useState(0);
+
+    // Coupon State
+    const [couponCode, setCouponCode] = useState('');
+    const [couponLoading, setCouponLoading] = useState(false);
+
+    const handleApplyCoupon = async () => {
+        if (!couponCode.trim()) return;
+        setCouponLoading(true);
+        try {
+            const result = await couponService.validateCoupon(couponCode);
+            applyCoupon(result);
+            toast.success("Codice applicato con successo!");
+            setCouponCode('');
+        } catch (error) {
+            toast.error(error.message);
+        } finally {
+            setCouponLoading(false);
+        }
+    };
 
     // 1. Persistence: Load data on mount
     useEffect(() => {
@@ -42,7 +70,7 @@ const CartPage = () => {
                 if (!parsed.telefono || parsed.telefono.trim() === '') {
                     parsed.telefono = '+';
                 }
-                setFormData(parsed);
+                setFormData(prev => ({ ...prev, ...parsed }));
             } catch (e) {
                 console.error("Error loading saved form data", e);
             }
@@ -68,6 +96,13 @@ const CartPage = () => {
 
     const validateForm = () => {
         const newErrors = {};
+
+        // SECURITY: Check honeypot field (bots usually fill all fields)
+        if (formData.website && formData.website.trim() !== '') {
+            // Silent rejection - don't show error to avoid revealing honeypot
+            console.warn('Honeypot triggered - potential bot detected');
+            return false;
+        }
 
         // Hard Validations
         if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
@@ -117,6 +152,14 @@ const CartPage = () => {
         e.preventDefault();
         if (cart.length === 0) return;
 
+        // RATE LIMITING (Client Side)
+        const now = Date.now();
+        const timeSince = now - lastSubmitTime;
+        if (timeSince < 5000) {
+            toast.error(`Per favore attendi ${Math.ceil((5000 - timeSince) / 1000)}s prima di riprovare.`);
+            return;
+        }
+
         if (!validateForm()) {
             toast.error("Per favore correggi gli errori nel modulo.", {
                 style: { backgroundColor: '#fee2e2', color: '#dc2626' }
@@ -124,6 +167,7 @@ const CartPage = () => {
             return;
         }
 
+        setLastSubmitTime(now);
         setIsSubmitting(true);
         setIsModalOpen(true);
 
@@ -131,14 +175,142 @@ const CartPage = () => {
         setTimeout(() => setIsSubmitting(false), 60000);
     };
 
-    const confirmOrder = () => {
-        const total = getCartTotal();
-        const { whatsappUrl } = generateWhatsAppLink(formData, cart, total);
+    const [successData, setSuccessData] = useState(null);
 
-        window.open(whatsappUrl, '_blank');
+    // ...
+
+    const confirmOrder = async () => {
+        const total = getCartTotal();
+        let orderNumber = null;
+
+        // Block double submission if already successful
+        if (currentOrderNumber) return;
+
+        try {
+            // 2. Save Order to Database (MANDATORY & ROBUST)
+            try {
+                const orderResult = await createOrder({
+                    customerInfo: {
+                        fullName: formData.nombre,
+                        phone: formData.telefono,
+                        email: null,
+                        address: `${formData.indirizzo}, ${formData.civico}`,
+                        city: formData.citta,
+                        notes: formData.note
+                    },
+                    items: cart,
+                    couponCode: discount?.code
+                });
+
+                orderNumber = orderResult.orderNumber;
+                setCurrentOrderNumber(orderNumber);
+
+                // TRACK SUCCESSFUL ORDER SAVE
+                trackPurchase(cart, total, orderNumber);
+                logger.info('Order saved successfully', { orderNumber });
+
+            } catch (orderError) {
+                logger.error('Order save failed - Attempt 1', orderError);
+                toast.info('Reintentando guardar el pedido...');
+
+                // RETRY MECHANISM (1 Attempt)
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1500)); // Short backoff
+
+                    const retryResult = await createOrder({
+                        customerInfo: {
+                            fullName: formData.nombre,
+                            phone: formData.telefono,
+                            email: null,
+                            address: `${formData.indirizzo}, ${formData.civico}`,
+                            city: formData.citta,
+                            notes: formData.note
+                        },
+                        items: cart,
+                        couponCode: discount?.code
+                    });
+
+                    orderNumber = retryResult.orderNumber;
+                    setCurrentOrderNumber(orderNumber);
+
+                    // Track after retry success
+                    trackPurchase(cart, total, orderNumber);
+                    logger.info('Order saved on retry', { orderNumber });
+                    toast.success('Pedido guardado correctamente');
+
+                } catch (retryError) {
+                    logger.error('Order save retry failed - ABORTING', retryError);
+                    toast.error('Errore nel salvataggio dell\'ordine. Contatta il supporto o riprova.', {
+                        duration: 8000
+                    });
+
+                    // ⛔ CRITICAL: ABORT EVERYTHING
+                    setIsSubmitting(false);
+                    setIsModalOpen(false);
+                    return;
+                }
+            }
+
+            // 3. Increment Coupon (Best Effort - Only if order exists)
+            if (discount?.code && orderNumber) {
+                try {
+                    await couponService.incrementUsage(discount.code);
+                } catch (couponError) {
+                    logger.error('Coupon increment failed', couponError, { orderNumber });
+                    // Non-blocking
+                }
+            }
+
+            // 4. Generate WhatsApp Link (REQUIRES ORDER NUMBER)
+            if (!orderNumber) {
+                throw new Error('No order number available after save');
+            }
+
+            const { whatsappUrl } = generateWhatsAppLink(
+                formData,
+                cart,
+                total,
+                discount,
+                getCartSubtotal(),
+                orderNumber // Passing real order number
+            );
+
+            // 5. SUCCESS HANDLING UI
+            // We do NOT close the modal immediately. instead, we show success state.
+            setSuccessData({
+                orderNumber,
+                whatsappUrl,
+                messageBody: whatsappUrl.split('text=')[1] // Extract just the message for copy/paste
+            });
+
+            // 6. Open WhatsApp (Auto-attempt)
+            window.open(whatsappUrl, '_blank');
+
+            // 7. Clean up internal state (but keep modal open to show success)
+            // clearCart(); // Clean up only on modal close
+            // if (discount) removeCoupon();
+            setIsSubmitting(false);
+            // setCurrentOrderNumber(null); // Keep it to prevent double submit
+            setIsSubmitting(false);
+
+        } catch (error) {
+            logger.error('Order confirmation flow failed', error);
+            toast.error('Ha ocurrido un error inesperado.');
+            setIsSubmitting(false);
+        }
+    };
+
+    // Reset success data when modal is closed manually
+    const handleCloseModal = () => {
+        // Now we clean up everything as the user has acknowledged the success
+        if (successData) {
+            clearCart();
+            if (discount) removeCoupon();
+        }
+
         setIsModalOpen(false);
-        setIsSubmitting(false); // Fix: Reset loading state
-        // clearCart(); 
+        setSuccessData(null);
+        setCurrentOrderNumber(null);
     };
 
     if (cart.length === 0) {
@@ -268,16 +440,69 @@ const CartPage = () => {
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between text-text-muted">
                                     <span>Subtotale</span>
-                                    <span>€{getCartTotal().toFixed(2)}</span>
+                                    <span>€{getCartSubtotal().toFixed(2)}</span>
                                 </div>
+
+                                {/* Discount Display */}
+                                {discount && (
+                                    <div className="flex justify-between text-accent">
+                                        <div className="flex items-center gap-2">
+                                            <span>Sconto {discount.code}</span>
+                                            <button onClick={() => { removeCoupon(); toast.info("Codice rimosso"); }} className="text-xs text-red-400 hover:text-red-300 underline">(Rimuovi)</button>
+                                        </div>
+                                        <span>-€{(getCartSubtotal() - getCartTotal()).toFixed(2)}</span>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between text-2xl font-bold text-text-primary pt-4 border-t border-white/10">
                                     <span>Totale</span>
                                     <span>€{getCartTotal().toFixed(2)}</span>
                                 </div>
                             </div>
 
+                            {/* Coupon Input */}
+                            {!discount && (
+                                <div className="mb-8">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Codice sconto"
+                                            value={couponCode}
+                                            onChange={(e) => setCouponCode(e.target.value)}
+                                            className="flex-1 bg-background-dark border border-white/10 rounded-xl px-4 py-2 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleApplyCoupon}
+                                            disabled={couponLoading || !couponCode.trim()}
+                                            className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+                                        >
+                                            {couponLoading ? '...' : 'Applica'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Form */}
                             <form onSubmit={handlePreSubmit} onKeyDown={handleKeyDown} className="space-y-5">
+                                {/* SECURITY: Honeypot field (hidden from users, bots will fill it) */}
+                                <input
+                                    type="text"
+                                    name="website"
+                                    value={formData.website}
+                                    onChange={handleInputChange}
+                                    tabIndex="-1"
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                    style={{
+                                        position: 'absolute',
+                                        left: '-9999px',
+                                        width: '1px',
+                                        height: '1px',
+                                        opacity: 0
+                                    }}
+                                />
+
                                 <div className="space-y-1">
                                     <label htmlFor="checkout-name" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome Completo</label>
                                     <input
@@ -342,10 +567,13 @@ const CartPage = () => {
                                     {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note}</p>}
                                 </div>
 
-                                <button
+                                <motion.button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-3 transform active:scale-[0.98] ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(63,255,193,0.5)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(63,255,193,0.3)] flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     {isSubmitting ? (
                                         <span>Attendere...</span>
@@ -355,7 +583,7 @@ const CartPage = () => {
                                             <Send size={20} />
                                         </>
                                     )}
-                                </button>
+                                </motion.button>
                             </form>
                         </div>
                     </div>
@@ -365,10 +593,11 @@ const CartPage = () => {
 
             <OrderConfirmationModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleCloseModal}
                 onConfirm={confirmOrder}
                 formData={formData}
                 cartTotal={getCartTotal()}
+                successData={successData}
             />
         </div>
     );

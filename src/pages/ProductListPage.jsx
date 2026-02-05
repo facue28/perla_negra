@@ -4,6 +4,7 @@ import { useProductFilters } from '@/features/products/hooks/useProductFilters';
 import ProductCard from '@/features/products/components/ProductCard';
 import ProductSearchBar from '@/features/products/components/ProductSearchBar';
 import ProductFilters from '@/features/products/components/ProductFilters';
+import SkeletonProductCard from '@/features/products/components/SkeletonProductCard';
 import Drawer from '@/components/ui/Drawer';
 import { Loader2, Filter, Search } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
@@ -32,9 +33,11 @@ const ProductListPage = () => {
         clearFilters,
         filteredAndSortedProducts,
         setSearchQuery,
-        selectedUsage,
-        handleUsageChange,
-        usageAreas,
+        selectedProductFilters,
+        handleProductFilterChange,
+        gameTypes,
+        flavorOptions,
+        usageOptions,
         selectedTarget,
         handleTargetChange,
         targetAudiences
@@ -51,12 +54,15 @@ const ProductListPage = () => {
         handleSensationChange,
         priceRange,
         setPriceRange,
-        selectedUsage,
-        handleUsageChange,
-        usageAreas,
+        selectedProductFilters,
+        handleProductFilterChange,
+        gameTypes,
+        flavorOptions,
+        usageOptions,
         selectedTarget,
         handleTargetChange,
-        targetAudiences
+        targetAudiences,
+        selectedCategories  // Add category context for intelligent labels
     };
 
     return (
@@ -67,8 +73,10 @@ const ProductListPage = () => {
                 {/* New Header Section - Full Width for Mobile */}
                 <div className="mb-6 md:hidden">
                     {loading ? (
-                        <div className="flex justify-center py-12">
-                            <Loader2 className="animate-spin text-accent" size={32} />
+                        <div className="grid grid-cols-2 gap-3 mb-6">
+                            {[...Array(4)].map((_, i) => (
+                                <SkeletonProductCard key={i} />
+                            ))}
                         </div>
                     ) : (
                         <div className="mb-6 flex flex-col gap-4 border-b border-border/10 pb-4">
@@ -205,7 +213,13 @@ const ProductListPage = () => {
                         {/* // ... (other imports) */}
 
                         {/* // Inside component */}
-                        {filteredAndSortedProducts.length > 0 ? (
+                        {loading ? (
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                                {[...Array(9)].map((_, i) => (
+                                    <SkeletonProductCard key={i} />
+                                ))}
+                            </div>
+                        ) : filteredAndSortedProducts.length > 0 ? (
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                                 {filteredAndSortedProducts.map((product) => (
                                     <div key={product.id} className="h-full">

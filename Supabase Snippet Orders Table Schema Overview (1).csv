@@ -1,0 +1,11 @@
+column_name,data_type,is_nullable
+id,uuid,NO
+order_id,uuid,NO
+product_id,bigint,YES
+product_name,text,NO
+product_image,text,YES
+product_category,text,YES
+price,numeric,NO
+quantity,integer,NO
+subtotal,numeric,NO
+created_at,timestamp with time zone,NO

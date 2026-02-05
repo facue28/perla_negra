@@ -1,10 +1,11 @@
-export const generateWhatsAppLink = (formData, cart, total) => {
-    // 1. Generate Unique ID: #PN-{DDMM}-{RAND}
-    const date = new Date();
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const randomCode = Math.random().toString(36).substring(2, 5).toUpperCase();
-    const orderId = `PN-${day}${month}-${randomCode}`;
+export const generateWhatsAppLink = (formData, cart, total, discount, subtotal, orderNumber) => {
+    // 1. Validate Order Number (Mandatory)
+    if (!orderNumber) {
+        console.error('generateWhatsAppLink called without orderNumber');
+        throw new Error("Il numero dell'ordine è richiesto.");
+    }
+
+    const orderId = orderNumber;
 
     // 2. Construct the message
     let message = `*ORDINE #${orderId}* 🖤\n\n`;
@@ -34,7 +35,13 @@ export const generateWhatsAppLink = (formData, cart, total) => {
         message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): €${itemSubtotal.toFixed(2)}\n`;
     });
 
-    message += `\n*TOTALE: €${total.toFixed(2)}*`;
+    if (discount) {
+        message += `\nSubtotale: €${subtotal.toFixed(2)}\n`;
+        message += `Sconto (${discount.code}): -€${(subtotal - total).toFixed(2)}\n`;
+        message += `*TOTALE: €${total.toFixed(2)}*`;
+    } else {
+        message += `\n*TOTALE: €${total.toFixed(2)}*`;
+    }
 
     // 3. Encode and Return
     const encodedMessage = encodeURIComponent(message);
