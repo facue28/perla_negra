@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Package, Eye, Filter, Calendar, DollarSign } from 'lucide-react';
+import { Search, Package, Eye, Filter, Calendar, DollarSign, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
-import { getOrders } from '@/features/orders/services/orderService';
+import { getOrders, deleteOrder } from '@/features/orders/services/orderService';
 import OrderDetailModal from '@/components/admin/OrderDetailModal';
 
 const AdminOrderList = () => {
@@ -39,6 +40,22 @@ const AdminOrderList = () => {
         // Refresh list after status change
         fetchOrders();
         setIsModalOpen(false);
+    };
+
+    const handleDeleteOrder = async (orderId) => {
+        if (window.confirm('¿Estás seguro de que quieres eliminar este pedido? Esta acción borrará permanentemente el registro y sus items. No se puede deshacer.')) {
+            try {
+                // Optimistic UI or just loader? Let's use loader for safety
+                setLoading(true);
+                await deleteOrder(orderId);
+                toast.success('Pedido eliminado correctamente');
+                await fetchOrders(); // Reload list
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                toast.error('Error al eliminar el pedido: ' + error.message);
+                setLoading(false); // Only set false here if fetchOrders fails or wasn't called
+            }
+        }
     };
 
     const filteredOrders = orders.filter(order =>
@@ -196,6 +213,13 @@ const AdminOrderList = () => {
                                             >
                                                 <Eye size={16} />
                                                 <span className="text-sm font-medium">Ver</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteOrder(order.id)}
+                                                className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors ml-2"
+                                                title="Eliminar pedido"
+                                            >
+                                                <Trash2 size={16} />
                                             </button>
                                         </td>
                                     </motion.tr>

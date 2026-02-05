@@ -66,5 +66,14 @@ export const apiClient = {
         return handleRequest(async () => {
             return await supabase.from(table).update(payload).eq('id', id).select().single();
         }, `UPDATE ${table} ${id}`);
+    },
+
+    /**
+     * Elimina un registro por ID
+     */
+    async delete(table, id) {
+        return handleRequest(async () => {
+            return await supabase.from(table).delete().eq('id', id);
+        }, `DELETE ${table} ${id}`);
     }
 };

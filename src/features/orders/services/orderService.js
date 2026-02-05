@@ -65,9 +65,10 @@ export const createOrder = async (orderData) => {
 
     return {
         success: true,
-        orderId: data.orderId, // Nota: el RPC devuelve camelCase o snake_case según definición, en SQL devolvimos camelCase
+        orderId: data.orderId,
         orderNumber: data.orderNumber,
-        total: data.total
+        total: data.total,
+        warning: data.warning // Propagamos la advertencia si existe
     };
 };
 
@@ -235,10 +236,22 @@ const sanitizeInput = (input) => {
         .substring(0, 500); // Limitar longitud máxima
 };
 
+/**
+ * Elimina una orden (solo admins)
+ * @param {string} orderId - ID de la orden
+ * @returns {Promise<boolean>} Éxito de la operación
+ */
+export const deleteOrder = async (orderId) => {
+    // Al ser una operación sensible, confiamos en RLS para la seguridad
+    await apiClient.delete('orders', orderId);
+    return true;
+};
+
 export default {
     createOrder,
     getOrders,
     getOrderById,
     updateOrderStatus,
-    getOrderStats
+    getOrderStats,
+    deleteOrder
 };

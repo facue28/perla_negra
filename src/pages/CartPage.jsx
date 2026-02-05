@@ -205,6 +205,11 @@ const CartPage = () => {
                 orderNumber = orderResult.orderNumber;
                 setCurrentOrderNumber(orderNumber);
 
+                // UX: Show warning if backend returned one (e.g., Soft Fail Coupon)
+                if (orderResult.warning) {
+                    toast.warning(orderResult.warning, { duration: 6000 });
+                }
+
                 // TRACK SUCCESSFUL ORDER SAVE
                 trackPurchase(cart, total, orderNumber);
                 logger.info('Order saved successfully', { orderNumber });
