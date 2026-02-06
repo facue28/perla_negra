@@ -68,9 +68,13 @@ const HomePage = () => {
                         >
                             <img
                                 src={bg}
-                                alt=""
+                                alt="Fondo decorativo Perla Negra"
                                 aria-hidden="true"
                                 className="w-full h-full object-cover opacity-60"
+                                width="1920"
+                                height="1080"
+                                fetchPriority={index === 0 ? "high" : "auto"}
+                                loading={index === 0 ? "eager" : "lazy"}
                             />
                         </div>
                     ))}

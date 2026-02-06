@@ -29,6 +29,9 @@ const InstagramSection = () => {
                                 src="/instagram/instagram_placeholder.png"
                                 alt="Perla Negra Instagram"
                                 className="w-full h-auto object-contain rounded-lg shadow-lg"
+                                width="1080"
+                                height="1080"
+                                loading="lazy"
                             />
                         </a>
                     </Reveal>
