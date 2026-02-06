@@ -26,7 +26,7 @@ const InstagramSection = () => {
                             className="block w-full max-w-md hover:opacity-95 transition-opacity duration-300"
                         >
                             <img
-                                src="/instagram/instagram_placeholder.png"
+                                src="/instagram/instagram_placeholder.webp"
                                 alt="Perla Negra Instagram"
                                 className="w-full h-auto object-contain rounded-lg shadow-lg"
                                 width="1080"
