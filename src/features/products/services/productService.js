@@ -7,18 +7,18 @@ const storageUrl = `${supabaseUrl}/storage/v1/object/public/images`;
 const getPlaceholderImage = (category) => {
     const cat = category?.toLowerCase() || '';
 
-    // 'Vigorizzanti' uses 'vigorizzanti.png' - prioritizing this check
-    if (cat.includes('vigoriza')) return `${storageUrl}/vigorizzanti.png`;
+    // 'Vigorizzanti' uses 'vigorizzanti.webp' - prioritizing this check
+    if (cat.includes('vigoriza')) return `${storageUrl}/vigorizzanti.webp`;
 
-    if (cat.includes('lubri') || cat.includes('gel')) return `${storageUrl}/lubricante.png`;
-    if (cat.includes('frag') || cat.includes('profum')) return `${storageUrl}/fragancia.png`;
+    if (cat.includes('lubri') || cat.includes('gel')) return `${storageUrl}/lubricante.webp`;
+    if (cat.includes('frag') || cat.includes('profum')) return `${storageUrl}/fragancia.webp`;
 
-    // 'Afrodisiaco' and others use 'afrodisiaco.png'
-    if (cat.includes('afro') || cat.includes('suple') || cat.includes('crema')) return `${storageUrl}/afrodisiaco.png`;
-    if (cat.includes('olio') || cat.includes('aceite')) return `${storageUrl}/olio.png`;
-    if (cat.includes('gioco') || cat.includes('juego')) return `${storageUrl}/gioco.png`;
+    // 'Afrodisiaco' and others use 'afrodisiaco.webp'
+    if (cat.includes('afro') || cat.includes('suple') || cat.includes('crema')) return `${storageUrl}/afrodisiaco.webp`;
+    if (cat.includes('olio') || cat.includes('aceite')) return `${storageUrl}/olio.webp`;
+    if (cat.includes('gioco') || cat.includes('juego')) return `${storageUrl}/gioco.webp`;
 
-    return `${storageUrl}/lubricante.png`; // Default fallback
+    return `${storageUrl}/lubricante.webp`; // Default fallback
 };
 
 export const productService = {
