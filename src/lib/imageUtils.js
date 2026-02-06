@@ -17,6 +17,15 @@ export const getOptimizedImageUrl = (url, { width, height, resize = 'contain' } 
         return url; // Return original if not hosted on Supabase Storage
     }
 
+    // [FREE PLAN LIMITATION]
+    // The implementation below uses the Supabase Image Transformation API (/render/image).
+    // The user is currently on the Free Plan, which does NOT support this feature.
+    // We are returning the original URL to prevent 404 errors.
+    // If upgraded to Pro, uncomment the logic below.
+
+    return url;
+
+    /*
     // Replace '/object/public/' with '/render/image/public/' to access Transformation API
     // Note: This assumes the project has Image Transformations enabled. 
     // If not, it might return 404 or the original image depending on configuration.
@@ -36,4 +45,5 @@ export const getOptimizedImageUrl = (url, { width, height, resize = 'contain' } 
     const queryString = params.toString();
 
     return queryString ? `${optimizedUrl}?${queryString}` : optimizedUrl;
+    */
 };
