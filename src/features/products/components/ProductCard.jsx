@@ -5,6 +5,8 @@ import { toast } from 'sonner';
 import { ShoppingCart } from 'lucide-react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
+import { getOptimizedImageUrl } from '@/lib/imageUtils';
+
 // Helper function to properly capitalize product names
 const toTitleCase = (str) => {
     if (!str) return '';
@@ -32,7 +34,7 @@ const ProductCard = memo(({ product }) => {
                 <div className="w-full h-full relative z-10 transition-transform duration-500 ease-out group-hover:scale-105">
                     {/* Primary Image */}
                     <LazyLoadImage
-                        src={product.image}
+                        src={getOptimizedImageUrl(product.image, { width: 400 })}
                         alt={product.name}
                         effect="blur"
                         onError={(e) => {
