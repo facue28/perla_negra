@@ -36,8 +36,8 @@ const LoginPage = () => {
             <div className="w-full max-w-md relative z-10">
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
                     <div className="text-center mb-8">
-                        <h1 className="font-great-vibes text-4xl text-[#3FFFC1] mb-2">Perla Negra</h1>
-                        <p className="text-text-muted text-sm tracking-wider uppercase">Acceso Administrativo</p>
+                        <h1 className="font-signature text-5xl text-accent mb-2">Perla Negra</h1>
+                        <p className="text-text-muted text-xs tracking-wider uppercase">Acceso Administrativo</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">

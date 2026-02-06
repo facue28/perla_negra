@@ -20,7 +20,7 @@ const AdminLayout = ({ children }) => {
             <aside className="w-64 fixed h-full bg-[#141414]/90 backdrop-blur-md border-r border-white/10 flex flex-col z-20">
                 {/* Header */}
                 <div className="p-8 border-b border-white/10">
-                    <h1 className="font-great-vibes text-3xl text-[#3FFFC1]">Perla Negra</h1>
+                    <h1 className="font-signature text-3xl text-accent">Perla Negra</h1>
                     <p className="text-xs text-text-muted mt-1 uppercase tracking-widest">Panel Admin</p>
                 </div>
 
@@ -31,8 +31,8 @@ const AdminLayout = ({ children }) => {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${isActive(item.path)
-                                    ? 'bg-[#3FFFC1]/10 text-[#3FFFC1] border border-[#3FFFC1]/20'
-                                    : 'text-text-muted hover:text-white hover:bg-white/5'
+                                ? 'bg-[#3FFFC1]/10 text-[#3FFFC1] border border-[#3FFFC1]/20'
+                                : 'text-text-muted hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             <item.icon size={20} />

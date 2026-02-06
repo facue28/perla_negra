@@ -6,10 +6,20 @@ import { AppRoutes } from '@/app/routes/AppRoutes';
 import { initGA, logPageView } from '@/lib/analytics';
 import ScrollToTop from '@/components/layout/ScrollToTop';
 
-// Initialize GA on app start
-initGA();
+// Analytics initialization helper
+const useAnalyticsLazyLoad = () => {
+  useEffect(() => {
+    // Delay initialization by 3 seconds to prioritize visual rendering
+    const timer = setTimeout(() => {
+      initGA();
+      logPageView();
+    }, 3000);
 
-// Helper component to track page views
+    return () => clearTimeout(timer);
+  }, []);
+};
+
+// Helper component to track page views (subsequent navigation)
 const PageTracker = () => {
   const location = useLocation();
 
@@ -21,6 +31,8 @@ const PageTracker = () => {
 };
 
 function App() {
+  useAnalyticsLazyLoad();
+
   return (
     <Router>
       <PageTracker />

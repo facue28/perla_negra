@@ -52,9 +52,18 @@ const AdminDashboard = () => {
     return (
         <div className="px-6 py-8 space-y-8">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Bienvenido, {user?.email?.split('@')[0]} 👋</h1>
-                <p className="text-text-muted">Aquí tienes un resumen de tu tienda hoy.</p>
+            <div className="space-y-4">
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 text-text-muted hover:text-accent transition-colors group mb-2"
+                >
+                    <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                    <span className="text-sm font-medium">Volver al Sitio Público</span>
+                </Link>
+                <div>
+                    <h1 className="text-3xl font-bold text-white mb-2">Bienvenido, {user?.email?.split('@')[0]} 👋</h1>
+                    <p className="text-text-muted">Aquí tienes un resumen de tu tienda hoy.</p>
+                </div>
             </div>
 
             {/* Quick Stats Grid */}

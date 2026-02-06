@@ -6,11 +6,11 @@ const InfiniteMarquee = () => {
     const renderContent = () => (
         <>
             <span className="marquee-item">
-                DIVENTA <span className="font-serif italic text-accent font-light">Partner</span>
+                DIVENTA <span className="font-signature text-accent font-light">Partner</span>
             </span>
             <span className="marquee-separator">✦</span>
             <span className="marquee-item">
-                ESPANDI <span className="font-serif italic text-accent font-light">il tuo Business</span>
+                ESPANDI <span className="font-signature text-accent font-light">il tuo Business</span>
             </span>
             <span className="marquee-separator">✦</span>
             <span className="marquee-item">
