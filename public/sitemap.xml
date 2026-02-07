@@ -1,194 +1,331 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <!-- Static Pages -->
     <url>
-        <loc>https://perlanegra.it/</loc>
+        <loc>https://perlanegra.shop</loc>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos</loc>
+        <loc>https://perlanegra.shop/chi-sono</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/contatti</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/terminos</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/privacidad</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/uso-responsable</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/reseller</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/oh-my-god</loc>
+        <lastmod>2026-02-04</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/chi-sono</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>https://perlanegra.it/contacto</loc>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-
-    <!-- Products -->
-    <url>
-        <loc>https://perlanegra.it/productos/lube-premium-relaxing</loc>
+        <loc>https://perlanegra.shop/productos/bali-sunset-stripped</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/lube-supreme-extra-time</loc>
+        <loc>https://perlanegra.shop/productos/fucking-fabulous</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/lube-intensity-hot-pleasure</loc>
+        <loc>https://perlanegra.shop/productos/very-sexy</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/ibiza</loc>
+        <loc>https://perlanegra.shop/productos/hot-inevitable-privee</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/bali-sunset-stripped</loc>
+        <loc>https://perlanegra.shop/productos/black-dragon</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/fucking-fabulous</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/body-splash-be</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/very-sexy</loc>
+        <loc>https://perlanegra.shop/productos/ibiza</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/petit-mort</loc>
+        <loc>https://perlanegra.shop/productos/hot-inevitable</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/it-femme</loc>
+        <loc>https://perlanegra.shop/productos/crazy-girl</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/it-femme-florale</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/love-potion-cioccolato</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/crazy-girl</loc>
+        <loc>https://perlanegra.shop/productos/lube-premium-relaxing</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/hot-inevitable</loc>
+        <loc>https://perlanegra.shop/productos/more-sex-berries</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/hot-inevitable-privee</loc>
+        <loc>https://perlanegra.shop/productos/sens-bomb-sandalo</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/hot-inevitable-so-excited</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/body-splash-crazy-girl</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/for-him</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/body-splash-petit-mort</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/for-him-vip</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/inlube-game</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/inevitable-men-aphrodisiac</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/mini-poker</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/inevitable-men-vip-aphrodisiac</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/love-play</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/hi-sex</loc>
+        <loc>https://perlanegra.shop/productos/lube-supreme-extra-time</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/hi-sex</loc>
+        <loc>https://perlanegra.shop/productos/mine-my-pleasure</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/more-sex-berries</loc>
+        <loc>https://perlanegra.shop/productos/petit-mort</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/more-sex-chocolate</loc>
+        <loc>https://perlanegra.shop/productos/it-femme-florale</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/mine-my-pleasure</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/love-potion-champagne-e-lampone</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/diva-s-secret-effetto-caldo</loc>
+        <loc>https://perlanegra.shop/productos/for-him-vip</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/diva-s-secret-effetto-stringente</loc>
+        <loc>https://perlanegra.shop/productos/hi-sex-bustina</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/sens-bomb-maca</loc>
+        <loc>https://perlanegra.shop/productos/diva-s-secret-effetto-caldo</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/sens-bomb-sandalo</loc>
-        <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <loc>https://perlanegra.shop/productos/desire-coconut</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://perlanegra.it/productos/black-dragon</loc>
+        <loc>https://perlanegra.shop/productos/body-splash-privee</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/lube-intensity-hot-pleasure</loc>
         <lastmod>2026-01-30</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/body-splash-so-excited</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/party-game</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/love-potion-zucchero-filato</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/secret-game</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/hot-inevitable-so-excited</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/inevitable-men-aphrodisiac</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/it-femme</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/love-potion-frutti-rossi</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/for-him</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/inevitable-men-vip-aphrodisiac</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/more-sex-chocolate</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/sex-roulette-party-game</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/diva-s-secret-effetto-tightening</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/sens-bomb-maca</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/sex-roulette-lovers-game</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/body-splash-love</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/body-splash-hot-inevitable</loc>
+        <lastmod>2026-02-04</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    <url>
+        <loc>https://perlanegra.shop/productos/hi-sex-pote</loc>
+        <lastmod>2026-01-30</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
     </url>
 </urlset>
