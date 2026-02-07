@@ -1,5 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 
+// Game-specific values (from Gioco category) - Constant moved outside
+const GAME_VALUES = ['Dadi', 'Carte', 'Roulette'];
+
 export const useProductFilters = (products) => {
     // States for filters
     const [selectedCategories, setSelectedCategories] = useState([]);
@@ -27,8 +30,7 @@ export const useProductFilters = (products) => {
         return [...new Set(products.map(p => p.category))];
     }, [products]);
 
-    // Game-specific values (from Gioco category)
-    const GAME_VALUES = ['Dadi', 'Carte', 'Roulette'];
+    // Game-specific values (moved outside)
 
     // Helper: Split selectedProductFilters into Games, Flavors, and Usage Area for isolated filtering
     // Must be defined BEFORE sensations memo to use as dependency
@@ -249,6 +251,7 @@ export const useProductFilters = (products) => {
 
     // Auto-deselect sensations that are no longer available
     useEffect(() => {
+        // eslint-disable-next-line
         setSelectedSensations(prev => prev.filter(s => sensations.includes(s)));
     }, [sensations]);
 

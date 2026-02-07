@@ -66,16 +66,30 @@ const HomePage = () => {
                             key={bg}
                             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
                         >
-                            <img
-                                src={bg}
-                                alt="Fondo decorativo Perla Negra"
-                                aria-hidden="true"
-                                className="w-full h-full object-cover opacity-60"
-                                width="1920"
-                                height="1080"
-                                fetchPriority={index === 0 ? "high" : "auto"}
-                                loading={index === 0 ? "eager" : "lazy"}
-                            />
+                            <picture>
+                                <source
+                                    media="(max-width: 768px)"
+                                    srcSet={bg.replace('.webp', '-mobile.webp')}
+                                    width="1080"
+                                    height="1920"
+                                />
+                                <source
+                                    media="(min-width: 769px)"
+                                    srcSet={bg}
+                                    width="1920"
+                                    height="1080"
+                                />
+                                <img
+                                    src={bg}
+                                    alt="Fondo decorativo Perla Negra"
+                                    aria-hidden="true"
+                                    className="w-full h-full object-cover opacity-60"
+                                    width="1920"
+                                    height="1080"
+                                    fetchPriority={index === 0 ? "high" : "auto"}
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                />
+                            </picture>
                         </div>
                     ))}
                     {/* Gradient Overlay for Text Readability */}

@@ -90,7 +90,7 @@ const ProductCard = memo(({ product }) => {
                 </div>
 
                 <div className="flex flex-col md:flex-row items-center justify-center mt-2 gap-2 md:gap-4">
-                    <span className="text-accent font-bold text-base md:text-lg">${product.price.toFixed(2)}</span>
+                    <span className="text-accent font-bold text-base md:text-lg">€{product.price.toFixed(2)}</span>
                     <span className="hidden md:block bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
                         Vedi
                     </span>

@@ -1,6 +1,9 @@
+import SEO from '@/components/ui/SEO';
+
 const PrivacyPage = () => {
     return (
         <div className="min-h-screen bg-background-dark pt-24 pb-20 px-4">
+            <SEO title="Privacy Policy" description="Informativa sulla privacy di Perla Negra." />
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl font-serif text-text-primary mb-8">Privacy Policy</h1>
                 <div className="prose prose-invert max-w-none text-text-muted space-y-6">

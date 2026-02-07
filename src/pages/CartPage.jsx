@@ -15,9 +15,11 @@ import { couponService } from '@/features/cart/services/couponService';
 import { createOrder } from '@/features/orders/services/orderService';
 import { logger } from '@/lib/logger';
 import { Loader2 } from 'lucide-react';
+import { useProducts } from '@/features/products/hooks/useProducts';
 
 const CartPage = () => {
     const { cart, removeFromCart, updateQuantity, getCartTotal, getCartSubtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
+    const { products } = useProducts();
 
     const [formData, setFormData] = useState({
         nombre: '',
@@ -371,10 +373,25 @@ const CartPage = () => {
                                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                                     className="group bg-background-alt/50 backdrop-blur-md p-6 rounded-3xl border border-white/5 hover:border-accent/20 transition-colors duration-300 flex flex-wrap sm:flex-nowrap gap-6 items-center shadow-lg shadow-black/20"
                                 >
-                                    {/* Image */}
-                                    <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-contain rounded-lg" />
-                                    </div>
+                                    {/* Image Logic: Try to get fresh image from products context, fallback to cart item image */}
+                                    {(() => {
+                                        const currentProduct = products.find(p => p.id === item.id);
+                                        const displayImage = currentProduct?.image || item.image;
+
+                                        return (
+                                            <div className="w-fit sm:mx-0 sm:w-24 h-48 sm:h-24 bg-white/5 rounded-2xl p-2 flex-shrink-0 border border-white/5 mb-2 sm:mb-0">
+                                                <img
+                                                    src={displayImage}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-contain rounded-lg"
+                                                    onError={(e) => {
+                                                        // Fallback if even the new URL fails (rare)
+                                                        e.target.style.opacity = 0.5;
+                                                    }}
+                                                />
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* Info */}
                                     <div className="flex-grow min-w-[140px]">

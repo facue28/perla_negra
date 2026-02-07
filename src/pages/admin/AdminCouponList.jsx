@@ -182,7 +182,7 @@ const AdminCouponList = () => {
                                             <div className="flex items-center gap-1 text-white font-medium">
                                                 {coupon.discount_type === 'percent' ? (
                                                     <Percent size={14} className="text-text-muted" />
-                                                ) : '$'}
+                                                ) : '€'}
                                                 {coupon.discount_value}
                                                 {coupon.discount_type === 'percent' && '%'}
                                             </div>

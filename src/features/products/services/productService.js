@@ -37,6 +37,7 @@ export const productService = {
                     image: validImageUrl || getPlaceholderImage(p.category),
                     fallbackImage: getPlaceholderImage(p.category), // 🆕 Backup image for UI error handling
                     image2: p.image2_url, // 🆕 New mapping for second image
+                    image3: p.image3_url, // 🆕 New mapping for third image
                     sizeFlOz: p.size_fl_oz,
                     size: p.size_ml, // Mapped to 'size' for frontend compatibility
                     sizeMl: p.size_ml, // Keeping this just in case, or removing if redundant. Let's keep for safety.

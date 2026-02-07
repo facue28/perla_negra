@@ -53,7 +53,7 @@ const ChiSonoPage = () => {
                                     <span className="absolute top-0 left-0 text-6xl font-serif text-accent/20 -translate-y-4">“</span>
                                     <p className="text-xl md:text-2xl font-serif text-white italic pl-8 leading-relaxed relative z-10">
                                         Così ho comprato il mio primo set di <span className="text-accent not-italic">12 lubrificanti</span>... e li ho venduti in poche ore.
-                                        Da lì è iniziato tutto: un piccolo sogno diventato realtà.
+                                        Da lì è iniziato tutto: un piccolo sogno diventato realtà.<span className="text-5xl md:text-6xl font-serif text-accent/20 leading-none align-bottom ml-1">”</span>
                                     </p>
                                 </div>
                             </Reveal>

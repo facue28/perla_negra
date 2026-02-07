@@ -157,7 +157,7 @@ const ProductListPage = () => {
                     <div className="hidden md:block md:col-start-2 mb-8">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-border/10 pb-4">
                             <div>
-                                <h2 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h2>
+                                <h1 className="text-3xl font-serif text-text-primary mb-2">I nostri Prodotti</h1>
                                 <p className="text-text-muted text-sm">
                                     Mostrando {filteredAndSortedProducts.length} risultati
                                 </p>

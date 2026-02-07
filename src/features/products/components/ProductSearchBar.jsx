@@ -27,44 +27,54 @@ const SearchBar = ({ onSearch, id = "product-search" }) => {
 
     // Search products in real-time
     useEffect(() => {
-        // If external onSearch is provided, delegate to it and skip local dropdown
-        if (onSearch) {
-            onSearch(searchTerm);
-            setIsOpen(false);
-            return;
-        }
+        // If external onSearch is provided, we skip local dropdown logic entirely
+        // The onSearch callback is triggered by the input change directly now (see handleSearchChange)
+        if (onSearch) return;
 
         // Standard Dropdown Logic
-        if (searchTerm.trim() === '' || !products || !Array.isArray(products)) {
-            setSearchResults([]);
-            setIsOpen(false);
-            return;
-        }
+        const delayDebounceFn = setTimeout(() => {
+            if (searchTerm.trim() === '' || !products || !Array.isArray(products)) {
+                setSearchResults([]);
+                setIsOpen(false);
+                return;
+            }
 
-        const term = searchTerm.toLowerCase();
-        const results = products.filter(product => {
-            if (!product) return false;
-            const name = product.name?.toLowerCase() || '';
-            const category = product.category?.toLowerCase() || '';
-            const description = product.description?.toLowerCase() || '';
-            const brand = product.brand?.toLowerCase() || '';
-            const usageArea = product.usageArea?.toLowerCase() || '';
-            const targetAudience = product.targetAudience?.toLowerCase() || '';
+            const term = searchTerm.toLowerCase();
+            const results = products.filter(product => {
+                if (!product) return false;
+                const name = product.name?.toLowerCase() || '';
+                const category = product.category?.toLowerCase() || '';
+                const description = product.description?.toLowerCase() || '';
+                const brand = product.brand?.toLowerCase() || '';
+                const usageArea = product.usageArea?.toLowerCase() || '';
+                const targetAudience = product.targetAudience?.toLowerCase() || '';
 
-            return (
-                name.includes(term) ||
-                category.includes(term) ||
-                description.includes(term) ||
-                brand.includes(term) ||
-                usageArea.includes(term) ||
-                targetAudience.includes(term)
-            );
-        });
+                return (
+                    name.includes(term) ||
+                    category.includes(term) ||
+                    description.includes(term) ||
+                    brand.includes(term) ||
+                    usageArea.includes(term) ||
+                    targetAudience.includes(term)
+                );
+            });
 
-        setSearchResults(results);
-        setIsOpen(true);
-        setSelectedIndex(-1);
+            setSearchResults(results);
+            setIsOpen(true);
+            setSelectedIndex(-1);
+        }, 300); // Added debounce
+
+        return () => clearTimeout(delayDebounceFn);
     }, [searchTerm, products, onSearch]);
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        if (onSearch) {
+            onSearch(value);
+            setIsOpen(false);
+        }
+    };
 
     // Handle keyboard navigation
     const handleKeyDown = (e) => {
@@ -121,7 +131,7 @@ const SearchBar = ({ onSearch, id = "product-search" }) => {
                     aria-label="Cerca prodotti"
                     type="text"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={handleSearchChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Cerca prodotti..."
                     className="w-full bg-background-alt border border-border/20 rounded-full pl-10 pr-10 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/30 transition-all"
@@ -167,7 +177,7 @@ const SearchBar = ({ onSearch, id = "product-search" }) => {
 
                             {/* Price */}
                             <div className="text-accent font-bold text-sm flex-shrink-0">
-                                ${product.price.toFixed(2)}
+                                €{product.price.toFixed(2)}
                             </div>
                         </button>
                     ))}

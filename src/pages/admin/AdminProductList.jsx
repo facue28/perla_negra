@@ -147,7 +147,7 @@ const AdminProductList = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-white font-medium">
-                                            ${product.price?.toLocaleString()}
+                                            €{product.price?.toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <span className={`px-2 py-1 rounded text-xs font-medium ${product.stock > 0

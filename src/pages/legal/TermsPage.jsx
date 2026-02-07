@@ -1,6 +1,9 @@
+import SEO from '@/components/ui/SEO';
+
 const TermsPage = () => {
     return (
         <div className="min-h-screen bg-background-dark pt-24 pb-20 px-4">
+            <SEO title="Termini e Condizioni" description="Termini e condizioni di vendita di Perla Negra." />
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl font-serif text-text-primary mb-8">Termini e Condizioni</h1>
                 <div className="prose prose-invert max-w-none text-text-muted space-y-6">

@@ -262,7 +262,7 @@ const ProductFilters = ({
                     <div className="mt-4 space-y-4">
                         <div className="flex items-center gap-2">
                             <div className="relative flex-1">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">€</span>
                                 <input
                                     type="number"
                                     aria-label="Prezzo Minimo"
@@ -274,7 +274,7 @@ const ProductFilters = ({
                             </div>
                             <Minus size={12} className="text-text-muted" />
                             <div className="relative flex-1">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">$</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-xs">€</span>
                                 <input
                                     type="number"
                                     aria-label="Prezzo Massimo"
@@ -286,7 +286,7 @@ const ProductFilters = ({
                             </div>
                         </div>
                         <div className="text-xs text-text-muted text-center">
-                            Intervallo: ${priceRange.min} - ${priceRange.max}
+                            Intervallo: €{priceRange.min} - €{priceRange.max}
                         </div>
                     </div>
                 )}

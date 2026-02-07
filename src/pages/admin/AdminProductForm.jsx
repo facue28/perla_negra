@@ -292,7 +292,7 @@ const AdminProductForm = () => {
 
                         {/* Price */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Precio ($) *</label>
+                            <label className="text-sm text-text-muted">Precio (€) *</label>
                             <input
                                 required
                                 type="number"

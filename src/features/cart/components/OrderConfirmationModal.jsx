@@ -1,19 +1,11 @@
-import { useState, useEffect } from 'react';
+import { } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Phone, User, CheckCircle, MessageCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 const OrderConfirmationModal = ({ isOpen, onClose, onConfirm, formData, cartTotal, successData }) => {
-    const [viewState, setViewState] = useState('confirm'); // 'confirm' | 'success'
-
-    // Reset view state when modal opens/closes or successData changes
-    useEffect(() => {
-        if (isOpen && successData) {
-            setViewState('success');
-        } else if (isOpen) {
-            setViewState('confirm');
-        }
-    }, [isOpen, successData]);
+    // Derived state instead of useEffect sync
+    const viewState = (isOpen && successData) ? 'success' : 'confirm';
 
     const handleCopyMessage = async () => {
         if (successData?.messageBody) {
@@ -22,7 +14,7 @@ const OrderConfirmationModal = ({ isOpen, onClose, onConfirm, formData, cartTota
                 const text = decodeURIComponent(successData.messageBody);
                 await navigator.clipboard.writeText(text);
                 toast.success('Messaggio copiato!');
-            } catch (err) {
+            } catch {
                 toast.error('Errore durante la copia');
             }
         }

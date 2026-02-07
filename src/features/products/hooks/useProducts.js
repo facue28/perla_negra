@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useProductContext } from '../context/ProductContext';
 
 export const useProducts = () => {

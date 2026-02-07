@@ -8,7 +8,7 @@
  * @param {string} [options.resize='contain'] - Resize mode: 'cover', 'contain', or 'fill'.
  * @returns {string} The optimized URL or the original if not a Supabase URL.
  */
-export const getOptimizedImageUrl = (url, { width, height, resize = 'contain' } = {}) => {
+export const getOptimizedImageUrl = (url, { width: _width, height: _height, resize: _resize = 'contain' } = {}) => {
     if (!url) return '';
     if (typeof url !== 'string') return url;
 

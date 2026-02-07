@@ -11,8 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://hkedgklpsksezxxymdgc.supabase.co" crossorigin>
 
-  <!-- Preload critical assets -->
-  <link rel="preload" href="/hero/silk.webp" as="image">
+  <!-- Preload critical assets (Responsive LCP) -->
+  <link rel="preload" href="/hero/silk-mobile.webp" as="image" media="(max-width: 768px)">
+  <link rel="preload" href="/hero/silk.webp" as="image" media="(min-width: 769px)">
 
   <!-- Preload critical font stylesheet to improve LCP -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" as="style"

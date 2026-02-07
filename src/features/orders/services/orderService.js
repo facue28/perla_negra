@@ -209,7 +209,7 @@ export const getOrderStats = async () => {
             recentOrdersCount: recentData?.length || 0
         };
 
-    } catch (error) {
+    } catch {
         // apiClient ya logueó el error específico, pero aquí retornamos fallback
         return {
             statusCounts: { nueva: 0, en_preparacion: 0, completada: 0, cancelada: 0 },

@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 
 const OrderDetailModal = ({ order, isOpen, onClose, onUpdate }) => {
     const [updating, setUpdating] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState(null);
 
     if (!order) return null;
 

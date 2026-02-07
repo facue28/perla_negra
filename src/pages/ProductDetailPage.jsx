@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 import Reveal from '@/components/ui/Reveal';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import ProductCard from '@/features/products/components/ProductCard';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import AccordionItem from '@/components/ui/AccordionItem';
@@ -33,7 +32,7 @@ const ProductDetailPage = () => {
 
     // Image Gallery State
     const [activeImage, setActiveImage] = useState(null);
-    const [image2Error, setImage2Error] = useState(false); // 🆕 Track if secondary image is broken
+    const [image2Error, setImage2Error] = useState(false); // New: Track if secondary image is broken
 
     // Initialize active image when product loads
     useEffect(() => {
@@ -41,7 +40,7 @@ const ProductDetailPage = () => {
             setActiveImage(product.image);
             setImage2Error(false); // Reset error state ONLY when changing products
         }
-    }, [slug]); // ⚡ Fix: Use slug instead of product object to avoid re-renders resetting state
+    }, [slug, product]); // Fix: properly react to product changes
 
     // Product State (Restored)
     const [quantity, setQuantity] = useState(1);
@@ -53,22 +52,34 @@ const ProductDetailPage = () => {
 
     // Sticky Mobile Bar Logic
     const [showStickyBar, setShowStickyBar] = useState(false);
+    const [addToCartInView, setAddToCartInView] = useState(true);
 
     // Force scroll to top instantly on mount to prevent "stuck at bottom"
     useLayoutEffect(() => {
         window.scrollTo(0, 0);
     }, [slug]);
 
+    // Intersection Observer for the main "Add to Cart" button
     useEffect(() => {
-        const handleScroll = () => {
-            // Show when scrolled past 500px (roughly past main image/hero on mobile)
-            const threshold = 500;
-            setShowStickyBar(window.scrollY > threshold);
-        };
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setAddToCartInView(entry.isIntersecting);
+            },
+            { threshold: 0.1, rootMargin: "-20px" }
+        );
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+        const btn = document.getElementById('main-add-to-cart-btn');
+        if (btn) observer.observe(btn);
+
+        return () => {
+            if (btn) observer.unobserve(btn);
+        };
+    }, [product, slug]);
+
+    useEffect(() => {
+        // Show sticky bar ONLY if main button is NOT in view AND we have scrolled down a bit
+        setShowStickyBar(!addToCartInView && window.scrollY > 200);
+    }, [addToCartInView]);
 
     // Track View Item - Must be before any conditional returns (Rules of Hooks)
     useEffect(() => {
@@ -192,7 +203,6 @@ const ProductDetailPage = () => {
     };
 
     // Structured Data for SEO (Rich Snippets)
-    // Structured Data for SEO (Rich Snippets)
     const structuredData = {
         "@context": "https://schema.org/",
         "@type": "Product",
@@ -216,7 +226,7 @@ const ProductDetailPage = () => {
     };
 
     return (
-        <div className="bg-background-dark min-h-screen py-6 flex flex-col">
+        <div className="bg-background-dark min-h-screen py-6 flex flex-col pb-32"> {/* Added pb-32 to provide breathing room from sticky bar */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -238,36 +248,56 @@ const ProductDetailPage = () => {
                     <span className="text-accent">{product.category}</span>
                 </nav>
 
-                {/* Top Section: Fit to Screen Layout (Desktop) / Scroll (Mobile) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-10 items-stretch lg:h-[calc(100vh-140px)] lg:max-h-[700px] h-auto min-h-[600px]">
+                {/* Main Content Grid - Responsive layout without fixed height constraints */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
 
-                    {/* Left: Main Image Card - 40% width on desktop */}
-                    <div className="w-full h-full lg:col-span-5 flex flex-col gap-4">
+                    {/* Left: Main Image Card & Thumbnails - Sticky on Desktop */}
+                    <div className="w-full lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-24">
                         <div
-                            className="bg-white rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair flex-grow w-full flex items-center justify-center p-0 h-[500px] lg:h-auto"
+                            className="bg-background-alt/50 rounded-3xl overflow-hidden relative border border-border/10 group cursor-crosshair w-full aspect-[4/5] flex items-center justify-center"
                             onMouseMove={handleMouseMove}
                             onMouseEnter={() => setIsHovering(true)}
                             onMouseLeave={() => setIsHovering(false)}
                         >
+                            {/* 1. Ambient Background Layer */}
+                            <div className="absolute inset-0 z-0">
+                                <img
+                                    src={activeImage || product.image}
+                                    alt=""
+                                    className="w-full h-full object-cover blur-2xl opacity-40 scale-110"
+                                />
+                            </div>
+
+                            {/* 2. Main Product Image */}
                             <div style={{
                                 width: '100%',
                                 height: '100%',
-                                transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}% `,
-                                transform: isHovering ? 'scale(2)' : 'scale(1)',
-                                transition: 'transform 0.2s ease-out'
+                                position: 'relative',
+                                zIndex: 10,
+                                padding: '16px'
                             }}>
-                                <img
-                                    src={activeImage || product.image}
-                                    alt={product.name}
-                                    className="w-full h-full object-contain rounded-3xl block mix-blend-multiply"
-                                />
+                                <motion.div
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                        transform: isHovering ? 'scale(2)' : 'scale(1)',
+                                        transition: 'transform 0.2s ease-out'
+                                    }}
+                                >
+                                    <img
+                                        src={activeImage || product.image}
+                                        alt={product.name}
+                                        className="w-full h-full object-contain drop-shadow-xl"
+                                    />
+                                </motion.div>
                             </div>
                         </div>
 
-                        {/* Thumbnails Gallery - Only show if image2 exists AND is valid */}
-                        {product.image2 && !image2Error && (
-                            <div className="flex gap-3 justify-center h-20 flex-shrink-0">
-                                {/* Thumb 1 */}
+                        {/* Thumbnails Gallery - Show if secondary images exist */}
+                        {(product.image2 || product.image3) && (
+                            <div className="flex gap-4 justify-center">
+                                {/* Thumb 1 (Main) */}
                                 <button
                                     onClick={() => setActiveImage(product.image)}
                                     className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
@@ -276,146 +306,151 @@ const ProductDetailPage = () => {
                                 </button>
 
                                 {/* Thumb 2 */}
-                                <button
-                                    onClick={() => setActiveImage(product.image2)}
-                                    className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image2 ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
-                                >
-                                    <img
-                                        src={product.image2}
-                                        alt="Vista secundaria"
-                                        className="w-full h-full object-contain p-0 bg-white mix-blend-multiply"
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            setImage2Error(true);
-                                        }}
-                                    />
-                                </button>
+                                {product.image2 && !image2Error && (
+                                    <button
+                                        onClick={() => setActiveImage(product.image2)}
+                                        className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image2 ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
+                                    >
+                                        <img
+                                            src={product.image2}
+                                            alt="Vista secundaria"
+                                            className="w-full h-full object-contain p-0 bg-white mix-blend-multiply"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                setImage2Error(true);
+                                            }}
+                                        />
+                                    </button>
+                                )}
+
+                                {/* Thumb 3 */}
+                                {product.image3 && (
+                                    <button
+                                        onClick={() => setActiveImage(product.image3)}
+                                        className={`relative w-20 h-20 rounded-xl overflow-hidden border-2 transition-all bg-white ${activeImage === product.image3 ? 'border-accent shadow-[0_0_10px_rgba(63,255,193,0.3)]' : 'border-border/20 hover:border-accent/50'}`}
+                                    >
+                                        <img
+                                            src={product.image3}
+                                            alt="Vista extra"
+                                            className="w-full h-full object-contain p-0 bg-white mix-blend-multiply"
+                                            onError={(e) => e.target.style.display = 'none'}
+                                        />
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
 
-                    {/* Right: Info Card - 60% width on desktop */}
-                    <div className="flex flex-col h-full overflow-hidden lg:col-span-7">
-                        {/* Unified Card - Compact No-Scroll */}
-                        <div className="bg-background-alt px-8 py-3 rounded-2xl border border-border/20 flex flex-col h-full justify-center">
+                    {/* Right: Info Card - COMPACT VERSION */}
+                    <div className="lg:col-span-7 flex flex-col h-full">
+                        {/* Unified Card with REDUCED PADDING and COMPACT SPACINGS */}
+                        <div className="bg-background-alt px-6 py-6 rounded-3xl border border-border/20 flex flex-col h-full gap-4">
 
-                            {/* Header Group */}
-                            <div className="mb-4 flex-shrink-0">
-                                <h1 className="text-3xl lg:text-4xl font-serif text-text-primary mb-1 line-clamp-1 leading-tight">{toTitleCase(product.name)}</h1>
-                                <p className="text-lg text-text-muted font-light italic line-clamp-2">{product.subtitle}</p>
+                            {/* Header Group - Compact */}
+                            <div>
+                                <h1 className="text-3xl font-serif text-text-primary mb-1 leading-tight">{toTitleCase(product.name)}</h1>
+                                <p className="text-base text-text-muted font-light italic">{product.subtitle}</p>
                             </div>
 
-                            {/* Price & Rating */}
-                            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            {/* Price & Rating - Compact */}
+                            <div className="flex items-center justify-between mb-2">
                                 <div className="text-3xl font-bold text-accent">
-                                    ${product.price.toFixed(2)}
+                                    €{product.price.toFixed(2)}
                                 </div>
-                                <div className="flex items-center gap-1 bg-background-dark/30 px-3 py-1 rounded-full">
-                                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                                <div className="flex items-center gap-1 bg-background-dark/30 px-2 py-1 rounded-full">
+                                    <Star size={12} className="text-yellow-500 fill-yellow-500" />
                                     <span className="text-xs font-bold text-text-primary">4.9</span>
                                 </div>
                             </div>
 
-                            {/* Content Group - Compact */}
-                            <div className="space-y-5 flex-grow flex flex-col justify-center">
+                            {/* Content Group - Compact Font */}
+                            <p className="text-text-muted text-sm leading-relaxed first-letter:uppercase">
+                                {product.description || "Lorem ipsum dolor sit amet consectetur. Placerat arcu at non consequat phasellus mi morbi maecenas."}
+                            </p>
 
-                                {/* Description */}
-                                <p className="text-text-muted text-sm leading-relaxed first-letter:uppercase lg:max-h-[150px] lg:overflow-y-auto lg:pr-2 lg:scrollbar-thin lg:scrollbar-thumb-accent/20 lg:scrollbar-track-transparent">
-                                    {product.description || "Lorem ipsum dolor sit amet consectetur. Placerat arcu at non consequat phasellus mi morbi maecenas."}
-                                </p>
-
-                                {/* Interactive Section: Quantity + Add to Cart Row */}
-                                <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center lg:justify-center">
-                                    {/* Quantity */}
-                                    <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px] h-[52px]">
-                                        <button
-                                            onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                            className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
-                                        >
-                                            -
-                                        </button>
-                                        <div className="flex-grow text-center font-bold text-text-primary">{quantity}</div>
-                                        <button
-                                            onClick={() => setQuantity(q => q + 1)}
-                                            className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-
-                                    {/* Add Button */}
-                                    <motion.button
-                                        onClick={handleAddToCart}
-                                        layout
-                                        whileHover={{
-                                            scale: 1.05,
-                                            backgroundColor: "#32cc9a",
-                                            boxShadow: "0 10px 30px -10px rgba(63,255,193,0.6)",
-                                            transition: { duration: 0.2, ease: "easeOut" }
-                                        }}
-                                        whileTap={{
-                                            scale: 0.95,
-                                            backgroundColor: "#2bb589",
-                                            transition: { type: "spring", stiffness: 300, damping: 20 }
-                                        }}
-                                        className="w-full lg:w-auto lg:min-w-[280px] py-3 rounded-full font-bold text-base flex items-center justify-center gap-2 bg-accent text-background-dark shadow-[0_0_15px_rgba(63,255,193,0.3)] origin-center"
+                            {/* Interactive Section: Quantity + Add to Cart Row - Compact Height */}
+                            <div className="flex flex-col lg:flex-row gap-3 pt-6" id="main-add-to-cart-btn">
+                                {/* Quantity - Smaller Height */}
+                                <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px] h-[48px]">
+                                    <button
+                                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                                        className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
                                     >
-                                        <motion.span layout className="flex items-center gap-2">
-                                            <span>Aggiungi</span>
-                                            <ShoppingBag size={18} />
-                                        </motion.span>
-                                    </motion.button>
+                                        -
+                                    </button>
+                                    <div className="flex-grow text-center font-bold text-text-primary text-base">{quantity}</div>
+                                    <button
+                                        onClick={() => setQuantity(q => q + 1)}
+                                        className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
+                                    >
+                                        +
+                                    </button>
                                 </div>
 
-                                {/* Enhanced Explore CTA */}
-                                <div className="flex justify-center mt-6">
-                                    <Link
-                                        to="/productos"
-                                        className="group flex items-center gap-2 px-6 py-3 border-2 border-accent/30 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium"
-                                    >
-                                        <span>Continua a esplorare</span>
-                                        <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                                    </Link>
-                                </div>
+                                {/* Add Button - Smaller Height/Text */}
+                                <motion.button
+                                    onClick={handleAddToCart}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="w-full h-[48px] rounded-full font-bold text-base flex items-center justify-center gap-2 bg-accent text-background-dark shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] transition-all"
+                                >
+                                    <span>Aggiungi al Carrello</span>
+                                    <ShoppingBag size={18} />
+                                </motion.button>
+                            </div>
 
-                                {/* Compact Info Box */}
-                                <div className="border border-border/30 rounded-xl p-3 bg-background-dark/30 text-xs text-text-muted space-y-2">
-                                    <div className="flex justify-between items-center border-b border-border/30 pb-2 w-full">
-                                        <span>Sensazione</span>
-                                        <span className="text-text-primary font-medium text-right flex-1 ml-4">{formatText(displayData.sensation) || "Standard"}</span>
+                            {/* Enhanced Explore CTA - Compact */}
+                            <div className="flex justify-center mt-1">
+                                <Link
+                                    to="/productos"
+                                    className="group flex items-center gap-2 px-4 py-2 border border-accent/20 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium text-xs uppercase tracking-wide"
+                                >
+                                    <span>Continua a esplorare</span>
+                                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                            </div>
+
+                            {/* Info Box - Boxed Style - COMPACT ROWS */}
+                            <div className="mt-4 border border-border/10 rounded-2xl overflow-hidden bg-background-dark/20 text-xs">
+                                <div className="flex flex-col divide-y divide-border/10">
+                                    <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+                                        <span className="text-text-muted font-medium">Sensazione</span>
+                                        <span className="text-text-primary text-right font-medium">{formatText(displayData.sensation) || "Standard"}</span>
                                     </div>
-                                    {(product.size || product.sizeFlOz) && (
-                                        <div className="flex justify-between items-center border-b border-border/30 pb-2">
-                                            <span>Formato</span>
-                                            <div className="flex items-center gap-2 font-medium">
-                                                {product.size && <span className="text-text-primary">{product.size}</span>}
-                                                {product.size && product.sizeFlOz && <span className="text-text-muted/30">|</span>}
-                                                {product.sizeFlOz && <span className="text-text-primary">{product.sizeFlOz}</span>}
-                                            </div>
-                                        </div>
-                                    )}
-                                    <div className="flex justify-between items-center">
-                                        <span>Marca</span>
-                                        <span className="text-text-primary font-medium">{formatText(product.brand)}</span>
+                                    <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+                                        <span className="text-text-muted font-medium">Formato</span>
+                                        <span className="text-text-primary text-right font-medium">
+                                            {(product.size || product.sizeFlOz) ? (
+                                                <>
+                                                    {product.size && <span>{product.size}</span>}
+                                                    {product.size && product.sizeFlOz && <span className="text-text-muted/40 mx-2">|</span>}
+                                                    {product.sizeFlOz && <span>{product.sizeFlOz}</span>}
+                                                </>
+                                            ) : (
+                                                <span className="text-text-muted italic">N/A</span>
+                                            )}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+                                        <span className="text-text-muted font-medium">Marca</span>
+                                        <span className="text-text-primary text-right font-medium">{formatText(product.brand)}</span>
                                     </div>
                                     {product.code && (
-                                        <div className="flex justify-between items-center pt-2 border-t border-border/30">
-                                            <span>Codice</span>
-                                            <span className="text-text-primary font-medium">{product.code}</span>
+                                        <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+                                            <span className="text-text-muted font-medium">Codice</span>
+                                            <span className="text-text-primary text-right font-bold uppercase tracking-wider">{product.code}</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Footer: Enhanced Shipping Discretion */}
-                            <div className="flex flex-col gap-2 pt-4 mt-2 border-t border-border/10">
-                                <div className="flex items-center justify-center gap-2 bg-accent/10 border border-accent/20 rounded-lg py-2 px-3">
-                                    <Check size={14} className="text-accent flex-shrink-0" />
-                                    <span className="text-xs text-accent font-medium tracking-wide">Pacco anonimo - Nessuna etichetta esterna</span>
+                            {/* Footer - Compact */}
+                            <div className="flex flex-col gap-2 pt-4 flex-grow justify-center items-center text-center">
+                                <div className="flex items-center gap-2 text-accent/80 text-[10px] font-medium bg-accent/5 p-2 rounded-lg border border-accent/10">
+                                    <Check size={12} /> Pacco anonimo - Nessuna etichetta esterna
                                 </div>
-                                <div className="flex items-center justify-center gap-2 text-[10px] text-text-muted/60">
-                                    <Check size={12} className="text-accent" />
-                                    <span>Spedizione veloce</span>
+                                <div className="flex items-center gap-2 text-text-muted/60 text-[10px] px-2">
+                                    <Check size={12} /> Spedizione veloce e discreta
                                 </div>
                             </div>
 
@@ -424,11 +459,11 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Bottom Section: Accordions */}
-                <div className="max-w-3xl mx-auto w-full mt-12 pb-12">
+                <div className="max-w-4xl mx-auto w-full mt-24 pb-12">
                     <Reveal width="100%">
                         <div className="space-y-4">
                             <AccordionItem title="Descrizione Completa">
-                                <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line">
+                                <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line text-sm">
                                     {(product.descriptionAdditional ? product.descriptionAdditional : product.description)
                                         .replace(/\s{4,}/g, '\n')
                                         .split('\n')
@@ -437,17 +472,15 @@ const ProductDetailPage = () => {
                                 </p>
                             </AccordionItem>
 
-
-
                             <AccordionItem title="Ingredienti">
-                                <p className="text-text-muted leading-relaxed font-mono text-sm opacity-80">
+                                <p className="text-text-muted leading-relaxed text-sm">
                                     {displayData.ingredients}
                                 </p>
                             </AccordionItem>
 
                             <AccordionItem title="Consigli Perla Negra">
-                                <div className="bg-background-alt p-4 rounded-xl border-l-2 border-accent">
-                                    <p className="text-text-muted leading-relaxed">
+                                <div className="bg-background-alt p-6 rounded-xl border-l-2 border-accent">
+                                    <p className="text-text-muted leading-relaxed text-sm">
                                         {displayData.tips}
                                     </p>
                                 </div>
@@ -458,19 +491,14 @@ const ProductDetailPage = () => {
 
                 {/* Related Products Section */}
                 {products.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
-                    <div className="border-t border-border/10 pt-16 pb-24">
-                        <h2 className="text-3xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
+                    <div className="border-t border-border/10 pt-16 pb-24 mt-16">
+                        <h2 className="text-2xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
                             {products
                                 .filter(p => p.category === product.category && p.slug !== product.slug)
                                 .slice(0, 4)
                                 .map(relatedProduct => (
                                     <div key={relatedProduct.id} className="h-full">
-                                        {/* Import ProductCard if not already valid in scope? It is not imported at top yet! 
-                                            Wait, it is NOT imported. I need to check imports. 
-                                            ProductCard IS imported in ProductListPage, but I am in DetailPage.
-                                            I need to add import ProductCard at top.
-                                        */}
                                         <ProductCard product={relatedProduct} />
                                     </div>
                                 ))}
@@ -480,7 +508,7 @@ const ProductDetailPage = () => {
 
             </div>
 
-            {/* Smart Sticky Mobile Bar */}
+            {/* Smart Sticky Mobile Bar: Only visible on mobile (md:hidden) */}
             <AnimatePresence>
                 {showStickyBar && (
                     <motion.div
@@ -488,14 +516,9 @@ const ProductDetailPage = () => {
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:pb-4 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)] md:max-w-4xl md:mx-auto md:bottom-8 md:rounded-2xl md:border md:left-4 md:right-4"
+                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:pb-4 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)] md:hidden"
                     >
-                        <div className="flex items-center gap-4">
-                            {/* Product Image (Desktop Only) */}
-                            <div className="hidden md:block w-12 h-12 rounded-lg bg-white/5 p-1 flex-shrink-0">
-                                <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
-                            </div>
-
+                        <div className="flex items-center gap-4 max-w-7xl mx-auto">
                             {/* Product Info (Compact) */}
                             <div className="flex-1 min-w-0">
                                 <h3 className="text-sm font-serif text-text-primary truncate leading-tight">{product.name}</h3>
@@ -519,4 +542,3 @@ const ProductDetailPage = () => {
 };
 
 export default ProductDetailPage;
-

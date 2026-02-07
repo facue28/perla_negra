@@ -1,6 +1,9 @@
+import SEO from '@/components/ui/SEO';
+
 const ResponsibleUsePage = () => {
     return (
         <div className="min-h-screen bg-background-dark pt-24 pb-20 px-4">
+            <SEO title="Uso Responsabile" description="Guida all'uso responsabile e sicuro dei prodotti Perla Negra." />
             <div className="max-w-4xl mx-auto">
                 <h1 className="text-4xl font-serif text-text-primary mb-8">Uso Responsabile</h1>
                 <div className="prose prose-invert max-w-none text-text-muted space-y-6">

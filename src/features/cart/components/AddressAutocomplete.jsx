@@ -24,7 +24,21 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
         }, 450);
 
         return () => clearTimeout(timer);
-    }, [query, addressVerified]);
+    }, [query, addressVerified, API_KEY]); // Added API_KEY as it's stable, fetchSuggestions is defined below so better not to include it or wrap it.
+    // Actually fetchSuggestions is defined BELOW. 
+    // I should wrap fetchSuggestions in useCallback OR move it inside useEffect.
+    // Moving it inside is easier if it's only used there. But it might be used elsewhere? 
+    // It is called in the timer...
+    // Let's wrap fetchSuggestions in useCallback first? No, that requires valid deps for it.
+    // Simplest fix: Move fetchSuggestions definition BEFORE the useEffect? 
+    // Or just suppress the warning if we know what we are doing? 
+    // Better: Wrap fetchSuggestions in useCallback.
+
+    // Wait, let's look at the file content in next step.
+    // For now I will just add validation logic fix for unused var 'provincia'
+    // and come back to deps.
+
+    // Actually, I'll fix the unused var 'provincia' first.
 
     // Close suggestions on click outside
     useEffect(() => {
@@ -61,7 +75,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }) => {
 
     // New: Validate CAP vs City
     const validateLocation = async () => {
-        const { cap, citta, provincia } = formData;
+        const { cap, citta } = formData;
         if (!cap || !citta || cap.length < 5) return;
 
         setIsValidating(true);

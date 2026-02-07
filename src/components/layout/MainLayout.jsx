@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './Navbar';
@@ -9,7 +9,6 @@ import ScrollToTop from '@/components/ui/ScrollToTop';
 import PageTransition from '@/components/ui/PageTransition';
 
 const MainLayout = () => {
-    const location = useLocation();
 
     return (
         <div className="flex flex-col min-h-screen bg-background-dark">

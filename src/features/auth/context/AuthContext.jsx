@@ -9,6 +9,26 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    const checkAdminRole = async (userEmail) => {
+        try {
+            // Updated to use secure RPC
+            const { data, error } = await supabase.rpc('is_admin', {
+                user_email: userEmail
+            });
+
+            if (error) {
+                logger.error('Error checking admin role', error);
+                setIsAdmin(false);
+                return;
+            }
+
+            setIsAdmin(data === true);
+        } catch (err) {
+            logger.error('Unexpected error in checkAdminRole', err);
+            setIsAdmin(false);
+        }
+    };
+
     useEffect(() => {
         // 1. Get initial session
         const getSession = async () => {
@@ -34,25 +54,7 @@ export const AuthProvider = ({ children }) => {
         return () => subscription.unsubscribe();
     }, []);
 
-    const checkAdminRole = async (userEmail) => {
-        try {
-            // Updated to use secure RPC
-            const { data, error } = await supabase.rpc('is_admin', {
-                user_email: userEmail
-            });
 
-            if (error) {
-                logger.error('Error checking admin role', error);
-                setIsAdmin(false);
-                return;
-            }
-
-            setIsAdmin(data === true);
-        } catch (err) {
-            logger.error('Unexpected error in checkAdminRole', err);
-            setIsAdmin(false);
-        }
-    };
 
     const login = async (email, password) => {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
