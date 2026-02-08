@@ -14,7 +14,7 @@ import AccordionItem from '@/components/ui/AccordionItem';
 import ProductCard from '@/features/products/components/ProductCard';
 import { trackViewItem, trackAddToCart } from '@/lib/analytics';
 import { Product } from '@/features/products/types';
-import { getOptimizedImageUrl } from '@/lib/imageUtils';
+import { getOptimizedImageUrl, getAbsoluteUrl } from '@/lib/imageUtils';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 // Helper function to properly capitalize product names

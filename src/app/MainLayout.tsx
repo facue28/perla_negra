@@ -14,7 +14,11 @@ const MainLayout = () => {
     // Signal Prerender.io when app is fully ready (products loaded)
     useEffect(() => {
         if (!loading) {
-            window.prerenderReady = true;
+            // Add a small delay to ensure Helmet has time to update the <head>
+            const timer = setTimeout(() => {
+                window.prerenderReady = true;
+            }, 500);
+            return () => clearTimeout(timer);
         }
     }, [loading]);
 
