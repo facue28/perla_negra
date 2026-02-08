@@ -1,3 +1,10 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
 /**
  * Formats a number as a price string with the currency symbol.
  * Defaults to Euro (€) and 2 decimal places.
