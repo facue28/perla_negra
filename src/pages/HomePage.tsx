@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/ui/SEO';
-import InstagramSection from '@/components/layout/InstagramSection';
+// import InstagramSection from '@/components/layout/InstagramSection'; // Lazy loaded below
 import { motion, useScroll, useTransform, Variants } from 'framer-motion';
 import B2BTeaserSection from '@/components/layout/B2BTeaserSection';
 import InfiniteMarquee from '@/components/ui/InfiniteMarquee';
+
+const InstagramSection = lazy(() => import('@/components/layout/InstagramSection'));
 
 const MotionLink = motion(Link);
 
@@ -148,7 +150,10 @@ const HomePage: React.FC = () => {
             {/* B2B Teaser Section */}
             <B2BTeaserSection />
 
-            <InstagramSection />
+            {/* Lazy Load Instagram Section */}
+            <Suspense fallback={<div className="h-96 w-full flex items-center justify-center bg-background-light/5"><div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" /></div>}>
+                <InstagramSection />
+            </Suspense>
         </>
     );
 };
