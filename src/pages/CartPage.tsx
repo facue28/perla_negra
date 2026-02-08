@@ -7,7 +7,81 @@ import SEO from '@/components/ui/SEO';
 import { toast } from 'sonner';
 import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete';
 import Select from '@/components/ui/Select';
-import { isValidPhoneNumber } from 'libphonenumber-js';
+import { validatePhoneAsync } from '@/utils/phoneUtils';
+// ... other imports
+
+// ... inside CartPage component
+
+const validateForm = async (): Promise<boolean> => {
+    const newErrors: Record<string, string> = {};
+
+    if (formData.website && formData.website.trim() !== '') {
+        console.warn('Honeypot triggered - potential bot detected');
+        return false;
+    }
+
+    if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
+
+    if (!formData.telefono || formData.telefono.trim() === '+' || !formData.telefono.trim()) {
+        newErrors.telefono = "Il telefono è obbligatorio";
+    } else {
+        const isValid = await validatePhoneAsync(formData.telefono);
+        if (!isValid) {
+            newErrors.telefono = "Numero non valido (controlla prefisso e lunghezza).";
+        }
+    }
+
+    if (!formData.indirizzo.trim()) newErrors.indirizzo = "L'indirizzo è obbligatorio";
+    if (!formData.civico.trim()) newErrors.civico = "Il civico è obbligatorio";
+
+    if (!formData.cap.trim() || !/^\d{5}$/.test(formData.cap)) {
+        newErrors.cap = "Inserisci un CAP valido (5 cifre).";
+    }
+
+    if (!formData.citta.trim()) newErrors.citta = "Inserisci il Comune.";
+
+    if (!formData.provincia.trim() || !/^\d{5}$/.test(formData.provincia) && !/^[A-Za-z]{2}$/.test(formData.provincia)) {
+        // Relaxed regex or keep strict if intended. Original was /^[A-Za-z]{2}$/
+        if (!/^[A-Za-z]{2}$/.test(formData.provincia)) {
+            newErrors.provincia = "Provincia (2 lettere).";
+        }
+    }
+
+    if (formData.note && /(http|https|www\.|ftp)/i.test(formData.note)) {
+        newErrors.note = "Per sicurezza, non è consentito inserire link nelle note.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+};
+
+// ...
+
+const handlePreSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (cart.length === 0) return;
+
+    const now = Date.now();
+    const timeSince = now - lastSubmitTime;
+    if (timeSince < 5000) {
+        toast.error(`Per favore attendi ${Math.ceil((5000 - timeSince) / 1000)}s prima di riprovare.`);
+        return;
+    }
+
+    const isValid = await validateForm();
+    if (!isValid) {
+        toast.error("Per favore correggi gli errori nel modulo.", {
+            style: { backgroundColor: '#fee2e2', color: '#dc2626' }
+        });
+        return;
+    }
+
+    setLastSubmitTime(now);
+    setIsSubmitting(true);
+    setIsModalOpen(true);
+
+    setTimeout(() => setIsSubmitting(false), 60000);
+};
 import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
 import { generateWhatsAppLink } from '@/features/cart/utils/whatsappGenerator';
 import { trackPurchase } from '@/lib/analytics';

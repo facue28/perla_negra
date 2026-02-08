@@ -65,17 +65,6 @@ export default function middleware(request: Request) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // DEBUG: Check immediately if middleware is running
-    if (path === '/middleware-status') {
-        return new Response(JSON.stringify({
-            status: 'Middleware is active',
-            hasToken: !!process.env.PRERENDER_TOKEN,
-            userAgent: userAgent,
-        }), {
-            headers: { 'Content-Type': 'application/json' }
-        });
-    }
-
     // 1. Check if it's a static file (double check in case matcher misses something)
     const isStaticFile = IGNORE_EXTENSIONS.some(ext => path.endsWith(ext));
     if (isStaticFile) {

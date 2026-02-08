@@ -1,3 +1,4 @@
+import { useEffect } from 'react'; // Added useEffect
 import { Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Navbar from '@/components/layout/Navbar';
@@ -5,8 +6,17 @@ import Footer from '@/components/layout/Footer';
 import AgeVerification from '@/features/legal/components/AgeVerification';
 import CookieConsent from '@/features/legal/components/CookieConsent';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import { useProducts } from '@/features/products/hooks/useProducts'; // Import hook
 
 const MainLayout = () => {
+    const { loading } = useProducts(); // Access loading state
+
+    // Signal Prerender.io when app is fully ready (products loaded)
+    useEffect(() => {
+        if (!loading) {
+            window.prerenderReady = true;
+        }
+    }, [loading]);
 
     return (
         <div className="flex flex-col min-h-screen bg-background-dark">

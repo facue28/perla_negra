@@ -4,7 +4,7 @@ import { Send, MapPin, User, Mail, Phone, MessageSquare, CheckCircle } from 'luc
 import SEO from '@/components/ui/SEO';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
-import { isValidPhoneNumber } from 'libphonenumber-js';
+import { validatePhoneAsync } from '@/utils/phoneUtils';
 
 interface ResellerFormData {
     nombre: string;
@@ -67,7 +67,7 @@ const ResellerPage: React.FC = () => {
         }
     };
 
-    const validateForm = (): boolean => {
+    const validateForm = async (): Promise<boolean> => {
         const newErrors: ResellerErrors = {};
 
         // Name & Surname
@@ -85,8 +85,11 @@ const ResellerPage: React.FC = () => {
         // Phone
         if (!formData.telefono || formData.telefono.trim() === '+' || !formData.telefono.trim()) {
             newErrors.telefono = "Il telefono è obbligaorio";
-        } else if (!isValidPhoneNumber(formData.telefono)) {
-            newErrors.telefono = "Numero non valido (controlla prefisso).";
+        } else {
+            const isValid = await validatePhoneAsync(formData.telefono);
+            if (!isValid) {
+                newErrors.telefono = "Numero non valido (controlla prefisso).";
+            }
         }
 
         // Location
@@ -103,7 +106,8 @@ const ResellerPage: React.FC = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!validateForm()) {
+        const isValid = await validateForm();
+        if (!isValid) {
             toast.error("Per favorere correggi gli errori nel modulo.", {
                 style: { backgroundColor: '#fee2e2', color: '#dc2626' }
             });
@@ -347,8 +351,6 @@ const ResellerPage: React.FC = () => {
                                     options={sourceOptions}
                                     value={formData.conoscenza}
                                     onChange={(val) => {
-                                        setFormData({ ...formData, conocimiento: val } as any); // Cast as any for compatibility if needed
-                                        // Fix: formData has "conoscenza" not "conocimiento". Correcting it.
                                         setFormData({ ...formData, conoscenza: val });
                                         if (errors.conoscenza) setErrors({ ...errors, conoscenza: null });
                                     }}

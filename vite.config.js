@@ -15,6 +15,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['framer-motion', 'lucide-react', 'sonner'],
+          'vendor-utils': ['libphonenumber-js'],
         },
       },
     },
