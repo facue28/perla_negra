@@ -9,9 +9,10 @@ interface SEOProps {
     type?: string;
     structuredData?: Record<string, any>;
     noIndex?: boolean;
+    statusCode?: number;
 }
 
-const SEO = ({ title, description, image, url, type = 'website', structuredData, noIndex = false }: SEOProps) => {
+const SEO = ({ title, description, image, url, type = 'website', structuredData, noIndex = false, statusCode }: SEOProps) => {
     const siteTitle = 'Perla Negra';
     const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
     const currentUrl = url || typeof window !== 'undefined' ? window.location.href : '';
@@ -43,6 +44,9 @@ const SEO = ({ title, description, image, url, type = 'website', structuredData,
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             {image && <meta name="twitter:image" content={image} />}
+
+            {/* Prerender.io Status Code */}
+            {statusCode && <meta name="prerender-status-code" content={statusCode.toString()} />}
 
             {/* Structured Data (JSON-LD) */}
             {structuredData && (
