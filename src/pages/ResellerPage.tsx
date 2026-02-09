@@ -75,7 +75,7 @@ const ResellerPage: React.FC = () => {
         if (!formData.cognome.trim()) newErrors.cognome = "Il cognome è obbligatoio";
 
         // Email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!formData.email.trim()) {
             newErrors.email = "L'email è obbligatoria";
         } else if (formData.email.length > 100) {

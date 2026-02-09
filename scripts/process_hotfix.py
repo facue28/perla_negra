@@ -48,7 +48,7 @@ def process_file(file_path):
     
     # Try to match patterns like "slug1.jpg", "slug-1.jpg", "slug.jpg"
     # User's case: "desire-coconut1.jpeg", "mini-poker1.jpg"
-    match = re.match(r'^(.*?)(\d+)\.(jpg|jpeg|png|webp)$', filename, re.IGNORECASE)
+    match = re.match(r'^(.+?)-?(\d+)\.(jpg|jpeg|png|webp)$', filename, re.IGNORECASE)
     
     if match:
         slug = match.group(1)

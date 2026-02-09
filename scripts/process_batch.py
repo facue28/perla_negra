@@ -26,7 +26,7 @@ def process_image(file_path, output_dir):
 
     # Regex para capturar slug e indice: "nombre-producto" + "1" + ".jpg"
     # Soporta jpg, jpeg, png, etc.
-    match = re.match(r'^(.*?)(\d+)\.(jpg|jpeg|png|webp)$', filename, re.IGNORECASE)
+    match = re.match(r'^(.+?)-?(\d+)\.(jpg|jpeg|png|webp)$', filename, re.IGNORECASE)
     
     if not match:
         print(f"⚠️ SKIPPED (No format slug-N): {filename}")
