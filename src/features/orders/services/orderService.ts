@@ -25,10 +25,10 @@ const sanitizeInput = (input: any): any => {
     if (typeof input !== 'string') return input;
 
     return input
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#x27;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#x27;')
         .trim()
         .substring(0, 500); // Limitar longitud máxima
 };

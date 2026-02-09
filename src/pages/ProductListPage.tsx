@@ -11,7 +11,7 @@ import SEO from '@/components/ui/SEO';
 
 const ProductListPage = (): React.ReactElement => {
     // Data Fetching
-    const { products, loading, error } = useProducts();
+    const { products, loading } = useProducts();
 
     // Use Custom Hook for Filtering
     const {

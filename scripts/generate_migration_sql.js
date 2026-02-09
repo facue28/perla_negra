@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,7 +134,7 @@ SELECT setval('products_id_seq', COALESCE((SELECT MAX(id) FROM products), 0) + 1
             }
 
             if (val !== null) { // Only handle present columns
-                const escaped = val.replace(/'/g, "''");
+                const escaped = val.replaceAll("'", "''");
                 insertCols.push(dbCol);
                 insertVals.push(`'${escaped}'`);
 
@@ -152,7 +152,7 @@ SELECT setval('products_id_seq', COALESCE((SELECT MAX(id) FROM products), 0) + 1
         // Let's add 'usage' -> 'usage'. assuming DB has it.
         const usageVal = getVal('usage');
         if (usageVal) {
-            const escaped = usageVal.replace(/'/g, "''");
+            const escaped = usageVal.replaceAll("'", "''");
             insertCols.push('usage');
             insertVals.push(`'${escaped}'`);
             updateSets.push(`usage = EXCLUDED.usage`);
