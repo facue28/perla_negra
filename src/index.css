@@ -7,8 +7,6 @@
     --color-background-dark: #000000;
     --color-background-alt: #141414;
 
-    /* Static Hero Transition moved to @layer base or utilities */
-
     --color-text-primary: #FFFFFF;
     --color-text-muted: #D1D5D4;
     /* Increased brightness/opacity for WCAG AA+ contrast on dark bg */
@@ -52,13 +50,6 @@
         font-family: var(--font-sans);
         line-height: 1.6;
         /* Lectura cómoda */
-    }
-
-    /* Static Hero Transition */
-    body.hydrated #static-hero {
-        opacity: 0;
-        transition: opacity 0.8s ease-out;
-        pointer-events: none;
     }
 
     /* Focus Visible Global para Accesibilidad */
