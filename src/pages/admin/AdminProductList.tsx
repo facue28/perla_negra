@@ -1,18 +1,30 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Search, Edit, Trash2, Package } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Plus, Search, Edit, Trash2, Package, ArrowUpDown } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/features/products/types';
+
+type SortConfig = {
+    key: 'name' | 'category' | 'price' | 'stock';
+    direction: 'asc' | 'desc';
+} | null;
 
 const AdminProductList: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchParams] = useSearchParams();
+    const [sortConfig, setSortConfig] = useState<SortConfig>(null);
 
+    // Initial load handling (filter check)
     useEffect(() => {
+        const filter = searchParams.get('filter');
+        if (filter === 'low_stock') {
+            setSortConfig({ key: 'stock', direction: 'asc' });
+        }
         fetchProducts();
-    }, []);
+    }, [searchParams]);
 
     const fetchProducts = async (): Promise<void> => {
         try {
@@ -48,13 +60,47 @@ const AdminProductList: React.FC = () => {
         }
     };
 
-    const filteredProducts = products.filter(product =>
+    const handleSort = (key: SortConfig['key']) => {
+        let direction: 'asc' | 'desc' = 'asc';
+        if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    const sortedProducts = React.useMemo(() => {
+        let sortableProducts = [...products];
+        if (sortConfig !== null) {
+            sortableProducts.sort((a, b) => {
+                const aValue = a[sortConfig.key];
+                const bValue = b[sortConfig.key];
+
+                if (aValue < bValue) {
+                    return sortConfig.direction === 'asc' ? -1 : 1;
+                }
+                if (aValue > bValue) {
+                    return sortConfig.direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+        return sortableProducts;
+    }, [products, sortConfig]);
+
+    const filteredProducts = sortedProducts.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    const renderSortIcon = (key: SortConfig['key']) => {
+        if (!sortConfig || sortConfig.key !== key) {
+            return <ArrowUpDown size={14} className="ml-2 text-text-muted opacity-0 group-hover:opacity-50" />;
+        }
+        return <ArrowUpDown size={14} className={`ml-2 ${sortConfig.direction === 'asc' ? 'text-accent' : 'text-accent'} rotate-${sortConfig.direction === 'asc' ? '0' : '180'}`} />;
+    };
+
     return (
-        <div className="px-6 py-8 space-y-6 text-text-primary">
+        <div className="px-6 py-8 space-y-6 text-text-primary fade-in">
             {/* Back Button */}
             <Link
                 to="/admin"
@@ -99,10 +145,30 @@ const AdminProductList: React.FC = () => {
                     <table className="w-full text-left">
                         <thead className="bg-white/5 text-text-muted text-sm uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-medium">Producto</th>
-                                <th className="px-6 py-4 font-medium">Categoría</th>
-                                <th className="px-6 py-4 font-medium">Precio</th>
-                                <th className="px-6 py-4 font-medium text-center">Stock</th>
+                                <th
+                                    className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                    onClick={() => handleSort('name')}
+                                >
+                                    <div className="flex items-center">Producto {renderSortIcon('name')}</div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                    onClick={() => handleSort('category')}
+                                >
+                                    <div className="flex items-center">Categoría {renderSortIcon('category')}</div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
+                                    onClick={() => handleSort('price')}
+                                >
+                                    <div className="flex items-center">Precio {renderSortIcon('price')}</div>
+                                </th>
+                                <th
+                                    className="px-6 py-4 font-medium text-center cursor-pointer hover:text-white transition-colors group select-none"
+                                    onClick={() => handleSort('stock')}
+                                >
+                                    <div className="flex items-center justify-center">Stock {renderSortIcon('stock')}</div>
+                                </th>
                                 <th className="px-6 py-4 font-medium text-right">Acciones</th>
                             </tr>
                         </thead>

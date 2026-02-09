@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Search, AlertTriangle, Loader2, MapPin } from 'lucide-react';
 import { provinces } from '@/features/cart/data/italy_provinces';
 import Select from '@/components/ui/Select';

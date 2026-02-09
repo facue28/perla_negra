@@ -18,6 +18,12 @@ def ensure_dir(path):
 
 def process_image(file_path, output_dir):
     filename = os.path.basename(file_path)
+
+    # Security: Prevent ReDoS on long filenames
+    if len(filename) > 255:
+        print(f"⚠️ SKIPPED (Filename too long): {filename}")
+        return
+
     # Regex para capturar slug e indice: "nombre-producto" + "1" + ".jpg"
     # Soporta jpg, jpeg, png, etc.
     match = re.match(r'^(.*?)(\d+)\.(jpg|jpeg|png|webp)$', filename, re.IGNORECASE)

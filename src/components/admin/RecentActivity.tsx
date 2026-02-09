@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLog } from "@/types/admin";
-import { ScrollArea } from "@/components/ui/scroll-area"; // Ensure this exists or use div override
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';

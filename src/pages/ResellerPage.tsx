@@ -78,6 +78,8 @@ const ResellerPage: React.FC = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!formData.email.trim()) {
             newErrors.email = "L'email è obbligatoria";
+        } else if (formData.email.length > 100) {
+            newErrors.email = "L'email è troppo lunga";
         } else if (!emailRegex.test(formData.email)) {
             newErrors.email = "Inserisci un'email valida";
         }

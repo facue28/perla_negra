@@ -139,13 +139,13 @@ const AdminOrderList: React.FC = () => {
                         <select
                             value={statusFilter}
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as OrderListStatus)}
-                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent/50 transition-colors cursor-pointer"
+                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent/50 transition-colors cursor-pointer [&>option]:bg-background-alt [&>option]:text-white"
                         >
-                            <option value="all">Todos los estados</option>
-                            <option value="nueva">Nueva</option>
-                            <option value="en_preparacion">En Preparación</option>
-                            <option value="completada">Completada</option>
-                            <option value="cancelada">Cancelada</option>
+                            <option value="all" className="bg-background-alt text-white">Todos los estados</option>
+                            <option value="nueva" className="bg-background-alt text-white">Nueva</option>
+                            <option value="en_preparacion" className="bg-background-alt text-white">En Preparación</option>
+                            <option value="completada" className="bg-background-alt text-white">Completada</option>
+                            <option value="cancelada" className="bg-background-alt text-white">Cancelada</option>
                         </select>
                     </div>
                 </div>

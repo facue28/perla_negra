@@ -1,7 +1,7 @@
 import { Filter, ChevronUp, ChevronDown, Minus } from 'lucide-react';
 // @ts-ignore
 import Select from '@/components/ui/Select';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 // Category-specific filter label mapping
 const FILTER_LABEL_MAP: Record<string, { usageArea: string }> = {

@@ -40,6 +40,11 @@ HEADERS = {
 def process_file(file_path):
     filename = os.path.basename(file_path)
     print(f"🔄 Processing local: {filename}")
+
+    # Security: Prevent ReDoS
+    if len(filename) > 255:
+        print(f"⚠️ SKIPPED (Filename too long): {filename}")
+        return []
     
     # Try to match patterns like "slug1.jpg", "slug-1.jpg", "slug.jpg"
     # User's case: "desire-coconut1.jpeg", "mini-poker1.jpg"

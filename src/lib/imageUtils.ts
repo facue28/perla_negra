@@ -33,6 +33,7 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
 
     return url;
 
+
     /*
     // Replace '/object/public/' with '/render/image/public/' to access Transformation API
     let optimizedUrl = url.replace('/object/public/', '/render/image/public/');
@@ -50,4 +51,15 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
 
     return queryString ? `${optimizedUrl}?${queryString}` : optimizedUrl;
     */
+};
+
+/**
+ * Helper to ensure a URL is absolute (includes protocol and domain).
+ * Useful for SEO meta tags.
+ */
+export const getAbsoluteUrl = (path: string | undefined): string => {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://perlanegra.store';
+    return `${origin}${path.startsWith('/') ? '' : '/'}${path}`;
 };

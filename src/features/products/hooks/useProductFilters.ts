@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Product } from '@/features/products/types';
 
 // Game-specific values (from Gioco category) - Constant moved outside

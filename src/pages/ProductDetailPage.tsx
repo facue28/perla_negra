@@ -234,7 +234,6 @@ const ProductDetailPage = (): React.ReactElement => {
     return (
         <div className="bg-background-dark min-h-screen py-6 flex flex-col pb-32"> {/* Added pb-32 to provide breathing room from sticky bar */}
             <SEO
-                key={product.id}
                 title={product.name}
                 description={`Acquista ${product.name} - ${product.subtitle || product.category} `}
                 image={product.image}

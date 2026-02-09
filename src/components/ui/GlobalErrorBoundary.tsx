@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, ErrorInfo } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface Props {
@@ -11,29 +11,28 @@ interface State {
 }
 
 class GlobalErrorBoundary extends Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = { hasError: false, error: null };
-    }
+    public state: State = {
+        hasError: false,
+        error: null
+    };
 
-    static getDerivedStateFromError(error: Error): State {
+    public static getDerivedStateFromError(error: Error): State {
         return { hasError: true, error };
     }
 
-    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        // Here we could send the error to a service like Sentry
+    public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("Global Error Caught:", error, errorInfo);
     }
 
-    handleReload = () => {
+    public handleReload = () => {
         window.location.reload();
     };
 
-    handleGoHome = () => {
+    public handleGoHome = () => {
         window.location.href = '/';
     };
 
-    render() {
+    public render() {
         if (this.state.hasError) {
             return (
                 <div className="min-h-screen bg-background-dark flex items-center justify-center p-4 font-sans text-text-primary">
@@ -78,6 +77,7 @@ class GlobalErrorBoundary extends Component<Props, State> {
             );
         }
 
+        // @ts-ignore
         return this.props.children;
     }
 }
