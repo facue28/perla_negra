@@ -96,7 +96,7 @@ const AdminProductList: React.FC = () => {
         if (!sortConfig || sortConfig.key !== key) {
             return <ArrowUpDown size={14} className="ml-2 text-text-muted opacity-0 group-hover:opacity-50" />;
         }
-        return <ArrowUpDown size={14} className={`ml-2 ${sortConfig.direction === 'asc' ? 'text-accent' : 'text-accent'} rotate-${sortConfig.direction === 'asc' ? '0' : '180'}`} />;
+        return <ArrowUpDown size={14} className={`ml-2 text-accent rotate-${sortConfig.direction === 'asc' ? '0' : '180'}`} />;
     };
 
     return (
