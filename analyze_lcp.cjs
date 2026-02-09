@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 try {
-    const report = JSON.parse(fs.readFileSync('lighthouse-report-react-lcp.json', 'utf8'));
+    const report = JSON.parse(fs.readFileSync('lighthouse-report-static-lcp-final.json', 'utf8'));
     const lcpAudit = report.audits['largest-contentful-paint-element'];
 
     if (lcpAudit && lcpAudit.details && lcpAudit.details.items) {

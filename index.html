@@ -18,10 +18,17 @@
   <link rel="preload" href="/hero/silk-mobile.webp" as="image" media="(max-width: 768px)">
   <link rel="preload" href="/hero/silk.webp" as="image" media="(min-width: 769px)">
 
-  <!-- Load fonts with display=swap (non-blocking) -->
+  <!-- Load fonts non-blocking (Async Pattern) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap"
-    rel="stylesheet">
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap"
+      rel="stylesheet">
+  </noscript>
 
   <!-- Primary Meta Tags -->
   <title>Perla negra - Sexshop</title>
@@ -44,10 +51,13 @@
       left: 0;
       width: 100%;
       height: 120%;
-      z-index: -1;
+      z-index: 0;
+      /* Changed from -1 to 0 to prioritize paint */
       overflow: hidden;
       pointer-events: none;
       background-color: #000000;
+      will-change: opacity;
+      /* Hint to browser to layer this */
     }
 
     #static-hero-bg img {
@@ -76,7 +86,7 @@
     <div class="hero-overlay"></div>
   </div>
 
-  <div id="root"></div>
+  <div id="root" style="position: relative; z-index: 10;"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
