@@ -15,44 +15,82 @@ const escapeSql = (str) => {
 const csvPath = join(__dirname, 'products_export.csv');
 const csvContent = readFileSync(csvPath, 'utf-8');
 
-// Parsear CSV (manejo básico, asume que no hay comas dentro de campos)
-const lines = csvContent.split('\n').filter(l => l.trim());
-const headers = lines[0].split(',');
+// Parser CSV mejorado que maneja campos multi-línea
+function parseCSV(content) {
+    const lines = content.split('\n');
+    const result = [];
+    let currentRow = [];
+    let currentField = '';
+    let insideQuotes = false;
+    let headersParsed = false;
+    let headers = [];
 
-// Parsear productos
-const products = [];
-for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
-    const values = [];
-    let current = '';
-    let inQuotes = false;
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const line = lines[lineIdx];
 
-    for (let j = 0; j < line.length; j++) {
-        const char = line[j];
-        if (char === '"' && (j === 0 || line[j - 1] !== '\\')) {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            values.push(current.trim());
-            current = '';
-        } else {
-            current += char;
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            const nextChar = line[i + 1];
+
+            if (char === '"') {
+                if (insideQuotes && nextChar === '"') {
+                    // Escaped quote
+                    currentField += '"';
+                    i++; // Skip next quote
+                } else {
+                    // Toggle quote mode
+                    insideQuotes = !insideQuotes;
+                }
+            } else if (char === ',' && !insideQuotes) {
+                // End of field
+                currentRow.push(currentField.trim());
+                currentField = '';
+            } else if (char === '\r') {
+                // Ignorar carriage return
+                continue;
+            } else {
+                currentField += char;
+            }
+        }
+
+        // Si estamos dentro de comillas, es un campo multi-línea
+        if (insideQuotes) {
+            currentField += '\n'; // Preservar salto de línea
+            continue;
+        }
+
+        // Fin de línea fuera de comillas = fin de fila
+        if (currentField || currentRow.length > 0) {
+            currentRow.push(currentField.trim());
+            currentField = '';
+        }
+
+        if (currentRow.length > 0) {
+            if (!headersParsed) {
+                headers = currentRow;
+                headersParsed = true;
+            } else {
+                result.push(currentRow);
+            }
+            currentRow = [];
         }
     }
-    values.push(current.trim()); // último valor
 
-    // Crear objeto producto
+    return { headers, rows: result };
+}
+
+const { headers, rows } = parseCSV(csvContent);
+
+// Crear objetos producto
+const products = rows.map(row => {
     const product = {};
     headers.forEach((header, idx) => {
-        let value = values[idx] || '';
-        // Limpiar comillas
-        if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.slice(1, -1);
-        }
-        product[header.trim()] = value;
+        let value = row[idx] || '';
+        // Limpiar espacios
+        product[header.trim()] = value.trim();
     });
-
-    products.push(product);
-}
+    return product;
+}).filter(p => p.code && p.code !== ''); // Solo productos con code válido
 
 console.log(`✅ Parsed ${products.length} products from CSV`);
 
