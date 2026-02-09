@@ -15,9 +15,17 @@ createRoot(document.getElementById('root')).render(
       <HelmetProvider>
         <ProductProvider>
           <AppRouter />
+          <BodyHydrationEffect />
         </ProductProvider>
       </HelmetProvider>
       <Analytics />
     </GlobalErrorBoundary>
   </StrictMode>,
 )
+
+// Helper component to mark hydration complete
+function BodyHydrationEffect() {
+  createRoot(document.createElement('div')).render(null); // Force flush
+  requestAnimationFrame(() => document.body.classList.add('hydrated'));
+  return null;
+}
