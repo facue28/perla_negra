@@ -34,9 +34,48 @@
   <meta property="og:type" content="website" />
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
+
+  <style>
+    /* Critical LCP Styles - Inline to ensure immediate availability */
+    #static-hero-bg {
+      position: fixed;
+      top: -10%;
+      /* Matches HomePage.tsx parallax offset */
+      left: 0;
+      width: 100%;
+      height: 120%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      background-color: #000000;
+    }
+
+    #static-hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+      z-index: 1;
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Static Hero for LCP (Permanent Background) -->
+  <div id="static-hero-bg">
+    <picture>
+      <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
+      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080">
+    </picture>
+    <div class="hero-overlay"></div>
+  </div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
