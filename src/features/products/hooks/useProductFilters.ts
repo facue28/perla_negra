@@ -169,7 +169,7 @@ export const useProductFilters = (products: Product[]): UseProductFiltersReturn 
             }
         });
 
-        return Array.from(optionsMap.values()).sort();
+        return Array.from(optionsMap.values()).sort((a, b) => a.localeCompare(b));
     };
 
     // commonBaseProducts: Filtered by Category and Sensation (Base for both specific lists)
@@ -254,7 +254,7 @@ export const useProductFilters = (products: Product[]): UseProductFiltersReturn 
                 optionsMap.add(val.charAt(0).toUpperCase() + val.slice(1).toLowerCase());
             }
         });
-        return Array.from(optionsMap).sort();
+        return Array.from(optionsMap).sort((a, b) => a.localeCompare(b));
     }, [productsForFlavors]);
 
     // Dynamic Usage Options (Others)
@@ -272,7 +272,7 @@ export const useProductFilters = (products: Product[]): UseProductFiltersReturn 
                 optionsMap.add(val.charAt(0).toUpperCase() + val.slice(1).toLowerCase());
             }
         });
-        return Array.from(optionsMap).sort();
+        return Array.from(optionsMap).sort((a, b) => a.localeCompare(b));
     }, [productsForUsage]);
 
     // Dynamic Target Audiences (for Fragrances etc)

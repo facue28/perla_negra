@@ -97,7 +97,19 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, title, children, side 
                         >
                             {/* Drag Handle (Visual) */}
                             {side === 'bottom' && (
-                                <div className="w-full flex justify-center pt-3 pb-1" onClick={onClose}>
+                                <div
+                                    className="w-full flex justify-center pt-3 pb-1"
+                                    onClick={onClose}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            onClose();
+                                        }
+                                    }}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label="Close drawer"
+                                >
                                     <div className="w-12 h-1.5 bg-white/10 rounded-full" />
                                 </div>
                             )}

@@ -46,7 +46,7 @@ const SEO = ({ title, description, image, url, type = 'website', structuredData,
             {image && <meta name="twitter:image" content={image} />}
 
             {/* Prerender.io Status Code */}
-            {statusCode && <meta name="prerender-status-code" content={statusCode.toString()} />}
+            {statusCode ? <meta name="prerender-status-code" content={statusCode.toString()} /> : null}
 
             {/* Structured Data (JSON-LD) */}
             {structuredData && (
