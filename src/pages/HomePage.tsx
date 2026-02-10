@@ -2,7 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/ui/SEO';
 // import InstagramSection from '@/components/layout/InstagramSection'; // Lazy loaded below
-import { motion, useScroll, useTransform, Variants } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import B2BTeaserSection from '@/components/layout/B2BTeaserSection';
 import InfiniteMarquee from '@/components/ui/InfiniteMarquee';
 
@@ -17,13 +17,13 @@ const MotionLink = motion(Link);
  * 
  * - The Hero (H1 + CTAs + Background) is rendered in index.html OUTSIDE #root
  * - React does NOT render ANY hero content until user interaction
- * - On interaction: React fades in dynamic hero AS AN OVERLAY (position:fixed) and removes static shell
+ * - On interaction: React fades in dynamic hero AS AN OVERLAY (position:absolute) and removes static shell
  * 
  * DO NOT:
  * - Render H1, subtitle, or CTAs before heroActive is true
  * - Add hero background images before interaction
  * - Modify activation logic without validating LCP impact
- * - Change position:fixed to relative/absolute (will cause stacking issue)
+ * - Change position:absolute to fixed (will cause scroll overlay issue)
  * 
  * Validation: npm run lighthouse:mobile -- LCP element MUST be from #static-hero-shell
  */
@@ -95,110 +95,110 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            {/* React Hero Section - ONLY renders when active (post-interaction) */}
-            {/* CRITICAL: Uses position:fixed to OVERLAY the static shell, not stack below */}
-            {heroActive && (
-                <div className="fixed inset-0 top-0 left-0 w-full h-screen bg-transparent text-white text-center flex flex-col items-center justify-center overflow-hidden" style={{ zIndex: 5 }}>
-                    {/* Dynamic Carousel Background */}
-                    <motion.div
-                        style={{ y: yBg }}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1.2 }}
-                        className="absolute inset-0 z-0 h-full w-full"
-                    >
-                        {backgrounds.map((bg, index) => (
-                            <div
-                                key={bg}
-                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
-                            >
-                                <picture>
-                                    <source
-                                        media="(max-width: 768px)"
-                                        srcSet={bg.replace('.webp', '-mobile.webp')}
-                                        width="1080"
-                                        height="1920"
-                                    />
-                                    <source
-                                        media="(min-width: 769px)"
-                                        srcSet={bg}
-                                        width="1920"
-                                        height="1080"
-                                    />
-                                    <img
-                                        src={bg}
-                                        alt="Fondo decorativo Perla Negra"
-                                        aria-hidden="true"
-                                        className="w-full h-full object-cover opacity-60"
-                                        width="1920"
-                                        height="1080"
-                                        loading={index === 0 ? "eager" : "lazy"}
-                                        fetchPriority={index === 0 ? "high" : undefined}
-                                        decoding="async"
-                                    />
-                                </picture>
-                            </div>
-                        ))}
-                        {/* Gradient Overlay for Text Readability */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
-                    </motion.div>
-
-                    {/* Content */}
-                    <div className="relative z-20 flex flex-col items-center justify-center pt-24">
-                        <SEO
-                            title="Home"
-                            description="Perla Negra - Intimità Elegante. Scopri la nostra collezione esclusiva di prodotti per il benessere sessuale."
-                            structuredData={{
-                                "@context": "https://schema.org",
-                                "@type": "WebSite",
-                                "name": "Perla Negra",
-                                "url": "https://perlanegra.shop",
-                                "sameAs": [
-                                    "https://instagram.com/perlanegra.it"
-                                ]
-                            }}
-                        />
-                        <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg text-white">
-                            INTIMITÀ <span className="text-accent">ELEGANTE</span>
-                        </h1>
-
-                        <motion.p
-                            className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2, duration: 0.5 }}
-                        >
-                            Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
-                        </motion.p>
+            {/* Hero Container - Wraps both static and React heroes */}
+            <div className="relative" style={{ minHeight: '80vh' }}>
+                {/* React Hero Section - ONLY renders when active (post-interaction) */}
+                {/* CRITICAL: Uses position:absolute to OVERLAY the static shell within container, allows scroll */}
+                {heroActive && (
+                    <div className="absolute inset-0 w-full h-full bg-transparent text-white text-center flex flex-col items-center justify-center overflow-hidden" style={{ zIndex: 5 }}>
+                        {/* Dynamic Carousel Background */}
                         <motion.div
-                            className="flex gap-4"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.5 }}
+                            style={{ y: yBg }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1.2 }}
+                            className="absolute inset-0 z-0 h-full w-full"
                         >
-                            <MotionLink
-                                to="/productos"
-                                className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
-                                whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                VEDI PRODOTTI
-                            </MotionLink>
-                            <MotionLink
-                                to="/chi-sono"
-                                className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
-                                whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                CHI SONO
-                            </MotionLink>
+                            {backgrounds.map((bg, index) => (
+                                <div
+                                    key={bg}
+                                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
+                                >
+                                    <picture>
+                                        <source
+                                            media="(max-width: 768px)"
+                                            srcSet={bg.replace('.webp', '-mobile.webp')}
+                                            width="1080"
+                                            height="1920"
+                                        />
+                                        <source
+                                            media="(min-width: 769px)"
+                                            srcSet={bg}
+                                            width="1920"
+                                            height="1080"
+                                        />
+                                        <img
+                                            src={bg}
+                                            alt="Fondo decorativo Perla Negra"
+                                            aria-hidden="true"
+                                            className="w-full h-full object-cover opacity-60"
+                                            width="1920"
+                                            height="1080"
+                                            loading={index === 0 ? "eager" : "lazy"}
+                                            fetchPriority={index === 0 ? "high" : undefined}
+                                            decoding="async"
+                                        />
+                                    </picture>
+                                </div>
+                            ))}
+                            {/* Gradient Overlay for Text Readability */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
                         </motion.div>
-                    </div>
-                </div>
-            )}
 
-            {/* Spacer to push below-fold content down (matches static shell height) */}
-            <div style={{ minHeight: '80vh' }}></div>
+                        {/* Content */}
+                        <div className="relative z-20 flex flex-col items-center justify-center pt-24">
+                            <SEO
+                                title="Home"
+                                description="Perla Negra - Intimità Elegante. Scopri la nostra collezione esclusiva di prodotti per il benessere sessuale."
+                                structuredData={{
+                                    "@context": "https://schema.org",
+                                    "@type": "WebSite",
+                                    "name": "Perla Negra",
+                                    "url": "https://perlanegra.shop",
+                                    "sameAs": [
+                                        "https://instagram.com/perlanegra.it"
+                                    ]
+                                }}
+                            />
+                            <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg text-white">
+                                INTIMITÀ <span className="text-accent">ELEGANTE</span>
+                            </h1>
+
+                            <motion.p
+                                className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2, duration: 0.5 }}
+                            >
+                                Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
+                            </motion.p>
+                            <motion.div
+                                className="flex gap-4 flex-wrap justify-center"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4, duration: 0.5 }}
+                            >
+                                <MotionLink
+                                    to="/productos"
+                                    className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
+                                    whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
+                                    whileTap={{ scale: 0.98 }}
+                                >
+                                    VEDI PRODOTTI
+                                </MotionLink>
+                                <MotionLink
+                                    to="/chi-sono"
+                                    className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
+                                    whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
+                                    whileTap={{ scale: 0.98 }}
+                                >
+                                    CHI SONO
+                                </MotionLink>
+                            </motion.div>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {/* Below-the-fold content: ALWAYS rendered (improves SEO + perceived performance) */}
             <InfiniteMarquee />
