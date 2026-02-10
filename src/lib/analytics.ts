@@ -1,7 +1,7 @@
 import ReactGA from "react-ga4";
 import { Product } from "@/features/products/types";
 
-// Initialize GA4
+// Initialize GA4 (standard - immediate)
 export const initGA = (): void => {
     const MEASUREMENT_ID: string = import.meta.env.VITE_GA_MEASUREMENT_ID || "G-0BW27SXQPZ";
 
@@ -11,6 +11,47 @@ export const initGA = (): void => {
     } else {
         console.warn("GA4 Measurement ID missing. Events will not be tracked.");
     }
+};
+
+// Initialize GA4 (deferred - after page stability or interaction)
+// PERFORMANCE OPTIMIZATION: Loads GA only after idle or 5s timeout
+let gaInitialized = false;
+
+export const initGADeferred = (): void => {
+    if (gaInitialized) return;
+
+    const loadGA = () => {
+        if (gaInitialized) return;
+        gaInitialized = true;
+
+        initGA();
+
+        // Send initial page_view after GA loads
+        logPageView();
+
+        console.log("GA4 loaded (deferred)");
+    };
+
+    // Strategy 1: Load on requestIdleCallback (when browser is idle)
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(loadGA, { timeout: 5000 });
+    } else {
+        // Fallback: setTimeout 5s
+        setTimeout(loadGA, 5000);
+    }
+
+    // Strategy 2: Load on first user  interaction (scroll or pointer)
+    const interactionEvents = ['scroll', 'pointerdown', 'touchstart'];
+    const loadOnInteraction = () => {
+        loadGA();
+        interactionEvents.forEach(event => {
+            window.removeEventListener(event, loadOnInteraction);
+        });
+    };
+
+    interactionEvents.forEach(event => {
+        window.addEventListener(event, loadOnInteraction, { once: true, passive: true });
+    });
 };
 
 // Log Page View

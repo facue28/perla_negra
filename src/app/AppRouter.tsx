@@ -3,20 +3,16 @@ import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import AppProviders from '@/app/providers/AppProviders';
 import PageLoader from '@/components/ui/PageLoader';
 import { AppRoutes } from '@/app/routes/AppRoutes';
-import { initGA, logPageView } from '@/lib/analytics';
+import { initGADeferred, logPageView } from '@/lib/analytics';
 import ScrollToTop from './ScrollToTop'; // Now sibling
 
 
-// Analytics initialization helper
+// Analytics initialization helper - DEFERRED loading for performance
 const useAnalyticsLazyLoad = () => {
   useEffect(() => {
-    // Delay initialization by 3 seconds to prioritize visual rendering
-    const timer = setTimeout(() => {
-      initGA();
-      logPageView();
-    }, 3000);
-
-    return () => clearTimeout(timer);
+    // Load GA only after page stability (idle callback) or user interaction
+    // This removes GA from critical rendering path
+    initGADeferred();
   }, []);
 };
 
