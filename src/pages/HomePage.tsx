@@ -87,7 +87,7 @@ const HomePage: React.FC = () => {
                                     className="w-full h-full object-cover opacity-60"
                                     width="1920"
                                     height="1080"
-                                    loading="lazy"
+                                    loading={index === 0 ? "eager" : "lazy"}
                                 />
                             </picture>
                         </div>
