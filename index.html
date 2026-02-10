@@ -17,9 +17,11 @@
   <link rel="preload" href="/fonts/playfair-display-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/inter-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
 
-  <!-- LCP Image (Responsive) -->
-  <link rel="preload" href="/hero/silk-mobile.webp" as="image" media="(max-width: 768px)" fetchpriority="high">
-  <link rel="preload" href="/hero/silk.webp" as="image" media="(min-width: 769px)" fetchpriority="high">
+  <!-- LCP Image (Responsive with imagesrcset for perfect <picture> match) -->
+  <link rel="preload" href="/hero/silk-mobile.webp" as="image" imagesrcset="/hero/silk-mobile.webp" imagesizes="100vw"
+    media="(max-width: 768px)" fetchpriority="high">
+  <link rel="preload" href="/hero/silk.webp" as="image" imagesrcset="/hero/silk.webp" imagesizes="100vw"
+    media="(min-width: 769px)" fetchpriority="high">
 
   <!-- Self-Hosted Fonts (@font-face inline for immediate availability) -->
   <style>
@@ -201,7 +203,8 @@
         <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
         <source media="(min-width: 769px)" srcset="/hero/silk.webp">
         <img src="/hero/silk.webp" alt="Fondo decorativo Perla Negra" width="1920" height="1080"
-          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" fetchpriority="high">
+          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" fetchpriority="high" loading="eager"
+          decoding="async">
       </picture>
       <!-- Gradient Overlay -->
       <div

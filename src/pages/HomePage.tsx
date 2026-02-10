@@ -62,18 +62,22 @@ const HomePage: React.FC = () => {
         };
     }, []);
 
-    // Handoff: Remove static shell AFTER React hero fades in
+    // Handoff: Remove or hide static shell when React hero is active
     useEffect(() => {
         if (heroActive) {
-            // Wait for React hero fade-in to complete (1.2s) before removing static shell
             const handoffTimer = setTimeout(() => {
                 const staticShell = document.getElementById('static-hero-shell');
                 if (staticShell) {
-                    staticShell.style.display = 'none';
-                    // Optional: remove from DOM entirely for cleanliness
-                    // staticShell.remove();
+                    // Hide static shell to prevent duplication
+                    staticShell.style.opacity = '0';
+                    staticShell.style.transition = 'opacity 0.3s ease-out';
+
+                    // Remove from DOM after fade-out to free memory
+                    setTimeout(() => {
+                        staticShell.style.display = 'none';
+                    }, 300);
                 }
-            }, 1200); // Match fade-in duration + buffer
+            }, 800); // Hide after React hero fade-in starts (before 1200ms completion)
 
             return () => clearTimeout(handoffTimer);
         }
