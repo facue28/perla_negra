@@ -118,7 +118,8 @@ const HomePage: React.FC = () => {
                                         width="1920"
                                         height="1080"
                                         loading={index === 0 ? "eager" : "lazy"}
-                                        fetchpriority={index === 0 ? "high" : undefined}
+                                        fetchPriority={index === 0 ? "high" : undefined}
+                                        decoding="async"
                                     />
                                 </picture>
                             </div>
@@ -147,7 +148,8 @@ const HomePage: React.FC = () => {
                                     width="1920"
                                     height="1080"
                                     loading="eager"
-                                    fetchpriority="high"
+                                    fetchPriority="high"
+                                    decoding="async"
                                 />
                             </picture>
                         </div>
