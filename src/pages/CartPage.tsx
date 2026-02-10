@@ -449,13 +449,13 @@ const CartPage = (): React.ReactElement => {
                                             placeholder="Codice sconto"
                                             value={couponCode}
                                             onChange={(e) => setCouponCode(e.target.value)}
-                                            className="flex-1 bg-background-dark border border-white/10 rounded-xl px-4 py-2 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent"
+                                            className="min-w-0 flex-1 bg-background-dark border border-white/10 rounded-xl px-4 py-2 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent"
                                         />
                                         <button
                                             type="button"
                                             onClick={handleApplyCoupon}
                                             disabled={couponLoading || !couponCode.trim()}
-                                            className="bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+                                            className="flex-shrink-0 bg-white/5 hover:bg-white/10 text-white px-4 py-2 rounded-xl transition-colors disabled:opacity-50 whitespace-nowrap"
                                         >
                                             {couponLoading ? '...' : 'Applica'}
                                         </button>
