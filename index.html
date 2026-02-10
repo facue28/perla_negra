@@ -19,8 +19,6 @@
   <link rel="preload" href="/hero/silk.webp" as="image" media="(min-width: 769px)">
 
   <!-- Load fonts non-blocking (Optimized: minimal weights + swap) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@400;700&family=Great+Vibes&display=swap"
     rel="stylesheet" media="print" onload="this.media='all'">
@@ -54,7 +52,7 @@
       z-index: 0;
       /* Changed from -1 to 0 to prioritize paint */
       overflow: hidden;
-      pointer-events: none;
+      /* pointer-events removed - allow browser to recognize as LCP candidate */
       background-color: #000000;
       will-change: opacity;
       /* Hint to browser to layer this */
@@ -81,7 +79,7 @@
   <div id="static-hero-bg">
     <picture>
       <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
-      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080" fetchpriority="high">
+      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080">
     </picture>
     <div class="hero-overlay"></div>
   </div>

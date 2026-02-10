@@ -35,6 +35,8 @@ const itemVariants: Variants = {
 
 const HomePage: React.FC = () => {
     const [currentBg, setCurrentBg] = useState<number>(0);
+    const [carouselActive, setCarouselActive] = useState<boolean>(false);
+
     const backgrounds: string[] = [
         '/hero/silk.webp',
         '/hero/feather.webp',
@@ -43,12 +45,38 @@ const HomePage: React.FC = () => {
         '/hero/smoke.webp'
     ];
 
+    // Activate carousel after delay OR first interaction
     useEffect(() => {
+        const activationTimer = setTimeout(() => {
+            setCarouselActive(true);
+        }, 3000); // 3 second delay
+
+        const handleInteraction = () => {
+            setCarouselActive(true);
+            clearTimeout(activationTimer);
+        };
+
+        // Trigger on first scroll or click
+        window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+        window.addEventListener('click', handleInteraction, { once: true });
+
+        return () => {
+            clearTimeout(activationTimer);
+            window.removeEventListener('scroll', handleInteraction);
+            window.removeEventListener('click', handleInteraction);
+        };
+    }, []);
+
+    // Carousel rotation - only when active
+    useEffect(() => {
+        if (!carouselActive) return;
+
         const timer = setInterval(() => {
             setCurrentBg((prev) => (prev + 1) % backgrounds.length);
         }, 5000);
+
         return () => clearInterval(timer);
-    }, [backgrounds.length]);
+    }, [carouselActive, backgrounds.length]);
 
     const { scrollY } = useScroll();
     const yBg = useTransform(scrollY, [0, 1000], [0, 400]);
@@ -57,41 +85,73 @@ const HomePage: React.FC = () => {
     return (
         <>
             <div className="flex-grow relative bg-background-dark text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
-                {/* Background Carousel - Static Hero in index.html handles LCP */}
+                {/* Background: Single static image initially, full carousel after activation */}
                 <motion.div
-                    style={{ y: yBg }}
+                    style={{ y: carouselActive ? yBg : 0 }}
                     className="absolute inset-0 z-0 h-[120%] -top-[10%]"
                 >
-                    {backgrounds.map((bg, index) => (
-                        <div
-                            key={bg}
-                            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
-                        >
+                    {carouselActive ? (
+                        // Full carousel (after activation)
+                        backgrounds.map((bg, index) => (
+                            <div
+                                key={bg}
+                                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
+                            >
+                                <picture>
+                                    <source
+                                        media="(max-width: 768px)"
+                                        srcSet={bg.replace('.webp', '-mobile.webp')}
+                                        width="1080"
+                                        height="1920"
+                                    />
+                                    <source
+                                        media="(min-width: 769px)"
+                                        srcSet={bg}
+                                        width="1920"
+                                        height="1080"
+                                    />
+                                    <img
+                                        src={bg}
+                                        alt="Fondo decorativo Perla Negra"
+                                        aria-hidden="true"
+                                        className="w-full h-full object-cover opacity-60"
+                                        width="1920"
+                                        height="1080"
+                                        loading={index === 0 ? "eager" : "lazy"}
+                                        fetchpriority={index === 0 ? "high" : undefined}
+                                    />
+                                </picture>
+                            </div>
+                        ))
+                    ) : (
+                        // Single static image (initial render - LCP element)
+                        <div className="absolute inset-0">
                             <picture>
                                 <source
                                     media="(max-width: 768px)"
-                                    srcSet={bg.replace('.webp', '-mobile.webp')}
+                                    srcSet="/hero/silk-mobile.webp"
                                     width="1080"
                                     height="1920"
                                 />
                                 <source
                                     media="(min-width: 769px)"
-                                    srcSet={bg}
+                                    srcSet="/hero/silk.webp"
                                     width="1920"
                                     height="1080"
                                 />
                                 <img
-                                    src={bg}
+                                    src="/hero/silk.webp"
                                     alt="Fondo decorativo Perla Negra"
                                     aria-hidden="true"
                                     className="w-full h-full object-cover opacity-60"
                                     width="1920"
                                     height="1080"
-                                    loading={index === 0 ? "eager" : "lazy"}
+                                    loading="eager"
+                                    fetchpriority="high"
                                 />
                             </picture>
                         </div>
-                    ))}
+                    )}
                     {/* Gradient Overlay for Text Readability */}
                     <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
                 </motion.div>
