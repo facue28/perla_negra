@@ -84,12 +84,15 @@ const HomePage: React.FC = () => {
 
     return (
         <>
-            <div className="flex-grow relative bg-background-dark text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
-                {/* Background: Single static image initially, full carousel after activation */}
-                {/* Background: Single static image initially (LCP safe), full carousel after activation */}
-                {carouselActive ? (
+            {/* Main Hero Container - Transparent to show Static Hero (index.html) behind */}
+            <div className="flex-grow relative bg-transparent text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
+                {/* React Background: Only mounts when carousel is active (fades in over static hero) */}
+                {carouselActive && (
                     <motion.div
                         style={{ y: yBg }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1.5 }}
                         className="absolute inset-0 z-0 h-[120%] -top-[10%]"
                     >
                         {backgrounds.map((bg, index) => (
@@ -124,43 +127,9 @@ const HomePage: React.FC = () => {
                                 </picture>
                             </div>
                         ))}
-                        {/* Gradient Overlay for Text Readability */}
+                        {/* Gradient Overlay for Text Readability - React Layer */}
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
                     </motion.div>
-                ) : (
-                    // LCP SAFE MODE: Raw div, no motion, no opacity transition, no opacity-60
-                    <div className="absolute inset-0 z-0 h-[120%] -top-[10%]">
-                        <div className="absolute inset-0">
-                            <picture>
-                                <source
-                                    media="(max-width: 768px)"
-                                    srcSet="/hero/silk-mobile.webp"
-                                    width="1080"
-                                    height="1920"
-                                />
-                                <source
-                                    media="(min-width: 769px)"
-                                    srcSet="/hero/silk.webp"
-                                    width="1920"
-                                    height="1080"
-                                />
-                                <img
-                                    src="/hero/silk.webp"
-                                    alt="Fondo decorativo Perla Negra"
-                                    aria-hidden="true"
-                                    className="w-full h-full object-cover" // REMOVED opacity-60 for LCP speed
-                                    style={{ opacity: 0.6 }} // Applied via style to avoid class parsing costs if any
-                                    width="1920"
-                                    height="1080"
-                                    loading="eager"
-                                    fetchPriority="high"
-                                    decoding="async"
-                                />
-                            </picture>
-                        </div>
-                        {/* Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
-                    </div>
                 )}
 
                 {/* Content */}

@@ -76,10 +76,13 @@
 
 <body>
   <!-- Static Hero for LCP (Permanent Background) -->
+  <!-- Static Hero for LCP (Permanent Background) -->
   <div id="static-hero-bg">
     <picture>
       <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
-      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080">
+      <source media="(min-width: 769px)" srcset="/hero/silk.webp">
+      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080" class="w-full h-full object-cover"
+        style="opacity: 0.6" fetchpriority="high">
     </picture>
     <div class="hero-overlay"></div>
   </div>
