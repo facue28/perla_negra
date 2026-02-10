@@ -10,32 +10,27 @@ const InstagramSection = lazy(() => import('@/components/layout/InstagramSection
 
 const MotionLink = motion(Link);
 
-const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.08,
-            delayChildren: 0.3
-        }
-    }
-};
-
-const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.28,
-            ease: [0.22, 1, 0.36, 1]
-        }
-    }
-};
+/**
+ * ⚠️ CRITICAL LCP OPTIMIZATION ⚠️
+ * 
+ * This component uses the "Static Shell + React Islands" pattern for <4s LCP.
+ * 
+ * - The Hero (H1 + CTAs + Background) is rendered in index.html OUTSIDE #root
+ * - React does NOT render ANY hero content until user interaction
+ * - On interaction: React fades in dynamic hero AS AN OVERLAY (position:fixed) and removes static shell
+ * 
+ * DO NOT:
+ * - Render H1, subtitle, or CTAs before heroActive is true
+ * - Add hero background images before interaction
+ * - Modify activation logic without validating LCP impact
+ * - Change position:fixed to relative/absolute (will cause stacking issue)
+ * 
+ * Validation: npm run lighthouse:mobile -- LCP element MUST be from #static-hero-shell
+ */
 
 const HomePage: React.FC = () => {
+    const [heroActive, setHeroActive] = useState<boolean>(false);
     const [currentBg, setCurrentBg] = useState<number>(0);
-    const [carouselActive, setCarouselActive] = useState<boolean>(false);
 
     const backgrounds: string[] = [
         '/hero/silk.webp',
@@ -45,56 +40,72 @@ const HomePage: React.FC = () => {
         '/hero/smoke.webp'
     ];
 
-    // Activate carousel after delay OR first interaction
+    // Activate React hero after interaction OR long timeout (outside LCP window)
     useEffect(() => {
         const activationTimer = setTimeout(() => {
-            setCarouselActive(true);
-        }, 8000); // 8 second fallback delay for passive users
+            setHeroActive(true);
+        }, 10000); // 10 second fallback (well outside LCP measurement)
 
         const handleInteraction = () => {
-            setCarouselActive(true);
+            setHeroActive(true);
             clearTimeout(activationTimer);
         };
 
-        // Trigger on first scroll or click
+        // Trigger on first scroll or pointerdown
         window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
-        window.addEventListener('click', handleInteraction, { once: true });
+        window.addEventListener('pointerdown', handleInteraction, { once: true });
 
         return () => {
             clearTimeout(activationTimer);
             window.removeEventListener('scroll', handleInteraction);
-            window.removeEventListener('click', handleInteraction);
+            window.removeEventListener('pointerdown', handleInteraction);
         };
     }, []);
 
-    // Carousel rotation - only when active
+    // Handoff: Remove static shell AFTER React hero fades in
     useEffect(() => {
-        if (!carouselActive) return;
+        if (heroActive) {
+            // Wait for React hero fade-in to complete (1.2s) before removing static shell
+            const handoffTimer = setTimeout(() => {
+                const staticShell = document.getElementById('static-hero-shell');
+                if (staticShell) {
+                    staticShell.style.display = 'none';
+                    // Optional: remove from DOM entirely for cleanliness
+                    // staticShell.remove();
+                }
+            }, 1200); // Match fade-in duration + buffer
+
+            return () => clearTimeout(handoffTimer);
+        }
+    }, [heroActive]);
+
+    // Carousel rotation - only when hero is active
+    useEffect(() => {
+        if (!heroActive) return;
 
         const timer = setInterval(() => {
             setCurrentBg((prev) => (prev + 1) % backgrounds.length);
         }, 5000);
 
         return () => clearInterval(timer);
-    }, [carouselActive, backgrounds.length]);
+    }, [heroActive, backgrounds.length]);
 
     const { scrollY } = useScroll();
     const yBg = useTransform(scrollY, [0, 1000], [0, 400]);
-    const yText = useTransform(scrollY, [0, 500], [0, 100]);
 
     return (
         <>
-            {/* Main Hero Container - Transparent to show Static Hero (index.html) behind */}
-            <div className="flex-grow relative bg-transparent text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
-                {/* React Background: Only mounts when carousel is active (fades in over static hero) */}
-                {/* NO initial image here - Static Hero in index.html is the LCP element */}
-                {carouselActive && (
+            {/* React Hero Section - ONLY renders when active (post-interaction) */}
+            {/* CRITICAL: Uses position:fixed to OVERLAY the static shell, not stack below */}
+            {heroActive && (
+                <div className="fixed inset-0 top-0 left-0 w-full h-screen bg-transparent text-white text-center flex flex-col items-center justify-center overflow-hidden" style={{ zIndex: 5 }}>
+                    {/* Dynamic Carousel Background */}
                     <motion.div
                         style={{ y: yBg }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 1.0 }}
-                        className="absolute inset-0 z-0 h-[120%] -top-[10%]"
+                        transition={{ duration: 1.2 }}
+                        className="absolute inset-0 z-0 h-full w-full"
                     >
                         {backgrounds.map((bg, index) => (
                             <div
@@ -128,73 +139,69 @@ const HomePage: React.FC = () => {
                                 </picture>
                             </div>
                         ))}
-                        {/* Gradient Overlay for Text Readability - React Layer */}
+                        {/* Gradient Overlay for Text Readability */}
                         <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
                     </motion.div>
-                )}
 
-                {/* Content */}
-                <motion.div
-                    className="relative z-20 flex flex-col items-center justify-center"
-                    style={{ y: yText }}
-                >
-                    <SEO
-                        title="Home"
-                        description="Perla Negra - Intimità Elegante. Scopri la nostra collezione esclusiva di prodotti per il benessere sessuale."
-                        structuredData={{
-                            "@context": "https://schema.org",
-                            "@type": "WebSite",
-                            "name": "Perla Negra",
-                            "url": "https://perlanegra.shop",
-                            "sameAs": [
-                                "https://instagram.com/perlanegra.it"
-                            ]
-                        }}
-                    />
-                    {/* H1 - INSTANT VISIBILITY FOR LCP (No Framer Motion initial/animate) */}
-                    <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg text-white">
-                        INTIMITÀ <span className="text-accent">ELEGANTE</span>
-                    </h1>
+                    {/* Content */}
+                    <div className="relative z-20 flex flex-col items-center justify-center pt-24">
+                        <SEO
+                            title="Home"
+                            description="Perla Negra - Intimità Elegante. Scopri la nostra collezione esclusiva di prodotti per il benessere sessuale."
+                            structuredData={{
+                                "@context": "https://schema.org",
+                                "@type": "WebSite",
+                                "name": "Perla Negra",
+                                "url": "https://perlanegra.shop",
+                                "sameAs": [
+                                    "https://instagram.com/perlanegra.it"
+                                ]
+                            }}
+                        />
+                        <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg text-white">
+                            INTIMITÀ <span className="text-accent">ELEGANTE</span>
+                        </h1>
 
-                    {/* Delayed Animations for Subtitle & Buttons */}
-                    <motion.p
-                        className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                    >
-                        Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
-                    </motion.p>
-                    <motion.div
-                        className="flex gap-4"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                    >
-                        <MotionLink
-                            to="/productos"
-                            className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
-                            whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
-                            whileTap={{ scale: 0.98 }}
+                        <motion.p
+                            className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2, duration: 0.5 }}
                         >
-                            VEDI PRODOTTI
-                        </MotionLink>
-                        <MotionLink
-                            to="/chi-sono"
-                            className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
-                            whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
-                            whileTap={{ scale: 0.98 }}
+                            Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
+                        </motion.p>
+                        <motion.div
+                            className="flex gap-4"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.5 }}
                         >
-                            CHI SONO
-                        </MotionLink>
-                    </motion.div>
-                </motion.div>
-            </div>
+                            <MotionLink
+                                to="/productos"
+                                className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
+                                whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                VEDI PRODOTTI
+                            </MotionLink>
+                            <MotionLink
+                                to="/chi-sono"
+                                className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
+                                whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                CHI SONO
+                            </MotionLink>
+                        </motion.div>
+                    </div>
+                </div>
+            )}
 
-            {/* Infinite Marquee - Visual Separator */}
+            {/* Spacer to push below-fold content down (matches static shell height) */}
+            <div style={{ minHeight: '80vh' }}></div>
+
+            {/* Below-the-fold content: ALWAYS rendered (improves SEO + perceived performance) */}
             <InfiniteMarquee />
-
-            {/* B2B Teaser Section */}
             <B2BTeaserSection />
 
             {/* Lazy Load Instagram Section */}
