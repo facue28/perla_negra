@@ -49,7 +49,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const activationTimer = setTimeout(() => {
             setCarouselActive(true);
-        }, 3000); // 3 second delay
+        }, 8000); // 8 second fallback delay for passive users
 
         const handleInteraction = () => {
             setCarouselActive(true);
@@ -87,12 +87,13 @@ const HomePage: React.FC = () => {
             {/* Main Hero Container - Transparent to show Static Hero (index.html) behind */}
             <div className="flex-grow relative bg-transparent text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
                 {/* React Background: Only mounts when carousel is active (fades in over static hero) */}
+                {/* NO initial image here - Static Hero in index.html is the LCP element */}
                 {carouselActive && (
                     <motion.div
                         style={{ y: yBg }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ duration: 1.5 }}
+                        transition={{ duration: 1.0 }}
                         className="absolute inset-0 z-0 h-[120%] -top-[10%]"
                     >
                         {backgrounds.map((bg, index) => (
