@@ -40,6 +40,134 @@
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
 
+  <!-- CRITICAL CSS: Inline styles for Static Hero Shell (FCP Optimization) -->
+  <style>
+    /* Reset and base layout for static shell - prevents CLS */
+    #static-hero-shell {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding-top: 6rem;
+      margin: 0;
+    }
+
+    /* Background layer - absolute positioning within relative container */
+    #static-hero-shell>div:first-child {
+      position: absolute;
+      top: -10%;
+      left: 0;
+      width: 100%;
+      height: 120%;
+      z-index: 0;
+      overflow: hidden;
+      background-color: #000000;
+    }
+
+    /* Background image - critical for LCP */
+    #static-hero-shell picture img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    /* Gradient overlay */
+    #static-hero-shell>div:first-child>div:last-child {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+      z-index: 1;
+    }
+
+    /* Content layer - above background */
+    #static-hero-shell>div:last-child {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* H1 Typography - Playfair Display fallback to serif */
+    #static-hero-shell h1 {
+      font-size: 2.25rem;
+      font-family: 'Playfair Display', Georgia, serif;
+      margin-bottom: 1.5rem;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    #static-hero-shell h1 span {
+      color: #3FFFC1;
+    }
+
+    /* Paragraph */
+    #static-hero-shell p {
+      color: #B1B5B4;
+      margin-bottom: 2rem;
+      max-width: 42rem;
+      padding: 0 1rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Button container */
+    #static-hero-shell>div:last-child>div {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Primary button (VEDI PRODOTTI) */
+    #static-hero-shell a:first-of-type {
+      background-color: #3FFFC1;
+      color: #000000;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+
+    /* Secondary button (CHI SONO) */
+    #static-hero-shell a:last-of-type {
+      border: 1px solid #B1B5B4;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      background: rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    /* Hover effects */
+    #static-hero-shell a:hover {
+      transform: scale(1.02);
+    }
+
+    #static-hero-shell a:last-of-type:hover {
+      border-color: #3FFFC1;
+      color: #3FFFC1;
+    }
+
+    /* Mobile responsive */
+    @media (min-width: 768px) {
+      #static-hero-shell h1 {
+        font-size: 3.75rem;
+      }
+    }
   </style>
 </head>
 
