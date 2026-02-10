@@ -8,25 +8,43 @@
   <script> window.prerenderReady = false; </script>
 
   <!-- Performance Optimizations -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://hkedgklpsksezxxymdgc.supabase.co" crossorigin>
   <link rel="dns-prefetch" href="https://www.google-analytics.com">
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-  <!-- Preload critical assets (Responsive LCP) -->
+  <!-- Preload critical assets -->
+  <!-- Critical Fonts (Self-hosted for eliminat round-trips) -->
+  <link rel="preload" href="/fonts/playfair-display-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- LCP Image (Responsive) -->
   <link rel="preload" href="/hero/silk-mobile.webp" as="image" media="(max-width: 768px)" fetchpriority="high">
   <link rel="preload" href="/hero/silk.webp" as="image" media="(min-width: 769px)" fetchpriority="high">
 
-  <!-- Load fonts non-blocking (Optimized: minimal weights + swap) -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@400;700&family=Great+Vibes&display=swap"
-    rel="stylesheet" media="print" onload="this.media='all'">
-  <noscript>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:wght@400;700&family=Great+Vibes&display=swap"
-      rel="stylesheet">
-  </noscript>
+  <!-- Self-Hosted Fonts (@font-face inline for immediate availability) -->
+  <style>
+    /* Playfair Display - Used in H1 (Critical for above-the-fold) */
+    @font-face {
+      font-family: 'Playfair Display';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/playfair-display-latin-regular.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    /* Inter - Used in body text */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/inter-latin-regular.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    /* Great Vibes - Loaded async via Tailwind config (not critical) */
+  </style>
 
   <!-- Primary Meta Tags -->
   <title>Perla negra - Sexshop</title>
