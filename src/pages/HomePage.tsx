@@ -50,12 +50,6 @@ const HomePage: React.FC = () => {
         return () => clearInterval(timer);
     }, [backgrounds.length]);
 
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
     const { scrollY } = useScroll();
     const yBg = useTransform(scrollY, [0, 1000], [0, 400]);
     const yText = useTransform(scrollY, [0, 500], [0, 100]);
@@ -63,39 +57,7 @@ const HomePage: React.FC = () => {
     return (
         <>
             <div className="flex-grow relative bg-background-dark text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
-
-                {/* LCP Optimization: Static First Image (No Motion) */}
-                {!isMounted && (
-                    <div className="absolute inset-0 z-0 h-[120%] -top-[10%]">
-                        <picture>
-                            <source
-                                media="(max-width: 768px)"
-                                srcSet={backgrounds[0].replace('.webp', '-mobile.webp')}
-                                width="1080"
-                                height="1920"
-                            />
-                            <source
-                                media="(min-width: 769px)"
-                                srcSet={backgrounds[0]}
-                                width="1920"
-                                height="1080"
-                            />
-                            <img
-                                src={backgrounds[0]}
-                                alt="Fondo decorativo Perla Negra"
-                                className="w-full h-full object-cover opacity-60"
-                                width="1920"
-                                height="1080"
-                                fetchPriority="high"
-                                loading="eager"
-                            />
-                        </picture>
-                        {/* Gradient Overlay for Readability (Static) */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
-                    </div>
-                )}
-
-                {/* Background Carousel */}
+                {/* Background Carousel - Static Hero in index.html handles LCP */}
                 <motion.div
                     style={{ y: yBg }}
                     className="absolute inset-0 z-0 h-[120%] -top-[10%]"
@@ -125,7 +87,7 @@ const HomePage: React.FC = () => {
                                     className="w-full h-full object-cover opacity-60"
                                     width="1920"
                                     height="1080"
-                                    loading={index === 0 ? "eager" : "lazy"}
+                                    loading="lazy"
                                 />
                             </picture>
                         </div>
