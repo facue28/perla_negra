@@ -1,20 +1,32 @@
-import path from "path"
-import { fileURLToPath } from 'url';
-import { defineConfig } from 'vite'
+import path from "node:path"
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vite' // Trigger restart...
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    visualizer({
+      filename: './dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    })
+  ],
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['framer-motion', 'lucide-react', 'sonner'],
+          'vendor-utils': ['libphonenumber-js'],
+          'charts': ['recharts'],
+          'supabase': ['@supabase/supabase-js'],
         },
       },
     },

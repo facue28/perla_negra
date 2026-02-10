@@ -23,5 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+
 # Environment Variables
 .env
+
+# Local Scripts Data & Output
+raw_images/
+optimized_images/
+*.csv
+*.txt

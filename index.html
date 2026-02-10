@@ -5,28 +5,239 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/src/assets/brand/logo-perla-negra.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script> window.prerenderReady = false; </script>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Performance Optimizations -->
+  <link rel="preconnect" href="https://hkedgklpsksezxxymdgc.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+
+  <!-- Preload critical assets -->
+  <!-- Critical Fonts (Self-hosted for eliminat round-trips) -->
+  <link rel="preload" href="/fonts/playfair-display-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- LCP Image (Responsive with imagesrcset for perfect <picture> match) -->
+  <link rel="preload" href="/hero/silk-mobile.webp" as="image" imagesrcset="/hero/silk-mobile.webp" imagesizes="100vw"
+    media="(max-width: 768px)" fetchpriority="high">
+  <link rel="preload" href="/hero/silk.webp" as="image" imagesrcset="/hero/silk.webp" imagesizes="100vw"
+    media="(min-width: 769px)" fetchpriority="high">
+
+  <!-- Self-Hosted Fonts (@font-face inline for immediate availability) -->
+  <style>
+    /* Playfair Display - Used in H1 (Critical for above-the-fold) */
+    @font-face {
+      font-family: 'Playfair Display';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/playfair-display-latin-regular.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    /* Inter - Used in body text */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/inter-latin-regular.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    /* Great Vibes - Loaded async via Tailwind config (not critical) */
+  </style>
 
   <!-- Primary Meta Tags -->
   <title>Perla negra - Sexshop</title>
   <meta name="title" content="Perla negra - Sexshop" />
   <meta name="description" content="Benessere intimo senza tabu" />
+  <meta name="keywords"
+    content="sexshop, perla negra, benessere intimo, juguetes eróticos, lubricantes, italia, shop online" />
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://perlanegra.it/" />
-  <meta property="og:title" content="Perla negra - Sexshop" />
-  <meta property="og:description" content="Benessere intimo senza tabu" />
-  <meta property="og:image" content="/src/assets/brand/logo-perla-negra.png" />
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="website" />
+
+  <!-- CRITICAL CSS: Inline styles for Static Hero Shell (FCP Optimization) -->
+  <style>
+    /* Reset and base layout for static shell - prevents CLS */
+    #static-hero-shell {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding-top: 6rem;
+      margin: 0;
+    }
+
+    /* Background layer - absolute positioning within relative container */
+    #static-hero-shell>div:first-child {
+      position: absolute;
+      top: -10%;
+      left: 0;
+      width: 100%;
+      height: 120%;
+      z-index: 0;
+      overflow: hidden;
+      background-color: #000000;
+    }
+
+    /* Background image - critical for LCP */
+    #static-hero-shell picture img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+
+    /* Gradient overlay */
+    #static-hero-shell>div:first-child>div:last-child {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+      z-index: 1;
+    }
+
+    /* Content layer - above background */
+    #static-hero-shell>div:last-child {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* H1 Typography - Playfair Display fallback to serif */
+    #static-hero-shell h1 {
+      font-size: 2.25rem;
+      font-family: 'Playfair Display', Georgia, serif;
+      margin-bottom: 1.5rem;
+      color: white;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    #static-hero-shell h1 span {
+      color: #3FFFC1;
+    }
+
+    /* Paragraph */
+    #static-hero-shell p {
+      color: #B1B5B4;
+      margin-bottom: 2rem;
+      max-width: 42rem;
+      padding: 0 1rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Button container */
+    #static-hero-shell>div:last-child>div {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Primary button (VEDI PRODOTTI) */
+    #static-hero-shell a:first-of-type {
+      background-color: #3FFFC1;
+      color: #000000;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      transition: transform 0.2s;
+    }
+
+    /* Secondary button (CHI SONO) */
+    #static-hero-shell a:last-of-type {
+      border: 1px solid #B1B5B4;
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      text-decoration: none;
+      background: rgba(0, 0, 0, 0.1);
+      display: inline-block;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    /* Hover effects */
+    #static-hero-shell a:hover {
+      transform: scale(1.02);
+    }
+
+    #static-hero-shell a:last-of-type:hover {
+      border-color: #3FFFC1;
+      color: #3FFFC1;
+    }
+
+    /* Mobile responsive */
+    @media (min-width: 768px) {
+      #static-hero-shell h1 {
+        font-size: 3.75rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
+  <!-- Static Hero Shell for Instant LCP (Outside #root) -->
+  <div id="static-hero-shell"
+    style="position: relative; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem;">
+
+    <!-- Background Layer (absolute, not fixed) -->
+    <div
+      style="position: absolute; top: -10%; left: 0; width: 100%; height: 120%; z-index: 0; overflow: hidden; background-color: #000000;">
+      <picture>
+        <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
+        <source media="(min-width: 769px)" srcset="/hero/silk.webp">
+        <img src="/hero/silk.webp" alt="Fondo decorativo Perla Negra" width="1920" height="1080"
+          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" fetchpriority="high" loading="eager"
+          decoding="async">
+      </picture>
+      <!-- Gradient Overlay -->
+      <div
+        style="position: absolute; inset: 0; background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%); z-index: 1;">
+      </div>
+    </div>
+
+    <!-- Content Layer (z-index: 2, allows modals z-50+ to appear on top) -->
+    <div
+      style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <h1
+        style="font-size: 2.25rem; font-family: 'Playfair Display', serif; margin-bottom: 1.5rem; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+        INTIMITÀ <span style="color: #3FFFC1;">ELEGANTE</span>
+      </h1>
+      <p
+        style="color: #B1B5B4; margin-bottom: 2rem; max-width: 42rem; padding: 0 1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); font-size: 1rem; line-height: 1.5;">
+        Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
+      </p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <a href="/productos"
+          style="background-color: #3FFFC1; color: #000000; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block;">
+          VEDI PRODOTTI
+        </a>
+        <a href="/chi-sono"
+          style="border: 1px solid #B1B5B4; color: white; padding: 0.75rem 2rem; border-radius: 9999px; text-decoration: none; background: rgba(0,0,0,0.1); display: inline-block;">
+          CHI SONO
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="root" style="position: relative; z-index: 10;"></div>
+  <script type="module" src="/src/main.tsx"></script>
 </body>
 
 </html>
