@@ -2,7 +2,9 @@ import { lazy } from 'react';
 import { Route, Routes, Outlet } from 'react-router-dom';
 import MainLayout from '@/app/MainLayout';
 import NotFoundPage from '@/pages/NotFoundPage';
-import AdminLayout from '@/components/layout/AdminLayout'; // Import AdminLayout
+
+// Lazy load AdminLayout (only loads when accessing /admin routes)
+const AdminLayout = lazy(() => import('@/components/layout/AdminLayout'));
 
 // Lazy Loaded Pages
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -18,7 +20,7 @@ const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
 const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
 const ResponsibleUsePage = lazy(() => import('@/pages/legal/ResponsibleUsePage'));
 
-// Admin Pages
+// Admin Pages (Lazy - only load when accessing admin)
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const AdminProductList = lazy(() => import('@/pages/admin/AdminProductList'));
@@ -31,7 +33,7 @@ import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 export const AppRoutes = () => {
     return (
         <Routes>
-            {/* Main Layout Wraps All Routes */}
+            {/* Main Public Routes - Wrapped in MainLayout (Header/Footer) */}
             <Route element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="chi-sono" element={<ChiSonoPage />} />
@@ -51,10 +53,10 @@ export const AppRoutes = () => {
                 <Route path="*" element={<NotFoundPage />} />
             </Route>
 
-            {/* Admin Routes (Separate Layout potentially) */}
+            {/* Admin Login (No Layout) */}
             <Route path="/admin/login" element={<LoginPage />} />
 
-            {/* Protected Admin Zone */}
+            {/* Protected Admin Zone - Separate from MainLayout */}
             <Route path="/admin" element={
                 <ProtectedRoute>
                     <AdminLayout>
