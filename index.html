@@ -40,51 +40,51 @@
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website" />
 
-  <style>
-    /* Critical LCP Styles - Inline to ensure immediate availability */
-    #static-hero-bg {
-      position: fixed;
-      top: -10%;
-      /* Matches HomePage.tsx parallax offset */
-      left: 0;
-      width: 100%;
-      height: 120%;
-      z-index: 0;
-      /* Changed from -1 to 0 to prioritize paint */
-      overflow: hidden;
-      /* pointer-events removed - allow browser to recognize as LCP candidate */
-      background-color: #000000;
-      will-change: opacity;
-      /* Hint to browser to layer this */
-    }
-
-    #static-hero-bg img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.6;
-    }
-
-    .hero-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
-      z-index: 1;
-    }
   </style>
 </head>
 
 <body>
-  <!-- Static Hero for LCP (Permanent Background) -->
-  <!-- Static Hero for LCP (Permanent Background) -->
-  <div id="static-hero-bg">
-    <picture>
-      <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
-      <source media="(min-width: 769px)" srcset="/hero/silk.webp">
-      <img src="/hero/silk.webp" alt="Fondo decorativo" width="1920" height="1080" class="w-full h-full object-cover"
-        style="opacity: 0.6" fetchpriority="high">
-    </picture>
-    <div class="hero-overlay"></div>
+  <!-- Static Hero Shell for Instant LCP (Outside #root) -->
+  <div id="static-hero-shell"
+    style="position: relative; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem;">
+
+    <!-- Background Layer (absolute, not fixed) -->
+    <div
+      style="position: absolute; top: -10%; left: 0; width: 100%; height: 120%; z-index: 0; overflow: hidden; background-color: #000000;">
+      <picture>
+        <source media="(max-width: 768px)" srcset="/hero/silk-mobile.webp">
+        <source media="(min-width: 769px)" srcset="/hero/silk.webp">
+        <img src="/hero/silk.webp" alt="Fondo decorativo Perla Negra" width="1920" height="1080"
+          style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;" fetchpriority="high">
+      </picture>
+      <!-- Gradient Overlay -->
+      <div
+        style="position: absolute; inset: 0; background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%); z-index: 1;">
+      </div>
+    </div>
+
+    <!-- Content Layer (z-index: 20) -->
+    <div
+      style="position: relative; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <h1
+        style="font-size: 2.25rem; font-family: 'Playfair Display', serif; margin-bottom: 1.5rem; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+        INTIMITÀ <span style="color: #3FFFC1;">ELEGANTE</span>
+      </h1>
+      <p
+        style="color: #B1B5B4; margin-bottom: 2rem; max-width: 42rem; padding: 0 1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); font-size: 1rem; line-height: 1.5;">
+        Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
+      </p>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <a href="/productos"
+          style="background-color: #3FFFC1; color: #000000; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block;">
+          VEDI PRODOTTI
+        </a>
+        <a href="/chi-sono"
+          style="border: 1px solid #B1B5B4; color: white; padding: 0.75rem 2rem; border-radius: 9999px; text-decoration: none; background: rgba(0,0,0,0.1); display: inline-block;">
+          CHI SONO
+        </a>
+      </div>
+    </div>
   </div>
 
   <div id="root" style="position: relative; z-index: 10;"></div>
