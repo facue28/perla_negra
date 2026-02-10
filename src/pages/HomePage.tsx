@@ -136,9 +136,6 @@ const HomePage: React.FC = () => {
                 {/* Content */}
                 <motion.div
                     className="relative z-20 flex flex-col items-center justify-center"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
                     style={{ y: yText }}
                 >
                     <SEO
@@ -154,13 +151,26 @@ const HomePage: React.FC = () => {
                             ]
                         }}
                     />
-                    <motion.h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg" variants={itemVariants}>
+                    {/* H1 - INSTANT VISIBILITY FOR LCP (No Framer Motion initial/animate) */}
+                    <h1 className="text-4xl md:text-6xl font-serif mb-6 drop-shadow-lg text-white">
                         INTIMITÀ <span className="text-accent">ELEGANTE</span>
-                    </motion.h1>
-                    <motion.p className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md" variants={itemVariants}>
+                    </h1>
+
+                    {/* Delayed Animations for Subtitle & Buttons */}
+                    <motion.p
+                        className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                    >
                         Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
                     </motion.p>
-                    <motion.div className="flex gap-4" variants={itemVariants}>
+                    <motion.div
+                        className="flex gap-4"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.5 }}
+                    >
                         <MotionLink
                             to="/productos"
                             className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
