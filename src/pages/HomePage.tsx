@@ -86,13 +86,13 @@ const HomePage: React.FC = () => {
         <>
             <div className="flex-grow relative bg-background-dark text-white pt-24 text-center flex flex-col items-center justify-center overflow-hidden min-h-[80vh]">
                 {/* Background: Single static image initially, full carousel after activation */}
-                <motion.div
-                    style={{ y: carouselActive ? yBg : 0 }}
-                    className="absolute inset-0 z-0 h-[120%] -top-[10%]"
-                >
-                    {carouselActive ? (
-                        // Full carousel (after activation)
-                        backgrounds.map((bg, index) => (
+                {/* Background: Single static image initially (LCP safe), full carousel after activation */}
+                {carouselActive ? (
+                    <motion.div
+                        style={{ y: yBg }}
+                        className="absolute inset-0 z-0 h-[120%] -top-[10%]"
+                    >
+                        {backgrounds.map((bg, index) => (
                             <div
                                 key={bg}
                                 className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentBg ? 'opacity-100' : 'opacity-0'}`}
@@ -123,9 +123,13 @@ const HomePage: React.FC = () => {
                                     />
                                 </picture>
                             </div>
-                        ))
-                    ) : (
-                        // Single static image (initial render - LCP element)
+                        ))}
+                        {/* Gradient Overlay for Text Readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
+                    </motion.div>
+                ) : (
+                    // LCP SAFE MODE: Raw div, no motion, no opacity transition, no opacity-60
+                    <div className="absolute inset-0 z-0 h-[120%] -top-[10%]">
                         <div className="absolute inset-0">
                             <picture>
                                 <source
@@ -144,7 +148,8 @@ const HomePage: React.FC = () => {
                                     src="/hero/silk.webp"
                                     alt="Fondo decorativo Perla Negra"
                                     aria-hidden="true"
-                                    className="w-full h-full object-cover opacity-60"
+                                    className="w-full h-full object-cover" // REMOVED opacity-60 for LCP speed
+                                    style={{ opacity: 0.6 }} // Applied via style to avoid class parsing costs if any
                                     width="1920"
                                     height="1080"
                                     loading="eager"
@@ -153,10 +158,10 @@ const HomePage: React.FC = () => {
                                 />
                             </picture>
                         </div>
-                    )}
-                    {/* Gradient Overlay for Text Readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
-                </motion.div>
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
+                    </div>
+                )}
 
                 {/* Content */}
                 <motion.div
