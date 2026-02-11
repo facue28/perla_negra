@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const checkAdminRole = async (userEmail: string) => {
         try {
-            // Updated to use secure RPC
             const { data, error } = await supabase.rpc('is_admin', {
                 user_email: userEmail
             });
@@ -31,21 +30,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     useEffect(() => {
-        // 1. Get initial session
         const getSession = async () => {
+            setLoading(true);
             const { data: { session } } = await supabase.auth.getSession();
-            setUser(session?.user ?? null);
-            if (session?.user?.email) checkAdminRole(session.user.email);
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+
+            if (currentUser?.email) {
+                await checkAdminRole(currentUser.email);
+            }
             setLoading(false);
         };
 
         getSession();
 
-        // 2. Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            if (session?.user?.email) {
-                checkAdminRole(session.user.email);
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+            setLoading(true);
+            const currentUser = session?.user ?? null;
+            setUser(currentUser);
+
+            if (currentUser?.email) {
+                await checkAdminRole(currentUser.email);
             } else {
                 setIsAdmin(false);
             }
