@@ -42,6 +42,13 @@ const HomePage: React.FC = () => {
 
     // Activate React hero after interaction OR long timeout (outside LCP window)
     useEffect(() => {
+        // If the static shell is NOT active (i.e. we are navigating back via SPA),
+        // we should activate the React Hero immediately to avoid a blank space.
+        if (!document.documentElement.classList.contains('is-home')) {
+            setHeroActive(true);
+            return;
+        }
+
         const activationTimer = setTimeout(() => {
             setHeroActive(true);
         }, 3000); // 3 second fallback (after LCP window)
@@ -61,7 +68,6 @@ const HomePage: React.FC = () => {
             window.removeEventListener('pointerdown', handleInteraction);
         };
     }, []);
-
     // Handoff: Remove or hide static shell when React hero is active
     useEffect(() => {
         if (heroActive) {
