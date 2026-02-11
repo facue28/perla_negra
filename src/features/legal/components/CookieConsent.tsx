@@ -56,7 +56,7 @@ const CookieConsent = (): React.ReactElement | null => {
     }
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-40 p-4 animate-slideUp">
+        <div className="fixed bottom-0 left-0 right-0 z-[160] p-4 animate-slideUp">
             <div className="max-w-7xl mx-auto bg-background-alt/95 backdrop-blur-xl border border-accent/20 rounded-2xl shadow-2xl shadow-black/20">
                 <div className="p-6 md:p-8">
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-4">

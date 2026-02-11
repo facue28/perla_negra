@@ -34,7 +34,7 @@ const AgeVerification: React.FC = () => {
     }
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center">
             {/* Backdrop - Optimized: used bg-black/80 instead of backdrop-blur for better LCP/TBT */}
             <div className="absolute inset-0 bg-black/90"></div>
 
