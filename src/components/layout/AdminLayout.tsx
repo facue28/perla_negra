@@ -37,7 +37,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <SEO title="Admin Panel" description="Panel de administración" noIndex={true} />
 
             {/* Mobile Header */}
-            <div className="lg:hidden flex items-center justify-between p-4 bg-[#141414] border-b border-white/10 sticky top-0 z-30 backdrop-blur-md">
+            <header className="lg:hidden flex items-center justify-between p-4 bg-[#141414] border-b border-white/10 sticky top-0 z-20 backdrop-blur-md">
                 <div className="flex items-center gap-2">
                     <h1 className="font-signature text-2xl text-accent">Perla Negra</h1>
                 </div>
@@ -48,19 +48,19 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 >
                     {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
-            </div>
+            </header>
 
             {/* Mobile Overlay */}
             {isSidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-20 lg:hidden"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
                     onClick={() => setIsSidebarOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside className={`
-                w-64 fixed lg:sticky top-0 left-0 lg:left-auto h-[100dvh] bg-[#141414]/95 lg:bg-[#141414]/90 backdrop-blur-md border-r border-white/10 flex flex-col z-30 lg:z-20
+                w-72 lg:w-64 fixed lg:sticky top-0 left-0 lg:left-auto h-[100dvh] bg-[#141414]/98 lg:bg-[#141414]/90 backdrop-blur-md border-r border-white/10 flex flex-col z-40 lg:z-10
                 transition-transform duration-300 ease-in-out
                 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}>
@@ -117,7 +117,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 p-4 lg:p-8 relative min-w-0">
+            <main className="flex-1 p-4 sm:p-6 lg:p-8 relative min-w-0">
                 {/* Background Effects */}
                 <div className="fixed inset-0 pointer-events-none z-0">
                     <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-900/10 rounded-full blur-[120px]" />

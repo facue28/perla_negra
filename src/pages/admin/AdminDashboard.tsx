@@ -65,7 +65,7 @@ const AdminDashboard = () => {
     }, []);
 
     return (
-        <div className="space-y-8 p-6 pb-16 fade-in">
+        <div className="space-y-6 md:space-y-8 p-4 md:p-6 pb-16 fade-in">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                     <h2 className="text-3xl font-bold tracking-tight text-white font-display">
