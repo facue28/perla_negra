@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
     useEffect(() => {
         const activationTimer = setTimeout(() => {
             setHeroActive(true);
-        }, 10000); // 10 second fallback (well outside LCP measurement)
+        }, 3000); // 3 second fallback (after LCP window)
 
         const handleInteraction = () => {
             setHeroActive(true);

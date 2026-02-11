@@ -34,6 +34,20 @@ const Navbar = (): React.ReactElement => {
         }
     });
 
+    // Protect Performance: Hide static shell on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const shell = document.getElementById('static-nav-shell');
+            if (shell) {
+                shell.style.opacity = '0';
+                setTimeout(() => {
+                    shell.style.display = 'none';
+                }, 300);
+            }
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     // Prevent body scroll when menu is open
     useEffect(() => {
         if (isOpen) {
