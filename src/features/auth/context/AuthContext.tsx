@@ -61,8 +61,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const login = async (email: string, password: string): Promise<void> => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        setLoading(true);
+        try {
+            const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            if (session?.user?.email) {
+                // Proactively verify and wait for admin role check before resolving
+                await checkAdminRole(session.user.email);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const logout = async (): Promise<void> => {
