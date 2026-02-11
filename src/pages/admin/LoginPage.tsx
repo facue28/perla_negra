@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '@/features/auth/context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -34,6 +35,14 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div className="w-full max-w-md relative z-10">
+                <Link
+                    to="/"
+                    className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-6 group"
+                >
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                    <span className="text-sm tracking-wide">Volver a la tienda</span>
+                </Link>
+
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
                     <div className="text-center mb-8">
                         <h1 className="font-signature text-5xl text-accent mb-2">Perla Negra</h1>
