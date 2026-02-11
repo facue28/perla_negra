@@ -137,30 +137,34 @@
       justify-content: center;
     }
 
-    /* H1 Typography - Playfair Display fallback to serif */
+    /* H1 Typography - Match Tailwind text-4xl / md:text-6xl / mb-6 / drop-shadow-lg */
     #static-hero-shell h1 {
       font-size: 2.25rem;
       font-family: 'Playfair Display', Georgia, serif;
       margin-bottom: 1.5rem;
       color: white;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1));
       font-weight: 400;
       line-height: 1.2;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     #static-hero-shell h1 span {
       color: #3FFFC1;
     }
 
-    /* Paragraph */
+    /* Paragraph - Match text-text-muted / mb-8 / max-w-2xl / drop-shadow-md */
     #static-hero-shell p {
       color: #B1B5B4;
       margin-bottom: 2rem;
       max-width: 42rem;
       padding: 0 1rem;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.06));
       font-size: 1rem;
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     /* Button container */
@@ -210,6 +214,8 @@
     @media (min-width: 768px) {
       #static-hero-shell h1 {
         font-size: 3.75rem;
+        line-height: 1;
+        /* Match Tailwind text-6xl */
       }
     }
   </style>
@@ -218,7 +224,7 @@
 <body>
   <!-- Static Navbar Shell (Instant Header) -->
   <div id="static-nav-shell"
-    style="position: fixed; top: 0; width: 100%; height: 5rem; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 60; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease-out;">
+    style="position: fixed; top: 0; width: 100%; height: 5rem; background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); z-index: 120; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease-out; pointer-events: none;">
     <div style="display: flex; flex-direction: column; align-items: center;">
       <span
         style="font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: 0.2em; color: white;">PERLA</span>
@@ -238,7 +244,7 @@
   </script>
   <!-- Static Hero Shell for Instant LCP (Outside #root) -->
   <div id="static-hero-shell"
-    style="position: absolute; top: 0; left: 0; width: 100%; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem; z-index: 40;">
+    style="position: absolute; top: 0; left: 0; width: 100%; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem; z-index: 110; pointer-events: none;">
 
     <!-- Background Layer (absolute, not fixed) -->
     <div
@@ -259,12 +265,10 @@
     <!-- Content Layer (z-index: 2, allows modals z-50+ to appear on top) -->
     <div
       style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-      <h1
-        style="font-size: 2.25rem; font-family: 'Playfair Display', serif; margin-bottom: 1.5rem; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
+      <h1 style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem; color: white;">
         INTIMITÀ <span style="color: #3FFFC1;">ELEGANTE</span>
       </h1>
-      <p
-        style="color: #B1B5B4; margin-bottom: 2rem; max-width: 42rem; padding: 0 1rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2); font-size: 1rem; line-height: 1.5;">
+      <p style="color: #B1B5B4; margin-bottom: 2rem; max-width: 42rem; padding: 0 1rem;">
         Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
       </p>
       <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
@@ -280,7 +284,7 @@
     </div>
   </div>
 
-  <div id="root" style="position: relative; z-index: 10;"></div>
+  <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

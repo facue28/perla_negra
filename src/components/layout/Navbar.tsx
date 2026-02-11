@@ -36,16 +36,13 @@ const Navbar = (): React.ReactElement => {
 
     // Protect Performance: Hide static shell on mount
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const shell = document.getElementById('static-nav-shell');
-            if (shell) {
-                shell.style.opacity = '0';
-                setTimeout(() => {
-                    shell.style.display = 'none';
-                }, 300);
-            }
-        }, 100);
-        return () => clearTimeout(timer);
+        const shell = document.getElementById('static-nav-shell');
+        if (shell) {
+            shell.style.opacity = '0';
+            setTimeout(() => {
+                shell.style.display = 'none';
+            }, 300);
+        }
     }, []);
 
     // Prevent body scroll when menu is open
@@ -90,13 +87,14 @@ const Navbar = (): React.ReactElement => {
 
     return (
         <motion.nav
+            initial={false}
             variants={{
                 visible: { y: 0 },
                 hidden: { y: "-100%" },
             }}
             animate={isHidden ? "hidden" : "visible"}
             transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="fixed top-0 w-full z-50 bg-background-dark/90 backdrop-blur-md border-b border-border/10 transition-all duration-300"
+            className="fixed top-0 w-full z-[150] bg-background-dark/90 backdrop-blur-md border-b border-border/10"
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20 relative z-50">
@@ -115,8 +113,8 @@ const Navbar = (): React.ReactElement => {
                     {/* Logo */}
                     <div className="flex-shrink-0 flex items-center justify-center flex-1 md:flex-none">
                         <Link to="/" className="flex flex-col items-center group" onClick={() => setIsOpen(false)}>
-                            <span className="font-serif text-2xl tracking-widest text-text-primary group-hover:text-accent transition-colors">PERLA</span>
-                            <span className="font-serif text-2xl tracking-widest text-text-primary group-hover:text-accent transition-colors -mt-2">NEGRA</span>
+                            <span className="font-serif text-2xl tracking-[0.2em] text-text-primary group-hover:text-accent transition-colors">PERLA</span>
+                            <span className="font-serif text-2xl tracking-[0.2em] text-text-primary group-hover:text-accent transition-colors -mt-2">NEGRA</span>
                         </Link>
                     </div>
 

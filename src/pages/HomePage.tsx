@@ -73,14 +73,14 @@ const HomePage: React.FC = () => {
 
                     // 2. Fade out for smooth transition
                     staticShell.style.opacity = '0';
-                    staticShell.style.transition = 'opacity 0.3s ease-out';
+                    staticShell.style.transition = 'opacity 0.2s ease-out';
 
                     // 3. Remove from layout completely
                     setTimeout(() => {
                         staticShell.style.display = 'none';
-                    }, 300);
+                    }, 200);
                 }
-            }, 800); // Hide after React hero fade-in starts
+            }, 0); // Hide immediately when React hero is ready
 
             return () => clearTimeout(handoffTimer);
         }
@@ -107,7 +107,7 @@ const HomePage: React.FC = () => {
                 {/* React Hero Section - ONLY renders when active (post-interaction) */}
                 {/* CRITICAL: Uses position:absolute to OVERLAY the static shell within container, allows scroll */}
                 {heroActive && (
-                    <div className="absolute inset-0 w-full h-full bg-transparent text-white text-center flex flex-col items-center justify-center overflow-hidden" style={{ zIndex: 5 }}>
+                    <div className="absolute inset-0 w-full h-full bg-transparent text-white text-center flex flex-col items-center justify-center overflow-hidden" style={{ zIndex: 130 }}>
                         {/* Dynamic Carousel Background */}
                         <motion.div
                             style={{ y: yBg }}
@@ -173,17 +173,15 @@ const HomePage: React.FC = () => {
 
                             <motion.p
                                 className="text-text-muted mb-8 max-w-2xl px-4 drop-shadow-md"
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={false}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2, duration: 0.5 }}
                             >
                                 Scopri Perla Negra. Piacere, eleganza e discrezione in ogni detalle.
                             </motion.p>
                             <motion.div
                                 className="flex gap-4 flex-wrap justify-center"
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={false}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4, duration: 0.5 }}
                             >
                                 <MotionLink
                                     to="/productos"
