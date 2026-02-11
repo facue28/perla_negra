@@ -24,22 +24,18 @@ export const useProductsLogic = (): UseProductsLogicResult => {
             const data = await productService.getProducts();
             setProducts(data);
         } catch (err) {
-            logger.error("Error fetching products - Attempt 1", err);
-
             // Auto-retry once
             try {
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 const data = await productService.getProducts();
                 setProducts(data);
-                logger.info("Products loaded on retry");
             } catch (retryErr) {
-                logger.error("Error fetching products - Retry failed", retryErr);
-                setError(true); // Keeping original logic of setting boolean true
+                setError(true);
             }
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, []); // Removed [loading] to avoid infinite loop or stale closure issues
 
     useEffect(() => {
         loadProducts();

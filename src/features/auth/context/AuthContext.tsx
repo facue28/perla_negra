@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { logger } from '@/lib/logger';
 import { AuthContextType, User } from '../types';
@@ -29,55 +29,83 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    useEffect(() => {
-        const getSession = async () => {
-            setLoading(true);
-            const { data: { session } } = await supabase.auth.getSession();
-            const currentUser = session?.user ?? null;
-            setUser(currentUser);
+    const isInitialized = useRef(false);
 
-            if (currentUser?.email) {
-                await checkAdminRole(currentUser.email);
+    useEffect(() => {
+        if (isInitialized.current) return;
+        isInitialized.current = true;
+
+        const initializeAuth = async () => {
+            console.log('[Auth] Initializing Auth Session...');
+            setLoading(true);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const currentUser = session?.user ?? null;
+                console.log('[Auth] Initial session:', currentUser?.email || 'Guest');
+
+                setUser(currentUser);
+                if (currentUser?.email) {
+                    await checkAdminRole(currentUser.email);
+                }
+            } catch (err) {
+                console.error('[Auth] Initialization error:', err);
+                setUser(null);
+                setIsAdmin(false);
+            } finally {
+                console.log('[Auth] Initialization complete. loading -> false');
+                setLoading(false);
             }
-            setLoading(false);
         };
 
-        getSession();
+        initializeAuth();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            setLoading(true);
+        // Runtime updates - absolutely silent
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('[Auth] Event:', event, 'User:', session?.user?.email);
             const currentUser = session?.user ?? null;
             setUser(currentUser);
 
             if (currentUser?.email) {
-                await checkAdminRole(currentUser.email);
+                // Background check without blocking UI
+                checkAdminRole(currentUser.email);
             } else {
                 setIsAdmin(false);
             }
-            setLoading(false);
         });
 
         return () => subscription.unsubscribe();
     }, []);
 
     const login = async (email: string, password: string): Promise<void> => {
+        console.log('[Auth] Login manual start:', email);
         setLoading(true);
         try {
             const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
 
             if (session?.user?.email) {
-                // Proactively verify and wait for admin role check before resolving
                 await checkAdminRole(session.user.email);
             }
         } finally {
+            console.log('[Auth] Login manual end. loading -> false');
             setLoading(false);
         }
     };
 
     const logout = async (): Promise<void> => {
-        await supabase.auth.signOut();
+        console.log('[Auth] Logout manual start');
+        setLoading(true);
+        try {
+            await supabase.auth.signOut();
+            setUser(null);
+            setIsAdmin(false);
+        } finally {
+            console.log('[Auth] Logout manual end. loading -> false');
+            setLoading(false);
+        }
     };
+
+    console.log('[Auth] Context state:', { loading, user: user?.email, isAdmin });
 
     return (
         <AuthContext.Provider value={{ user, isAdmin, loading, login, logout }}>
