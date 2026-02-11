@@ -134,8 +134,8 @@ const Navbar = (): React.ReactElement => {
                     {/* Icons */}
                     <div className="flex items-center space-x-6">
                         <Link
-                            to={user ? "/admin" : "/login"}
-                            className={`hover:text-accent transition-colors hidden sm:block ${location.pathname.startsWith('/admin') || location.pathname === '/login' ? 'text-accent' : 'text-text-primary'}`}
+                            to={user ? "/admin" : "/admin/login"}
+                            className={`hover:text-accent transition-colors hidden sm:block ${location.pathname.startsWith('/admin') ? 'text-accent' : 'text-text-primary'}`}
                             aria-label={user ? "Dashboard" : "Login"}
                         >
                             <User size={20} />
@@ -201,7 +201,7 @@ const Navbar = (): React.ReactElement => {
 
                             <motion.div variants={linkVariants} className="pt-8 flex flex-col gap-6 items-center w-full">
                                 <Link
-                                    to={user ? "/admin" : "/login"}
+                                    to={user ? "/admin" : "/admin/login"}
                                     className="flex items-center gap-2 text-text-muted hover:text-white transition-colors"
                                     onClick={() => setIsOpen(false)}
                                 >
