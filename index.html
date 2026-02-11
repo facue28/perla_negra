@@ -84,7 +84,10 @@
   <style>
     /* Reset and base layout for static shell - prevents CLS */
     #static-hero-shell {
-      position: relative;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
       min-height: 80vh;
       display: flex;
       align-items: center;
@@ -93,6 +96,7 @@
       overflow: hidden;
       padding-top: 6rem;
       margin: 0;
+      z-index: 5;
     }
 
     /* Background layer - absolute positioning within relative container */
@@ -214,7 +218,7 @@
 <body>
   <!-- Static Hero Shell for Instant LCP (Outside #root) -->
   <div id="static-hero-shell"
-    style="position: relative; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem;">
+    style="position: absolute; top: 0; left: 0; width: 100%; min-height: 80vh; display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden; padding-top: 6rem; z-index: 5;">
 
     <!-- Background Layer (absolute, not fixed) -->
     <div

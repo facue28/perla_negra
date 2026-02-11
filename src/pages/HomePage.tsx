@@ -68,16 +68,19 @@ const HomePage: React.FC = () => {
             const handoffTimer = setTimeout(() => {
                 const staticShell = document.getElementById('static-hero-shell');
                 if (staticShell) {
-                    // Hide static shell to prevent duplication
+                    // 1. Remove the class that 'reveals' the static shell in CSS
+                    document.documentElement.classList.remove('is-home');
+
+                    // 2. Fade out for smooth transition
                     staticShell.style.opacity = '0';
                     staticShell.style.transition = 'opacity 0.3s ease-out';
 
-                    // Remove from DOM after fade-out to free memory
+                    // 3. Remove from layout completely
                     setTimeout(() => {
                         staticShell.style.display = 'none';
                     }, 300);
                 }
-            }, 800); // Hide after React hero fade-in starts (before 1200ms completion)
+            }, 800); // Hide after React hero fade-in starts
 
             return () => clearTimeout(handoffTimer);
         }
