@@ -5,7 +5,27 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/src/assets/brand/logo-perla-negra.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script> window.prerenderReady = false; </script>
+  <script>window.prerenderReady = false;</script>
+  <style>
+    /* Default: Hide static hero shell to prevent it from leaking into other pages */
+    #static-hero-shell {
+      display: none !important;
+    }
+
+    /* Reveal only when .is-home class is present on root (added by script below) */
+    .is-home #static-hero-shell {
+      display: flex !important;
+    }
+  </style>
+  <script>
+    (function () {
+      const path = window.location.pathname;
+      // Precise home route check
+      if (path === '/' || path === '/index.html' || path === '/adulto') {
+        document.documentElement.classList.add('is-home');
+      }
+    })();
+  </script>
 
   <!-- Performance Optimizations -->
   <link rel="preconnect" href="https://hkedgklpsksezxxymdgc.supabase.co" crossorigin>

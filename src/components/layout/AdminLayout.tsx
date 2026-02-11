@@ -30,7 +30,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="min-h-screen bg-black text-white flex">
             <SEO title="Admin Panel" description="Panel de administración" noIndex={true} />
             {/* Sidebar */}
-            <aside className="w-64 fixed h-full bg-[#141414]/90 backdrop-blur-md border-r border-white/10 flex flex-col z-20">
+            <aside className="w-64 fixed top-0 left-0 h-full bg-[#141414]/90 backdrop-blur-md border-r border-white/10 flex flex-col z-20">
                 {/* Header */}
                 <div className="p-8 border-b border-white/10">
                     <h1 className="font-signature text-3xl text-accent">Perla Negra</h1>

@@ -1,10 +1,8 @@
-import { lazy } from 'react';
+import { lazy, Suspense } from 'react';
 import { Route, Routes, Outlet } from 'react-router-dom';
 import MainLayout from '@/app/MainLayout';
 import NotFoundPage from '@/pages/NotFoundPage';
-
-// Lazy load AdminLayout (only loads when accessing /admin routes)
-const AdminLayout = lazy(() => import('@/components/layout/AdminLayout'));
+import PageLoader from '@/components/ui/PageLoader';
 
 // Lazy Loaded Pages
 const HomePage = lazy(() => import('@/pages/HomePage'));
@@ -20,7 +18,7 @@ const TermsPage = lazy(() => import('@/pages/legal/TermsPage'));
 const PrivacyPage = lazy(() => import('@/pages/legal/PrivacyPage'));
 const ResponsibleUsePage = lazy(() => import('@/pages/legal/ResponsibleUsePage'));
 
-// Admin Pages (Lazy - only load when accessing admin)
+// Admin Pages
 const LoginPage = lazy(() => import('@/pages/admin/LoginPage'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 const AdminProductList = lazy(() => import('@/pages/admin/AdminProductList'));
@@ -28,12 +26,13 @@ const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
 const AdminCouponList = lazy(() => import('@/pages/admin/AdminCouponList'));
 const AdminCouponForm = lazy(() => import('@/pages/admin/AdminCouponForm'));
 const AdminOrderList = lazy(() => import('@/pages/admin/AdminOrderList'));
+const AdminLayout = lazy(() => import('@/components/layout/AdminLayout'));
 import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
 
 export const AppRoutes = () => {
     return (
         <Routes>
-            {/* Main Public Routes - Wrapped in MainLayout (Header/Footer) */}
+            {/* Main Layout Wraps All Routes */}
             <Route element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="chi-sono" element={<ChiSonoPage />} />
@@ -53,15 +52,17 @@ export const AppRoutes = () => {
                 <Route path="*" element={<NotFoundPage />} />
             </Route>
 
-            {/* Admin Login (No Layout) */}
+            {/* Admin Routes (Separate Layout potentially) */}
             <Route path="/admin/login" element={<LoginPage />} />
 
-            {/* Protected Admin Zone - Separate from MainLayout */}
+            {/* Protected Admin Zone */}
             <Route path="/admin" element={
                 <ProtectedRoute>
-                    <AdminLayout>
-                        <Outlet />
-                    </AdminLayout>
+                    <Suspense fallback={<PageLoader />}>
+                        <AdminLayout>
+                            <Outlet />
+                        </AdminLayout>
+                    </Suspense>
                 </ProtectedRoute>
             }>
                 <Route index element={<AdminDashboard />} />
