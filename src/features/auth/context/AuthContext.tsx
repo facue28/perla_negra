@@ -83,8 +83,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const { data: { session }, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
 
-            if (session?.user?.email) {
-                await checkAdminRole(session.user.email);
+            console.log('[Auth] Login success. User:', session?.user?.email);
+
+            // Fix: Explicitly set user state here to avoid race condition with onAuthStateChange
+            if (session?.user) {
+                setUser(session.user);
+                await checkAdminRole(session.user.email!);
             }
         } finally {
             console.log('[Auth] Login manual end. loading -> false');

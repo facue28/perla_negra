@@ -30,6 +30,21 @@ const PageTracker = () => {
 function App() {
   useAnalyticsLazyLoad();
 
+  // Fix: Remove "Black Screen" Global Loader once React hydrates
+  useEffect(() => {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+      // Smooth fade out
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.remove();
+      }, 500);
+    }
+
+    // Cleanup prerender flag if it was used
+    // (window as any).prerenderReady = true; 
+  }, []);
+
   return (
     <Router>
       <PageTracker />
