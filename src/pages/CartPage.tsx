@@ -37,6 +37,7 @@ const CartPage = (): React.ReactElement => {
         cap: '',
         dettagli: '',
         note: '',
+        email: '',
         metodoEnvio: 'Spedizione a domicilio',
         latitude: null,
         longitude: null,
@@ -116,6 +117,12 @@ const CartPage = (): React.ReactElement => {
             newErrors.telefono = "Numero non valido (controlla prefisso e lunghezza).";
         }
 
+        if (!formData.email.trim()) {
+            newErrors.email = "L'email è obbligatoria";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = "Inserisci un indirizzo email valido.";
+        }
+
         const isPuntoRitiro = formData.metodoEnvio.includes('Ritiro');
 
         if (!isPuntoRitiro) {
@@ -182,20 +189,26 @@ const CartPage = (): React.ReactElement => {
 
         if (currentOrderNumber) return;
 
+        const isPickup = formData.metodoEnvio.includes('Ritiro');
+        const finalAddress = isPickup ? 'Ritiro in sede (Verbania)' : `${formData.indirizzo}, ${formData.civico}`;
+        const finalCity = isPickup ? 'Verbania' : formData.citta;
+
         try {
             try {
+
                 const orderResult = await createOrder({
                     customerInfo: {
                         fullName: formData.nombre,
                         phone: formData.telefono,
-                        email: null,
-                        address: `${formData.indirizzo}, ${formData.civico}`,
-                        city: formData.citta,
+                        email: formData.email,
+                        address: finalAddress,
+                        city: finalCity,
                         notes: formData.note
                     },
                     items: cart,
                     couponCode: discount?.code
                 });
+
 
                 orderNumber = orderResult.orderNumber;
                 setCurrentOrderNumber(orderNumber);
@@ -218,9 +231,9 @@ const CartPage = (): React.ReactElement => {
                         customerInfo: {
                             fullName: formData.nombre,
                             phone: formData.telefono,
-                            email: null,
-                            address: `${formData.indirizzo}, ${formData.civico}`,
-                            city: formData.citta,
+                            email: formData.email,
+                            address: finalAddress,
+                            city: finalCity,
                             notes: formData.note
                         },
                         items: cart,
@@ -511,6 +524,20 @@ const CartPage = (): React.ReactElement => {
                                         className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
                                     {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono}</p>}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label htmlFor="checkout-email" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Email</label>
+                                    <input
+                                        id="checkout-email"
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        placeholder="esempio@dominio.it"
+                                        className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
+                                    />
+                                    {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email}</p>}
                                 </div>
 
                                 <AddressAutocomplete

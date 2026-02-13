@@ -60,7 +60,7 @@ export const createOrder = async (orderData: CreateOrderInput): Promise<CreateOr
         city: sanitizeInput(customerInfo.city),
         delivery_notes: customerInfo.notes ? sanitizeInput(customerInfo.notes) : null,
         items: items.map(item => ({
-            id: item.id, // ID plano para JSONB
+            product_id: item.id, // Mapped correctly for SQL
             name: item.name,
             price: item.price,
             quantity: Math.max(1, Math.min(999, Number(item.quantity)))
@@ -68,18 +68,15 @@ export const createOrder = async (orderData: CreateOrderInput): Promise<CreateOr
         coupon_code: couponCode || null
     };
 
-    // Llamar a la función RPC segura vía apiClient
-    const { data } = await apiClient.rpc('create_order', {
-        customer_info: {
-            fullName: sanitizedData.customer_name,
-            phone: sanitizedData.customer_phone,
-            email: sanitizedData.customer_email,
-            address: sanitizedData.address,
-            city: sanitizedData.city,
-            notes: sanitizedData.delivery_notes
-        },
-        items: sanitizedData.items,
-        coupon_code: sanitizedData.coupon_code
+    // Llamar a la función RPC segura vía apiClient (parameters flattened)
+    const { data } = await apiClient.rpc('create_order_secure', {
+        p_customer_name: sanitizedData.customer_name,
+        p_customer_phone: sanitizedData.customer_phone,
+        p_customer_email: sanitizedData.customer_email,
+        p_delivery_address: sanitizedData.address,
+        p_delivery_notes: sanitizedData.delivery_notes,
+        p_items: sanitizedData.items,
+        p_coupon_code: sanitizedData.coupon_code
     });
 
     if (!data) {
@@ -88,8 +85,8 @@ export const createOrder = async (orderData: CreateOrderInput): Promise<CreateOr
 
     return {
         success: true,
-        orderId: data.orderId,
-        orderNumber: data.orderNumber,
+        orderId: data.order_id,
+        orderNumber: data.order_number,
         total: data.total,
         warning: data.warning // Propagamos la advertencia si existe
     };
