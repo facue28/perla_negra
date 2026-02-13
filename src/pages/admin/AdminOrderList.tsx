@@ -29,7 +29,7 @@ const AdminOrderList: React.FC = () => {
             setOrders((data as any) as AdminOrder[] || []);
         } catch (error: any) {
             console.error('Error fetching orders:', error);
-            toast.error('Error al cargar los pedidos');
+            toast.error('Errore durante il caricamento degli ordini');
         } finally {
             setLoading(false);
         }
@@ -46,15 +46,15 @@ const AdminOrderList: React.FC = () => {
     };
 
     const handleDeleteOrder = async (orderId: string | number): Promise<void> => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar este pedido? Esta acción borrará permanentemente el registro y sus items. No se puede deshacer.')) {
+        if (window.confirm('Sei sicuro di voler eliminare questo ordine? Questa azione cancellerà permanentemente la registrazione e i suoi articoli. Non può essere annullata.')) {
             try {
                 setLoading(true);
                 await deleteOrder(orderId.toString());
-                toast.success('Pedido eliminado correctamente');
+                toast.success('Ordine eliminato correttamente');
                 await fetchOrders();
             } catch (error: any) {
                 console.error('Error deleting order:', error);
-                toast.error('Error al eliminar el pedido: ' + error.message);
+                toast.error('Errore durante l\'eliminazione dell\'ordine: ' + error.message);
                 setLoading(false);
             }
         }
@@ -84,10 +84,10 @@ const AdminOrderList: React.FC = () => {
 
     const getStatusBadge = (status: string) => {
         const statusConfig: Record<string, { label: string; color: string }> = {
-            nueva: { label: 'Nueva', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-            en_preparacion: { label: 'En Preparación', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-            completada: { label: 'Completada', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-            cancelada: { label: 'Cancelada', color: 'bg-red-500/20 text-red-400 border-red-500/30' }
+            nueva: { label: 'Nuovo', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
+            en_preparacion: { label: 'In Preparazione', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+            completada: { label: 'Completato', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+            cancelada: { label: 'Cancellato', color: 'bg-red-500/20 text-red-400 border-red-500/30' }
         };
 
         const config = statusConfig[status] || statusConfig.nueva;
@@ -109,14 +109,14 @@ const AdminOrderList: React.FC = () => {
                 <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="font-medium">Volver al Panel</span>
+                <span className="font-medium">Torna al Pannello</span>
             </Link>
 
             {/* Header */}
             <div className="space-y-4">
                 <div>
-                    <h1 className="text-3xl font-playfair font-bold text-white mb-2">Pedidos</h1>
-                    <p className="text-text-muted">Gestiona el historial de pedidos y su estado</p>
+                    <h1 className="text-3xl font-playfair font-bold text-white mb-2">Ordini</h1>
+                    <p className="text-text-muted">Gestisci la cronologia degli ordini e il loro stato</p>
                 </div>
 
                 {/* Filters Row */}
@@ -126,7 +126,7 @@ const AdminOrderList: React.FC = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                         <input
                             type="text"
-                            placeholder="Buscar por # pedido, cliente o teléfono..."
+                            placeholder="Cerca per # ordine, cliente o telefono..."
                             value={searchTerm}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent/50 text-white placeholder-text-muted transition-colors backdrop-blur-sm"
@@ -141,11 +141,11 @@ const AdminOrderList: React.FC = () => {
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as OrderListStatus)}
                             className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-accent/50 transition-colors cursor-pointer [&>option]:bg-background-alt [&>option]:text-white"
                         >
-                            <option value="all" className="bg-background-alt text-white">Todos los estados</option>
-                            <option value="nueva" className="bg-background-alt text-white">Nueva</option>
-                            <option value="en_preparacion" className="bg-background-alt text-white">En Preparación</option>
-                            <option value="completada" className="bg-background-alt text-white">Completada</option>
-                            <option value="cancelada" className="bg-background-alt text-white">Cancelada</option>
+                            <option value="all" className="bg-background-alt text-white">Tutti gli stati</option>
+                            <option value="nueva" className="bg-background-alt text-white">Nuovo</option>
+                            <option value="en_preparacion" className="bg-background-alt text-white">In Preparazione</option>
+                            <option value="completada" className="bg-background-alt text-white">Completato</option>
+                            <option value="cancelada" className="bg-background-alt text-white">Cancellato</option>
                         </select>
                     </div>
                 </div>
@@ -157,12 +157,12 @@ const AdminOrderList: React.FC = () => {
                     <table className="w-full text-left">
                         <thead className="bg-white/5 text-text-muted text-sm uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-medium"># Pedido</th>
+                                <th className="px-6 py-4 font-medium"># Ordine</th>
                                 <th className="px-6 py-4 font-medium">Cliente</th>
-                                <th className="px-6 py-4 font-medium">Fecha</th>
-                                <th className="px-6 py-4 font-medium text-right">Total</th>
-                                <th className="px-6 py-4 font-medium">Estado</th>
-                                <th className="px-6 py-4 font-medium text-center">Acciones</th>
+                                <th className="px-6 py-4 font-medium">Data</th>
+                                <th className="px-6 py-4 font-medium text-right">Totale</th>
+                                <th className="px-6 py-4 font-medium">Stato</th>
+                                <th className="px-6 py-4 font-medium text-center">Azioni</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -217,15 +217,15 @@ const AdminOrderList: React.FC = () => {
                                             <button
                                                 onClick={() => handleViewOrder(order)}
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-accent/10 text-white hover:text-accent rounded-lg transition-colors"
-                                                title="Ver detalles"
+                                                title="Vedi dettagli"
                                             >
                                                 <Eye size={16} />
-                                                <span className="text-sm font-medium">Ver</span>
+                                                <span className="text-sm font-medium">Vedi</span>
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteOrder(order.id)}
                                                 className="inline-flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors ml-2"
-                                                title="Eliminar pedido"
+                                                title="Elimina ordine"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -236,7 +236,7 @@ const AdminOrderList: React.FC = () => {
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-text-muted">
                                         <Package size={48} className="mx-auto mb-4 opacity-30" />
-                                        <p>No se encontraron pedidos.</p>
+                                        <p>Nessun ordine trovato.</p>
                                     </td>
                                 </tr>
                             )}
@@ -257,10 +257,10 @@ const AdminOrderList: React.FC = () => {
                         return (
                             <div key={status} className="bg-background-alt/50 border border-white/10 rounded-xl p-4">
                                 <p className="text-text-muted text-xs uppercase mb-1">
-                                    {status === 'nueva' && 'Nuevas'}
-                                    {status === 'en_preparacion' && 'En Preparación'}
-                                    {status === 'completada' && 'Completadas'}
-                                    {status === 'cancelada' && 'Canceladas'}
+                                    {status === 'nueva' && 'Nuovi'}
+                                    {status === 'en_preparacion' && 'In Preparazione'}
+                                    {status === 'completada' && 'Completati'}
+                                    {status === 'cancelada' && 'Cancellati'}
                                 </p>
                                 <p className="text-white text-2xl font-bold">{count}</p>
                                 {status === 'completada' && (

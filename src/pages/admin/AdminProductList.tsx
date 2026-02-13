@@ -43,7 +43,7 @@ const AdminProductList: React.FC = () => {
     };
 
     const handleDelete = async (id: string | number): Promise<void> => {
-        if (!window.confirm('¿Estás seguro de que quieres eliminar este producto?')) return;
+        if (!window.confirm('Sei sicuro di voler eliminare questo prodotto?')) return;
 
         try {
             const { error } = await supabase
@@ -56,7 +56,7 @@ const AdminProductList: React.FC = () => {
             setProducts(products.filter(p => p.id !== id));
         } catch (error) {
             console.error('Error deleting product:', error);
-            alert('Error al eliminar el producto');
+            alert('Errore durante l\'eliminazione del prodotto');
         }
     };
 
@@ -109,7 +109,7 @@ const AdminProductList: React.FC = () => {
                 <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="font-medium">Volver al Panel</span>
+                <span className="font-medium">Torna al Pannello</span>
             </Link>
 
             {/* Header */}
@@ -123,7 +123,7 @@ const AdminProductList: React.FC = () => {
                     className="flex items-center gap-2 px-6 py-3 bg-accent text-background-dark rounded-full font-bold hover:bg-accent-light transition-colors shadow-lg shadow-accent/20"
                 >
                     <Plus size={20} />
-                    Nuevo Producto
+                    Nuovo Prodotto
                 </Link>
             </div>
 
@@ -132,7 +132,7 @@ const AdminProductList: React.FC = () => {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                 <input
                     type="text"
-                    placeholder="Buscar por nombre o categoría..."
+                    placeholder="Cerca per nome o categoria..."
                     value={searchTerm}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent/50 text-white placeholder-text-muted transition-colors backdrop-blur-sm"
@@ -149,19 +149,19 @@ const AdminProductList: React.FC = () => {
                                     className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                     onClick={() => handleSort('name')}
                                 >
-                                    <div className="flex items-center">Producto {renderSortIcon('name')}</div>
+                                    <div className="flex items-center">Prodotto {renderSortIcon('name')}</div>
                                 </th>
                                 <th
                                     className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                     onClick={() => handleSort('category')}
                                 >
-                                    <div className="flex items-center">Categoría {renderSortIcon('category')}</div>
+                                    <div className="flex items-center">Categoria {renderSortIcon('category')}</div>
                                 </th>
                                 <th
                                     className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors group select-none"
                                     onClick={() => handleSort('price')}
                                 >
-                                    <div className="flex items-center">Precio {renderSortIcon('price')}</div>
+                                    <div className="flex items-center">Prezzo {renderSortIcon('price')}</div>
                                 </th>
                                 <th
                                     className="px-6 py-4 font-medium text-center cursor-pointer hover:text-white transition-colors group select-none"
@@ -169,7 +169,7 @@ const AdminProductList: React.FC = () => {
                                 >
                                     <div className="flex items-center justify-center">Stock {renderSortIcon('stock')}</div>
                                 </th>
-                                <th className="px-6 py-4 font-medium text-right">Acciones</th>
+                                <th className="px-6 py-4 font-medium text-right">Azioni</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -221,7 +221,7 @@ const AdminProductList: React.FC = () => {
                                                 ? 'text-green-400 bg-green-400/10'
                                                 : 'text-red-400 bg-red-400/10'
                                                 }`}>
-                                                {product.stock > 0 ? product.stock : 'Agotado'}
+                                                {product.stock > 0 ? product.stock : 'Esaurito'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -229,14 +229,14 @@ const AdminProductList: React.FC = () => {
                                                 <Link
                                                     to={`/admin/products/${product.id}`}
                                                     className="p-2 text-text-muted hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                                                    title="Editar"
+                                                    title="Modifica"
                                                 >
                                                     <Edit size={18} />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(product.id)}
                                                     className="p-2 text-text-muted hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                                                    title="Eliminar"
+                                                    title="Elimina"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -247,7 +247,7 @@ const AdminProductList: React.FC = () => {
                             ) : (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-12 text-center text-text-muted">
-                                        No se encontraron productos.
+                                        Nessun prodotto trovato.
                                     </td>
                                 </tr>
                             )}

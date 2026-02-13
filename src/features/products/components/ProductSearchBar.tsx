@@ -113,7 +113,7 @@ const SearchBar = ({ onSearch, id = "product-search" }: SearchBarProps) => {
     };
 
     const handleSelectProduct = (product: Product) => {
-        navigate(`/productos/${product.slug}`);
+        navigate(`/prodotti/${product.slug}`);
         setSearchTerm('');
         setIsOpen(false);
         setSelectedIndex(-1);

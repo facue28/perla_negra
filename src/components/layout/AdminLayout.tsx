@@ -27,14 +27,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     }, [location.pathname]);
 
     const navItems: NavItem[] = [
-        { icon: LayoutDashboard, label: 'Resumen', path: '/admin' },
-        { icon: Package, label: 'Productos', path: '/admin/products' },
-        { icon: Ticket, label: 'Cupones', path: '/admin/coupons' },
+        { icon: LayoutDashboard, label: 'Riepilogo', path: '/admin' },
+        { icon: Package, label: 'Prodotti', path: '/admin/products' },
+        { icon: Ticket, label: 'Coupon', path: '/admin/coupons' },
     ];
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col lg:flex-row">
-            <SEO title="Admin Panel" description="Panel de administración" noIndex={true} />
+            <SEO title="Admin Panel" description="Pannello di Amministrazione" noIndex={true} />
 
             {/* Mobile Header */}
             <header className="lg:hidden flex items-center justify-between p-4 bg-[#141414] border-b border-white/10 sticky top-0 z-20 backdrop-blur-md">
@@ -67,12 +67,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 {/* Header (Desktop) */}
                 <div className="hidden lg:block p-8 border-b border-white/10">
                     <h1 className="font-signature text-3xl text-accent">Perla Negra</h1>
-                    <p className="text-xs text-text-muted mt-1 uppercase tracking-widest">Panel Admin</p>
+                    <p className="text-xs text-text-muted mt-1 uppercase tracking-widest">Pannello Admin</p>
                 </div>
 
                 {/* Header (Mobile Close Button) */}
                 <div className="lg:hidden flex items-center justify-between p-6 border-b border-white/10">
-                    <span className="text-xs text-text-muted uppercase tracking-widest font-medium">Navegación</span>
+                    <span className="text-xs text-text-muted uppercase tracking-widest font-medium">Navigazione</span>
                     <button onClick={() => setIsSidebarOpen(false)} className="text-text-muted hover:text-white">
                         <X size={20} />
                     </button>
@@ -103,7 +103,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                         className="flex items-center gap-3 px-4 py-3 rounded-lg text-text-muted hover:text-white hover:bg-white/5 transition-colors"
                     >
                         <ExternalLink size={20} />
-                        <span className="text-sm">Ver Tienda</span>
+                        <span className="text-sm">Vedi Negozio</span>
                     </Link>
 
                     <button
@@ -111,7 +111,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                         className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                     >
                         <LogOut size={20} />
-                        <span className="text-sm">Cerrar Sesión</span>
+                        <span className="text-sm">Esci</span>
                     </button>
                 </div>
             </aside>

@@ -244,7 +244,7 @@ const ProductDetailPage = (): React.ReactElement => {
                 <nav className="flex items-center text-sm text-text-muted mb-4 space-x-2 flex-shrink-0 pt-24">
                     <Link to="/" className="hover:text-accent">Home</Link>
                     <ChevronRight size={14} />
-                    <Link to="/productos" className="hover:text-accent">Prodotti</Link>
+                    <Link to="/prodotti" className="hover:text-accent">Prodotti</Link>
                     <ChevronRight size={14} />
                     <span className="text-accent">{product.category}</span>
                 </nav>
@@ -432,7 +432,7 @@ const ProductDetailPage = (): React.ReactElement => {
                             {/* Enhanced Explore CTA - Compact */}
                             <div className="flex justify-center mt-1">
                                 <Link
-                                    to="/productos"
+                                    to="/prodotti"
                                     className="group flex items-center gap-2 px-4 py-2 border border-accent/20 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium text-xs uppercase tracking-wide"
                                 >
                                     <span>Continua a esplorare</span>

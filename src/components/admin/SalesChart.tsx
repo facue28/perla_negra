@@ -16,7 +16,7 @@ export function SalesChart({ data, loading }: ChartProps) {
     return (
         <Card className="bg-background-alt border-white/10 col-span-4">
             <CardHeader>
-                <CardTitle className="text-text-primary">Tendencia de Ventas (30 Días)</CardTitle>
+                <CardTitle className="text-text-primary">Tendagza delle Vendite (30 Giorni)</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
                 <ResponsiveContainer width="100%" height={350}>
@@ -45,7 +45,7 @@ export function SalesChart({ data, loading }: ChartProps) {
                         <Tooltip
                             contentStyle={{ backgroundColor: '#1A1A1A', borderColor: '#333', color: '#fff' }}
                             itemStyle={{ color: '#D4AF37' }}
-                            formatter={(value: number) => [`€${value}`, 'Ventas']}
+                            formatter={(value: number) => [`€${value}`, 'Vendite']}
                         />
                         <Area
                             type="monotone"

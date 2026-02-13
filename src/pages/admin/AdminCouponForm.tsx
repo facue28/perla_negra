@@ -63,7 +63,7 @@ const AdminCouponForm: React.FC = () => {
 
         } catch (error: any) {
             console.error('Error fetching coupon:', error);
-            toast.error('Error al cargar datos del cupón');
+            toast.error('Errore durante il caricamento dei dati del coupon');
             navigate('/admin/coupons');
         } finally {
             setInitialLoading(false);
@@ -112,13 +112,13 @@ const AdminCouponForm: React.FC = () => {
 
             if (error) throw error;
 
-            toast.success(`Cupón ${isEditing ? 'actualizado' : 'creado'} exitosamente`);
+            toast.success(`Coupon ${isEditing ? 'aggiornato' : 'creato'} exitosamente`);
             navigate('/admin/coupons');
 
         } catch (error: any) {
             console.error('Error saving coupon:', error);
             if (error.code === '23505') {
-                toast.error('Error: El código de cupón ya existe');
+                toast.error('Errore: Il codice del coupon esiste già');
             } else {
                 toast.error(`Error: ${error.message}`);
             }
@@ -146,8 +146,8 @@ const AdminCouponForm: React.FC = () => {
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h1 className="text-3xl font-playfair font-bold text-white">{isEditing ? 'Editar Cupón' : 'Nuevo Cupón'}</h1>
-                    <p className="text-text-muted">{isEditing ? 'Modifica los detalles del cupón' : 'Crea un código promocional para tus clientes'}</p>
+                    <h1 className="text-3xl font-playfair font-bold text-white">{isEditing ? 'Modifica Coupon' : 'Nuovo Coupon'}</h1>
+                    <p className="text-text-muted">{isEditing ? 'Modifica i dettagli del coupon' : 'Crea un codice promozionale per i tuoi clienti'}</p>
                 </div>
             </div>
 
@@ -156,7 +156,7 @@ const AdminCouponForm: React.FC = () => {
 
                     {/* Code */}
                     <div className="space-y-2">
-                        <label className="text-sm text-text-muted">Código del Cupón *</label>
+                        <label className="text-sm text-text-muted">Codice Coupon *</label>
                         <input
                             required
                             type="text"
@@ -164,29 +164,29 @@ const AdminCouponForm: React.FC = () => {
                             value={formData.code}
                             onChange={handleChange}
                             className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white placeholder-text-muted/50 font-mono tracking-wider uppercase text-lg"
-                            placeholder="EJ: VERANO2025"
+                            placeholder="ES: ESTATE2025"
                         />
-                        <p className="text-xs text-text-muted">Se convertirá automáticamente a mayúsculas y sin espacios.</p>
+                        <p className="text-xs text-text-muted">Verrà convertito automaticamente in maiuscolo e senza spazi.</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Type */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Tipo de Descuento</label>
+                            <label className="text-sm text-text-muted">Tipo di Sconto</label>
                             <select
                                 name="discount_type"
                                 value={formData.discount_type}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white [&>option]:bg-zinc-900"
                             >
-                                <option value="percent">Porcentaje (%)</option>
-                                <option value="fixed">Monto Fijo ($)</option>
+                                <option value="percent">Percentuale (%)</option>
+                                <option value="fixed">Importo Fisso (€)</option>
                             </select>
                         </div>
 
                         {/* Value */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Valor *</label>
+                            <label className="text-sm text-text-muted">Valore *</label>
                             <input
                                 required
                                 type="number"
@@ -204,7 +204,7 @@ const AdminCouponForm: React.FC = () => {
 
                     {/* Expiration */}
                     <div className="space-y-2">
-                        <label className="text-sm text-text-muted">Fecha de Expiración (Opcional)</label>
+                        <label className="text-sm text-text-muted">Data di Scadenza (Opzionale)</label>
                         <div className="relative">
                             <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
                             <input
@@ -220,7 +220,7 @@ const AdminCouponForm: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Usage Limit */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Límite de Usos (Opcional)</label>
+                            <label className="text-sm text-text-muted">Limite di Utilizzo (Opzionale)</label>
                             <input
                                 type="number"
                                 min="1"
@@ -228,14 +228,14 @@ const AdminCouponForm: React.FC = () => {
                                 value={formData.usage_limit}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white"
-                                placeholder="Ej: 100"
+                                placeholder="Es: 100"
                             />
-                            <p className="text-xs text-text-muted">Dejar vacío para uso ilimitado.</p>
+                            <p className="text-xs text-text-muted">Lasciare vuoto per utilizzo illimitato.</p>
                         </div>
 
                         {/* Min Purchase */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Mínimo de Compra ($)</label>
+                            <label className="text-sm text-text-muted">Minimo di Spesa (€)</label>
                             <input
                                 type="number"
                                 min="0"
@@ -257,7 +257,7 @@ const AdminCouponForm: React.FC = () => {
                         onClick={() => navigate('/admin/coupons')}
                         className="flex-1 py-3 px-4 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors"
                     >
-                        Cancelar
+                        Annulla
                     </button>
                     <button
                         type="submit"
@@ -269,7 +269,7 @@ const AdminCouponForm: React.FC = () => {
                         ) : (
                             <>
                                 <Save size={20} />
-                                {isEditing ? 'Actualizar Cupón' : 'Crear Cupón'}
+                                {isEditing ? 'Aggiorna Coupon' : 'Crea Coupon'}
                             </>
                         )}
                     </button>

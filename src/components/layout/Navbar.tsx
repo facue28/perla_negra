@@ -14,10 +14,10 @@ const Navbar = (): React.ReactElement => {
     const cartCount = getCartCount();
 
     const navLinks = [
-        { name: 'PRODOTTI', path: '/productos' },
-        { name: 'RIVENDITORI', path: '/revendedores' },
+        { name: 'PRODOTTI', path: '/prodotti' },
+        { name: 'RIVENDITORI', path: '/rivenditori' },
         { name: 'CHI SONO', path: '/chi-sono' },
-        { name: 'CONTATTI', path: '/contacto' },
+        { name: 'CONTATTI', path: '/contatti' },
     ];
 
     const [isHidden, setIsHidden] = useState<boolean>(false);
@@ -140,7 +140,7 @@ const Navbar = (): React.ReactElement => {
                         >
                             <User size={20} />
                         </Link>
-                        <Link to="/carrito" className={`hover:text-accent transition-colors relative ${location.pathname === '/carrito' ? 'text-accent' : 'text-text-primary'}`} aria-label="Carrello" onClick={() => setIsOpen(false)}>
+                        <Link to="/carrello" className={`hover:text-accent transition-colors relative ${location.pathname === '/carrello' ? 'text-accent' : 'text-text-primary'}`} aria-label="Carrello" onClick={() => setIsOpen(false)}>
                             {/* Animated Container for Icon */}
                             <motion.div
                                 key={cartCount}

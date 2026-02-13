@@ -100,12 +100,12 @@ const CartPage = (): React.ReactElement => {
         }
     };
 
-    const validateForm = (): boolean => {
+    const validateForm = (): Record<string, string> => {
         const newErrors: Record<string, string> = {};
 
         if (formData.website && formData.website.trim() !== '') {
             console.warn('Honeypot triggered - potential bot detected');
-            return false;
+            return { website: 'Bot detected' };
         }
 
         if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
@@ -138,7 +138,7 @@ const CartPage = (): React.ReactElement => {
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        return newErrors;
     };
 
     const handleKeyDown = (e: React.KeyboardEvent): void => {
@@ -160,9 +160,23 @@ const CartPage = (): React.ReactElement => {
             return;
         }
 
-        if (!validateForm()) {
-            toast.error("Per favore correggi gli errori nel modulo.", {
-                style: { backgroundColor: '#fee2e2', color: '#dc2626' }
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            // Create a readable list of errors
+            const errorMessages = Object.values(formErrors).map(msg => `• ${msg}`).join('\n');
+
+            toast.error("Attenzione: Dati mancanti", {
+                description: (
+                    <div className="mt-2 text-xs font-medium text-red-900 opacity-90 whitespace-pre-line leading-relaxed">
+                        {errorMessages}
+                    </div>
+                ),
+                duration: 5000,
+                style: {
+                    backgroundColor: '#fee2e2',
+                    color: '#991b1b', // Dark red for title
+                    borderColor: '#fca5a5'
+                }
             });
             return;
         }
@@ -313,7 +327,7 @@ const CartPage = (): React.ReactElement => {
                         </p>
 
                         <Link
-                            to="/productos"
+                            to="/prodotti"
                             className="bg-accent text-background-dark px-10 py-4 rounded-full font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] transform hover:-translate-y-1 active:scale-95 flex items-center gap-2"
                         >
                             <ArrowLeft size={20} /> Inizia lo Shopping
@@ -410,7 +424,7 @@ const CartPage = (): React.ReactElement => {
                         </AnimatePresence>
 
                         <div className="pt-6">
-                            <Link to="/productos" className="inline-flex items-center gap-2 text-text-muted hover:text-accent transition-colors text-sm group">
+                            <Link to="/prodotti" className="inline-flex items-center gap-2 text-text-muted hover:text-accent transition-colors text-sm group">
                                 <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                                 <span>Continua con gli acquisti</span>
                             </Link>

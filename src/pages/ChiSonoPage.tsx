@@ -73,7 +73,7 @@ const ChiSonoPage: React.FC = () => {
                                         </div>
 
                                         <Link
-                                            to="/productos"
+                                            to="/prodotti"
                                             className="group flex items-center gap-3 text-white hover:text-accent transition-colors pb-1 border-b border-white/20 hover:border-accent"
                                         >
                                             <span className="font-medium tracking-wide">SCOPRI LA COLLEZIONE</span>

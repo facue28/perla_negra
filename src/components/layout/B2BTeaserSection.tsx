@@ -36,7 +36,7 @@ const B2BTeaserSection: React.FC = () => {
                     {/* CTA Button */}
                     <div className="flex-shrink-0">
                         <Link
-                            to="/revendedores"
+                            to="/rivenditori"
                             className="inline-flex items-center gap-2 bg-accent text-background-dark px-10 py-5 rounded-full font-bold text-lg hover:bg-accent-light transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] transform hover:-translate-y-1 active:scale-95 group/btn"
                         >
                             <span className="relative z-10">DIVENTA PARTNER</span>

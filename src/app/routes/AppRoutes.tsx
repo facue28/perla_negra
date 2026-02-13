@@ -36,11 +36,11 @@ export const AppRoutes = () => {
             <Route element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="chi-sono" element={<ChiSonoPage />} />
-                <Route path="productos" element={<ProductListPage />} />
-                <Route path="productos/:slug" element={<ProductDetailPage />} />
-                <Route path="contacto" element={<ContactPage />} />
-                <Route path="carrito" element={<CartPage />} />
-                <Route path="revendedores" element={<ResellerPage />} />
+                <Route path="prodotti" element={<ProductListPage />} />
+                <Route path="prodotti/:slug" element={<ProductDetailPage />} />
+                <Route path="contatti" element={<ContactPage />} />
+                <Route path="carrello" element={<CartPage />} />
+                <Route path="rivenditori" element={<ResellerPage />} />
 
                 {/* Legal Routes */}
                 <Route path="termini" element={<TermsPage />} />

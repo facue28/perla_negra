@@ -40,14 +40,14 @@ const AdminCouponList: React.FC = () => {
             setCoupons(normalizedData);
         } catch (error) {
             console.error('Error fetching coupons:', error);
-            toast.error('Error al cargar cupones');
+            toast.error('Errore durante il caricamento dei coupon');
         } finally {
             setLoading(false);
         }
     };
 
     const handleDelete = async (id: string | number): Promise<void> => {
-        if (!window.confirm('¿Estás seguro de eliminar este cupón? Esta acción no se puede deshacer.')) return;
+        if (!window.confirm('Sei sicuro di voler eliminare questo coupon? Questa azione non può essere annullata.')) return;
 
         try {
             const { error } = await supabase
@@ -58,10 +58,10 @@ const AdminCouponList: React.FC = () => {
             if (error) throw error;
 
             setCoupons(coupons.filter(c => c.id !== id));
-            toast.success('Cupón eliminado');
+            toast.success('Coupon eliminato');
         } catch (error) {
             console.error('Error deleting coupon:', error);
-            toast.error('Error al eliminar cupón');
+            toast.error('Errore durante l\'eliminazione del coupon');
         }
     };
 
@@ -77,10 +77,10 @@ const AdminCouponList: React.FC = () => {
             setCoupons(coupons.map(c =>
                 c.id === id ? { ...c, is_active: !currentStatus } : c
             ));
-            toast.success(`Cupón ${!currentStatus ? 'activado' : 'desactivado'}`);
+            toast.success(`Coupon ${!currentStatus ? 'attivato' : 'disattivato'}`);
         } catch (error) {
             console.error('Error updating status:', error);
-            toast.error('Error al actualizar estado');
+            toast.error('Errore durante l\'aggiornamento dello stato');
         }
     };
 
@@ -89,7 +89,7 @@ const AdminCouponList: React.FC = () => {
     );
 
     const formatDate = (dateString: string | null): string => {
-        if (!dateString) return 'Sin expiración';
+        if (!dateString) return 'Nessuna scadenza';
         return new Date(dateString).toLocaleDateString();
     };
 
@@ -108,14 +108,14 @@ const AdminCouponList: React.FC = () => {
                 <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="font-medium">Volver al Panel</span>
+                <span className="font-medium">Torna al Pannello</span>
             </Link>
 
             {/* Header */}
             <div className="space-y-4">
                 <div>
-                    <h1 className="text-3xl font-playfair font-bold text-white mb-2">Cupones</h1>
-                    <p className="text-text-muted">Gestiona códigos de descuento y promociones</p>
+                    <h1 className="text-3xl font-playfair font-bold text-white mb-2">Coupon</h1>
+                    <p className="text-text-muted">Gestisci codici sconto e promozioni</p>
                 </div>
 
                 {/* Search and Action Row */}
@@ -125,7 +125,7 @@ const AdminCouponList: React.FC = () => {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                         <input
                             type="text"
-                            placeholder="Buscar por código..."
+                            placeholder="Cerca per codice..."
                             value={searchTerm}
                             onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                             className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent/50 text-white placeholder-text-muted transition-colors backdrop-blur-sm"
@@ -138,7 +138,7 @@ const AdminCouponList: React.FC = () => {
                         className="flex items-center gap-2 px-6 py-3 bg-accent text-background-dark rounded-full font-bold hover:bg-accent-light transition-colors shadow-lg shadow-accent/20 whitespace-nowrap"
                     >
                         <Plus size={20} />
-                        Nuevo Cupón
+                        Nuovo Coupon
                     </Link>
                 </div>
             </div>
@@ -149,12 +149,12 @@ const AdminCouponList: React.FC = () => {
                     <table className="w-full text-left">
                         <thead className="bg-white/5 text-text-muted text-sm uppercase tracking-wider">
                             <tr>
-                                <th className="px-6 py-4 font-medium">Código</th>
-                                <th className="px-6 py-4 font-medium">Descuento</th>
-                                <th className="px-6 py-4 font-medium">Expiración</th>
-                                <th className="px-6 py-4 font-medium">Usos</th>
-                                <th className="px-6 py-4 font-medium">Estado</th>
-                                <th className="px-6 py-4 font-medium text-right">Acciones</th>
+                                <th className="px-6 py-4 font-medium">Codice</th>
+                                <th className="px-6 py-4 font-medium">Sconto</th>
+                                <th className="px-6 py-4 font-medium">Scadenza</th>
+                                <th className="px-6 py-4 font-medium">Utilizzi</th>
+                                <th className="px-6 py-4 font-medium">Stato</th>
+                                <th className="px-6 py-4 font-medium text-right">Azioni</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
@@ -205,7 +205,7 @@ const AdminCouponList: React.FC = () => {
                                                     : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'
                                                     }`}
                                             >
-                                                {coupon.is_active ? 'Activo' : 'Inactivo'}
+                                                {coupon.is_active ? 'Attivo' : 'Inattivo'}
                                             </button>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -213,14 +213,14 @@ const AdminCouponList: React.FC = () => {
                                                 <Link
                                                     to={`/admin/coupons/${coupon.id}`}
                                                     className="p-2 text-text-muted hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-                                                    title="Modificar"
+                                                    title="Modifica"
                                                 >
                                                     <Edit size={18} />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(coupon.id)}
                                                     className="p-2 text-text-muted hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors"
-                                                    title="Eliminar"
+                                                    title="Elimina"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -231,7 +231,7 @@ const AdminCouponList: React.FC = () => {
                             ) : (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-text-muted">
-                                        No tienes cupones creados aún.
+                                        Non hai ancora creato coupon.
                                     </td>
                                 </tr>
                             )}

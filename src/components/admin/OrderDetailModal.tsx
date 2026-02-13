@@ -35,10 +35,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
 
     const getStatusLabel = (status: OrderStatus): string => {
         const labels: Record<OrderStatus, string> = {
-            nueva: 'Nueva',
-            en_preparacion: 'En Preparación',
-            completada: 'Completada',
-            cancelada: 'Cancelada'
+            nueva: 'Nuovo',
+            en_preparacion: 'In Preparazione',
+            completada: 'Completato',
+            cancelada: 'Cancellato'
         };
         return labels[status] || status;
     };
@@ -95,7 +95,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                 <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
                                     <div>
                                         <h2 className="text-2xl font-playfair font-bold text-white mb-1">
-                                            Pedido {order.order_number}
+                                            Ordine {order.order_number}
                                         </h2>
                                         <p className="text-text-muted text-sm flex items-center gap-2">
                                             <Calendar size={14} />
@@ -116,7 +116,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
                                         <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                                             <User size={18} className="text-accent" />
-                                            Información del Cliente
+                                            Informazioni Cliente
                                         </h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                             <div>
@@ -131,7 +131,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                                 </p>
                                             </div>
                                             <div className="sm:col-span-2">
-                                                <p className="text-text-muted text-xs uppercase mb-1">Dirección de Envío</p>
+                                                <p className="text-text-muted text-xs uppercase mb-1">Indirizzo di Spedizione</p>
                                                 <p className="text-white font-medium flex items-start gap-2">
                                                     <MapPin size={14} className="text-accent mt-1 flex-shrink-0" />
                                                     {(!order.delivery_address || order.delivery_address.replace(/[, ]/g, '').length === 0)
@@ -156,7 +156,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
                                         <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                                             <Package size={18} className="text-accent" />
-                                            Productos ({order.order_items?.length || 0})
+                                            Prodotti ({order.order_items?.length || 0})
                                         </h3>
                                         <div className="space-y-3">
                                             {order.order_items?.map((item, index) => (
@@ -193,7 +193,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
                                         <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                                             <DollarSign size={18} className="text-accent" />
-                                            Resumen del Pedido
+                                            Riepilogo Ordine
                                         </h3>
                                         <div className="space-y-2 text-sm">
                                             <div className="flex justify-between">
@@ -222,7 +222,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
 
                                     {/* Status Change */}
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5">
-                                        <h3 className="text-white font-bold mb-4">Cambiar Estado</h3>
+                                        <h3 className="text-white font-bold mb-4">Cambia Stato</h3>
                                         <div className="grid grid-cols-2 gap-3">
                                             {(['nueva', 'en_preparacion', 'completada', 'cancelada'] as OrderStatus[]).map((status) => (
                                                 <button
@@ -244,7 +244,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                             ))}
                                         </div>
                                         <p className="text-text-muted text-xs mt-3 text-center">
-                                            Estado actual: <span className="text-accent font-medium">{getStatusLabel(order.status)}</span>
+                                            Stato attuale: <span className="text-accent font-medium">{getStatusLabel(order.status)}</span>
                                         </p>
                                     </div>
                                 </div>

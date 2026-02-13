@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
             await login(email, password);
             navigate('/admin'); // Redirect to dashboard
         } catch (err) {
-            setError('Credenciales incorrectas');
+            setError('Credenziali non valide');
         } finally {
             setLoading(false);
         }
@@ -40,13 +40,13 @@ const LoginPage: React.FC = () => {
                     className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-6 group"
                 >
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-sm tracking-wide">Volver a la tienda</span>
+                    <span className="text-sm tracking-wide">Torna al negozio</span>
                 </Link>
 
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
                     <div className="text-center mb-8">
                         <h1 className="font-signature text-5xl text-accent mb-2">Perla Negra</h1>
-                        <p className="text-text-muted text-xs tracking-wider uppercase">Acceso Administrativo</p>
+                        <p className="text-text-muted text-xs tracking-wider uppercase">Accesso Amministrativo</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
                         </div>
 
                         <div>
-                            <label className="block text-text-muted text-xs uppercase tracking-wider mb-2">Contraseña</label>
+                            <label className="block text-text-muted text-xs uppercase tracking-wider mb-2">Password</label>
                             <input
                                 type="password"
                                 value={password}
@@ -85,7 +85,7 @@ const LoginPage: React.FC = () => {
                             disabled={loading}
                             className="w-full bg-[#3FFFC1] text-black font-medium py-3 rounded-lg hover:bg-[#32cc9a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
                         >
-                            {loading ? 'Accediendo...' : 'Ingresar al Portal'}
+                            {loading ? 'Accesso in corso...' : 'Entra nel Portale'}
                         </button>
                     </form>
                 </div>

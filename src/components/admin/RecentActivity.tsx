@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminLog } from "@/types/admin";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
 
 interface ActivityProps {
     logs: AdminLog[];
@@ -15,12 +15,12 @@ export function RecentActivity({ logs, loading }: ActivityProps) {
     return (
         <Card className="bg-background-alt border-white/10 col-span-3">
             <CardHeader>
-                <CardTitle className="text-text-primary">Actividad Reciente</CardTitle>
+                <CardTitle className="text-text-primary">Attività Recente</CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="space-y-8 pr-4 h-[300px] overflow-y-auto">
                     {logs.length === 0 ? (
-                        <p className="text-text-muted text-sm text-center py-4">No hay actividad registrada.</p>
+                        <p className="text-text-muted text-sm text-center py-4">Nessuna attività registrata.</p>
                     ) : (
                         logs.map((log) => (
                             <div key={log.id} className="flex items-center">
@@ -33,7 +33,7 @@ export function RecentActivity({ logs, loading }: ActivityProps) {
                                     </p>
                                 </div>
                                 <div className="ml-auto font-medium text-xs text-text-muted">
-                                    {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: es })}
+                                    {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: it })}
                                 </div>
                             </div>
                         ))
@@ -46,10 +46,10 @@ export function RecentActivity({ logs, loading }: ActivityProps) {
 
 function getActionText(log: AdminLog): string {
     switch (log.action) {
-        case 'create': return `Creó un nuevo ${log.entity}`;
-        case 'update': return `Actualizó ${log.entity}`;
-        case 'delete': return `Eliminó ${log.entity}`;
-        case 'login': return `Inició sesión`;
-        default: return `${log.action} en ${log.entity}`;
+        case 'create': return `Creato nuovo ${log.entity}`;
+        case 'update': return `Aggiornato ${log.entity}`;
+        case 'delete': return `Eliminato ${log.entity}`;
+        case 'login': return `Accesso effettuato`;
+        default: return `${log.action} in ${log.entity}`;
     }
 }

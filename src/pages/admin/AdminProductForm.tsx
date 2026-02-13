@@ -63,7 +63,7 @@ const AdminProductForm: React.FC = () => {
     const [thumbFiles, setThumbFiles] = useState<(File | null)[]>([null, null, null]);
     const [imagePreviews, setImagePreviews] = useState<(string | null)[]>([null, null, null]);
 
-    const CATEGORIES = ['Lubricantes', 'Juguetes', 'Lenceria', 'Aceites', 'Fragancias', 'Vigorizzanti', 'Olio commestibile', 'Gioco', 'Kits'];
+    const CATEGORIES = ['Lubrificanti', 'Giocattoli', 'Lingerie', 'Oli', 'Fragranze', 'Vigorizzanti', 'Olio commestibile', 'Gioco', 'Kit'];
 
     const convertToWebP = (file: File, targetWidth?: number): Promise<File> => {
         return new Promise((resolve, reject) => {
@@ -144,7 +144,7 @@ const AdminProductForm: React.FC = () => {
             setImagePreviews([data.image_url || null, data.image2_url || null, data.image3_url || null]);
         } catch (error) {
             console.error('Error fetching product:', error);
-            toast.error('Error al cargar el producto');
+            toast.error('Errore durante il caricamento del prodotto');
             navigate('/admin/products');
         } finally {
             setFetching(false);
@@ -203,10 +203,10 @@ const AdminProductForm: React.FC = () => {
             newThumbs[index] = thumbFile;
             setThumbFiles(newThumbs);
 
-            toast.success(`Imagen ${index + 1} y miniatura optimizadas ✨`);
+            toast.success(`Immagine ${index + 1} e miniatura ottimizzate ✨`);
         } catch (error) {
             console.error('Error converting image:', error);
-            toast.error('No se pudo optimizar la imagen, se usará la original');
+            toast.error('Impossibile ottimizzare l\'immagine, verrà usata l\'originale');
             const newFiles = [...imageFiles];
             newFiles[index] = file;
             setImageFiles(newFiles);
@@ -234,7 +234,7 @@ const AdminProductForm: React.FC = () => {
             return publicUrl;
         } catch (error) {
             console.error('Error uploading image:', error);
-            throw new Error(`Falló la subida de la imagen ${index + 1}`);
+            throw new Error(`Caricamento dell'immagine ${index + 1} fallito`);
         } finally {
             setUploading(false);
         }
@@ -281,13 +281,13 @@ const AdminProductForm: React.FC = () => {
                     .update(productData)
                     .eq('id', id);
                 if (error) throw error;
-                toast.success('Producto actualizado exitosamente');
+                toast.success('Prodotto aggiornato con successo');
             } else {
                 const { error } = await supabase
                     .from('products')
                     .insert([productData]);
                 if (error) throw error;
-                toast.success('Producto creado exitosamente');
+                toast.success('Prodotto creato con successo');
             }
 
             navigate('/admin/products');
@@ -320,10 +320,10 @@ const AdminProductForm: React.FC = () => {
                 </button>
                 <div>
                     <h1 className="text-3xl font-playfair font-bold text-white">
-                        {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                        {isEditing ? 'Modifica Prodotto' : 'Nuovo Prodotto'}
                     </h1>
                     <p className="text-text-muted">
-                        {isEditing ? `Editando: ${formData.name}` : 'Agrega un nuevo producto al catálogo'}
+                        {isEditing ? `Modifica: ${formData.name}` : 'Aggiungi un nuovo prodotto al catalogo'}
                     </p>
                 </div>
             </div>
@@ -333,13 +333,13 @@ const AdminProductForm: React.FC = () => {
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md space-y-6">
                     <h2 className="text-xl font-medium text-white border-b border-white/10 pb-4 flex items-center gap-2">
                         <AlertCircle size={18} className="text-accent" />
-                        Información Esencial
+                        Informazioni Essenziali
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Name */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Nombre del Producto *</label>
+                            <label className="text-sm text-text-muted">Nome del Prodotto *</label>
                             <input
                                 required
                                 type="text"
@@ -347,7 +347,7 @@ const AdminProductForm: React.FC = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white placeholder-text-muted/50"
-                                placeholder="Ej: Aceite de Masaje"
+                                placeholder="Es: Olio da Massaggio"
                             />
                         </div>
 
@@ -361,7 +361,7 @@ const AdminProductForm: React.FC = () => {
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white [&>option]:bg-zinc-900"
                             >
-                                <option value="">Seleccionar...</option>
+                                <option value="">Seleziona...</option>
                                 {CATEGORIES.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
@@ -370,7 +370,7 @@ const AdminProductForm: React.FC = () => {
 
                         {/* Subtitle */}
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-sm text-text-muted">Subtítulo *</label>
+                            <label className="text-sm text-text-muted">Sottotitolo *</label>
                             <input
                                 required
                                 type="text"
@@ -378,13 +378,13 @@ const AdminProductForm: React.FC = () => {
                                 value={formData.subtitle}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white placeholder-text-muted/50"
-                                placeholder="Ej: Relajante y aromático"
+                                placeholder="Es: Rilassante e aromatico"
                             />
                         </div>
 
                         {/* Price */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Precio (€) *</label>
+                            <label className="text-sm text-text-muted">Prezzo (€) *</label>
                             <input
                                 required
                                 type="number"
@@ -400,7 +400,7 @@ const AdminProductForm: React.FC = () => {
 
                         {/* Stock */}
                         <div className="space-y-2">
-                            <label className="text-sm text-text-muted">Stock Disponible (Recomendado)</label>
+                            <label className="text-sm text-text-muted">Stock Disponibile (Consigliato)</label>
                             <input
                                 type="number"
                                 min="0"
@@ -419,7 +419,7 @@ const AdminProductForm: React.FC = () => {
                     {/* Left Column: Details */}
                     <div className="lg:col-span-2 space-y-6">
                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md space-y-6">
-                            <h2 className="text-xl font-medium text-white border-b border-white/10 pb-4">Detalles Técnicos</h2>
+                            <h2 className="text-xl font-medium text-white border-b border-white/10 pb-4">Dettagli Tecnici</h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Brand */}
@@ -435,7 +435,7 @@ const AdminProductForm: React.FC = () => {
                                 </div>
                                 {/* Code/SKU */}
                                 <div className="space-y-2">
-                                    <label className="text-sm text-text-muted">Código (SKU)</label>
+                                    <label className="text-sm text-text-muted">Codice (SKU)</label>
                                     <input
                                         type="text"
                                         name="code"
@@ -447,11 +447,11 @@ const AdminProductForm: React.FC = () => {
 
                                 {/* Size Inputs Group */}
                                 <div className="space-y-4 md:col-span-2 bg-white/5 p-4 rounded-xl border border-white/10">
-                                    <label className="text-sm text-text-muted font-medium block mb-2">Tamaño / Capacidad</label>
+                                    <label className="text-sm text-text-muted font-medium block mb-2">Dimensione / Capacità</label>
                                     <div className="grid grid-cols-2 gap-4">
                                         {/* Size ML */}
                                         <div className="space-y-2">
-                                            <label className="text-xs text-text-muted">Mililitros (ml)</label>
+                                            <label className="text-xs text-text-muted">Millilitri (ml)</label>
                                             <input
                                                 type="number"
                                                 step="0.1"
@@ -459,13 +459,13 @@ const AdminProductForm: React.FC = () => {
                                                 value={formData.size_ml}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
-                                                placeholder="Ej: 100"
+                                                placeholder="Es: 100"
                                             />
                                         </div>
 
                                         {/* Size fl oz */}
                                         <div className="space-y-2">
-                                            <label className="text-xs text-text-muted">Onzas (fl oz)</label>
+                                            <label className="text-xs text-text-muted">Once (fl oz)</label>
                                             <input
                                                 type="number"
                                                 step="0.1"
@@ -473,13 +473,13 @@ const AdminProductForm: React.FC = () => {
                                                 value={formData.size_fl_oz}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-2 bg-black/20 border border-white/10 rounded-lg focus:outline-none focus:border-accent text-white"
-                                                placeholder="Ej: 3.4"
+                                                placeholder="Es: 3.4"
                                             />
                                         </div>
                                     </div>
                                     {/* Auto-generated preview */}
                                     <div className="text-xs text-text-muted flex items-center gap-2 mt-2">
-                                        <span>Vista previa en web:</span>
+                                        <span>Anteprima web:</span>
                                         <span className="text-accent font-mono bg-accent/10 px-2 py-1 rounded">
                                             {formData.size || "N/A"}
                                         </span>
@@ -489,7 +489,7 @@ const AdminProductForm: React.FC = () => {
 
                             {/* Description */}
                             <div className="space-y-2">
-                                <label className="text-sm text-text-muted">Descripción Corta *</label>
+                                <label className="text-sm text-text-muted">Descrizione Breve *</label>
                                 <textarea
                                     required
                                     rows={3}
@@ -502,7 +502,7 @@ const AdminProductForm: React.FC = () => {
 
                             {/* Additional Description */}
                             <div className="space-y-2">
-                                <label className="text-sm text-text-muted">Descripción Detallada (Extensa)</label>
+                                <label className="text-sm text-text-muted">Descrizione Dettagliata (Estesa)</label>
                                 <textarea
                                     rows={8}
                                     name="description_additional"
@@ -515,22 +515,22 @@ const AdminProductForm: React.FC = () => {
 
                         {/* Extra Info */}
                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md space-y-6">
-                            <h2 className="text-xl font-medium text-white border-b border-white/10 pb-4">Información Extra</h2>
+                            <h2 className="text-xl font-medium text-white border-b border-white/10 pb-4">Informazioni Extra</h2>
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-sm text-text-muted">Modo de Uso</label>
+                                    <label className="text-sm text-text-muted">Modo d'Uso</label>
                                     <textarea name="usage" rows={2} value={formData.usage} onChange={handleChange} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm text-text-muted">Ingredientes</label>
+                                    <label className="text-sm text-text-muted">Ingredienti</label>
                                     <textarea name="ingredients" rows={2} value={formData.ingredients} onChange={handleChange} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm text-text-muted">Tips / Consejos</label>
+                                    <label className="text-sm text-text-muted">Suggerimenti / Consigli</label>
                                     <textarea name="tips" rows={2} value={formData.tips} onChange={handleChange} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white" />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm text-text-muted">Sensación</label>
+                                    <label className="text-sm text-text-muted">Sensazione</label>
                                     <input name="sensation" value={formData.sensation} onChange={handleChange} className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-accent text-white" />
                                 </div>
                             </div>
@@ -540,16 +540,16 @@ const AdminProductForm: React.FC = () => {
                     {/* Right Column: Image */}
                     <div className="space-y-6">
                         <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-                            <h2 className="text-xl font-medium text-white mb-4">Imágenes del Producto</h2>
+                            <h2 className="text-xl font-medium text-white mb-4">Immagini del Prodotto</h2>
                             <p className="text-xs text-text-muted mb-6">
-                                Las imágenes se convertirán a WebP y se renombrarán automáticamente.
+                                Le immagini verranno convertite in WebP e rinominate automaticamente.
                             </p>
 
                             <div className="space-y-6">
                                 {[0, 1, 2].map((idx) => (
                                     <div key={idx} className="space-y-2">
                                         <label className="text-xs text-text-muted uppercase font-bold tracking-wider ml-1">
-                                            {idx === 0 ? 'Imagen Principal *' : `Imagen Adicional ${idx + 1}`}
+                                            {idx === 0 ? 'Immagine Principale *' : `Immagine Aggiuntiva ${idx + 1}`}
                                         </label>
                                         <div className="flex flex-col items-center justify-center w-full">
                                             <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-white/20 rounded-2xl cursor-pointer hover:bg-white/5 transition-colors relative overflow-hidden group">
@@ -558,13 +558,13 @@ const AdminProductForm: React.FC = () => {
                                                         <img src={imagePreviews[idx]!} alt={`Preview ${idx + 1}`} className="w-full h-full object-contain p-2" />
                                                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                                                             <Upload className="text-white" />
-                                                            <span className="ml-2 text-white font-medium">Cambiar</span>
+                                                            <span className="ml-2 text-white font-medium">Cambia</span>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <div className="flex flex-col items-center justify-center pt-5 pb-6 text-text-muted text-center">
                                                         <ImageIcon className="w-8 h-8 mb-2" />
-                                                        <p className="text-xs">Subir imagen {idx + 1}</p>
+                                                        <p className="text-xs">Carica immagine {idx + 1}</p>
                                                     </div>
                                                 )}
                                                 <input
@@ -588,7 +588,7 @@ const AdminProductForm: React.FC = () => {
                                 onClick={() => navigate('/admin/products')}
                                 className="flex-1 py-3 px-4 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-colors"
                             >
-                                Cancelar
+                                Annulla
                             </button>
                             <button
                                 type="submit"
@@ -600,7 +600,7 @@ const AdminProductForm: React.FC = () => {
                                 ) : (
                                     <>
                                         <Save size={20} />
-                                        Guardar
+                                        Salva
                                     </>
                                 )}
                             </button>
