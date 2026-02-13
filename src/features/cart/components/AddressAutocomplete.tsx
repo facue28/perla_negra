@@ -8,6 +8,7 @@ interface AddressAutocompleteProps {
     setFormData: (data: any) => void;
     errors: Record<string, string>;
     setErrors: (errors: Record<string, string>) => void;
+    disabled?: boolean;
 }
 
 interface RadarAddress {
@@ -25,7 +26,7 @@ interface RadarAddress {
     longitude?: number;
 }
 
-const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: AddressAutocompleteProps) => {
+const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disabled }: AddressAutocompleteProps) => {
     const [query, setQuery] = useState<string>('');
     const [suggestions, setSuggestions] = useState<RadarAddress[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -224,10 +225,11 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                         id="checkout-address"
                         name="indirizzo"
                         type="text"
-                        value={query || formData.indirizzo} // Fallback to formData if query empty
+                        value={disabled ? '' : (query || formData.indirizzo)} // Clear or show address
                         onChange={handleQueryChange}
-                        placeholder="Es. Via Roma"
-                        className={`w-full bg-background-dark border ${errors.indirizzo ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
+                        disabled={disabled}
+                        placeholder={disabled ? "Non richiesto per il ritiro" : "Es. Via Roma"}
+                        className={`w-full bg-background-dark border ${errors.indirizzo ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
 
@@ -273,10 +275,11 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                         id="checkout-civico"
                         name="civico"
                         type="text"
-                        value={formData.civico}
+                        value={disabled ? '' : formData.civico}
                         onChange={(e) => handleManualChange('civico', e.target.value)}
-                        placeholder="12/A"
-                        className={`w-full bg-background-dark border ${errors.civico ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
+                        disabled={disabled}
+                        placeholder={disabled ? "-" : "12/A"}
+                        className={`w-full bg-background-dark border ${errors.civico ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />
                 </div>
 
@@ -289,12 +292,13 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                         id="checkout-cap"
                         name="cap"
                         type="text"
-                        value={formData.cap}
+                        value={disabled ? '' : formData.cap}
                         onChange={(e) => handleManualChange('cap', e.target.value)}
                         onBlur={validateLocation} // Trigger validation
-                        placeholder="00100"
+                        disabled={disabled}
+                        placeholder={disabled ? "-" : "00100"}
                         maxLength={5}
-                        className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
+                        className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />
                     {/* Validation Feedback */}
                     {isValidating && <span className="text-xs text-text-muted absolute right-3 mt-4">Verificando...</span>}
@@ -313,11 +317,12 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                         id="checkout-city"
                         name="citta"
                         type="text"
-                        value={formData.citta}
+                        value={disabled ? '' : formData.citta}
                         onChange={(e) => handleManualChange('citta', e.target.value)}
                         onBlur={validateLocation} // Trigger validation
-                        placeholder="Roma"
-                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
+                        disabled={disabled}
+                        placeholder={disabled ? "-" : "Roma"}
+                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />
                     {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta}</p>}
                 </div>
@@ -331,8 +336,9 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                         value={formData.provincia}
                         onChange={(val) => handleManualChange('provincia', val)}
                         options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
-                        placeholder="Seleziona"
-                        className={`w-full ${errors.provincia ? 'border-red-500' : ''}`}
+                        placeholder={disabled ? "-" : "Seleziona"}
+                        disabled={disabled}
+                        className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
                     />
                     {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia}</p>}
                 </div>
@@ -347,10 +353,11 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors }: Addre
                     id="checkout-details"
                     name="dettagli"
                     type="text"
-                    value={formData.dettagli}
+                    value={disabled ? '' : formData.dettagli}
                     onChange={(e) => handleManualChange('dettagli', e.target.value)}
-                    placeholder="Scala A, Int 4..."
-                    className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all"
+                    disabled={disabled}
+                    placeholder={disabled ? "Ritiro in sede (Verbania)" : "Scala A, Int 4..."}
+                    className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                 />
             </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/features/cart/context/CartContext';
 import { Link } from 'react-router-dom';
-import { Trash2, Plus, Minus, ArrowLeft, Send, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft, Send, ShoppingBag, MapPin } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import { toast } from 'sonner';
 import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete';
@@ -116,17 +116,21 @@ const CartPage = (): React.ReactElement => {
             newErrors.telefono = "Numero non valido (controlla prefisso e lunghezza).";
         }
 
-        if (!formData.indirizzo.trim()) newErrors.indirizzo = "L'indirizzo è obbligatorio";
-        if (!formData.civico.trim()) newErrors.civico = "Il civico è obbligatorio";
+        const isPuntoRitiro = formData.metodoEnvio.includes('Ritiro');
 
-        if (!formData.cap.trim() || !/^\d{5}$/.test(formData.cap)) {
-            newErrors.cap = "Inserisci un CAP valido (5 cifre).";
-        }
+        if (!isPuntoRitiro) {
+            if (!formData.indirizzo.trim()) newErrors.indirizzo = "L'indirizzo è obbligatorio";
+            if (!formData.civico.trim()) newErrors.civico = "Il civico è obbligatorio";
 
-        if (!formData.citta.trim()) newErrors.citta = "Inserisci il Comune.";
+            if (!formData.cap.trim() || !/^\d{5}$/.test(formData.cap)) {
+                newErrors.cap = "Inserisci un CAP valido (5 cifre).";
+            }
 
-        if (!formData.provincia.trim() || !/^[A-Za-z]{2}$/.test(formData.provincia)) {
-            newErrors.provincia = "Provincia (2 lettere).";
+            if (!formData.citta.trim()) newErrors.citta = "Inserisci il Comune.";
+
+            if (!formData.provincia.trim() || !/^[A-Za-z]{2}$/.test(formData.provincia)) {
+                newErrors.provincia = "Provincia (2 lettere).";
+            }
         }
 
         if (formData.note && /(http|https|www\.|ftp)/i.test(formData.note)) {
@@ -514,6 +518,7 @@ const CartPage = (): React.ReactElement => {
                                     setFormData={setFormData}
                                     errors={errors as Record<string, string>}
                                     setErrors={(newErrors: any) => setErrors(newErrors)}
+                                    disabled={formData.metodoEnvio.includes('Ritiro')}
                                 />
 
                                 <div className="space-y-1">
@@ -524,10 +529,19 @@ const CartPage = (): React.ReactElement => {
                                             onChange={(val: string) => setFormData({ ...formData, metodoEnvio: val })}
                                             options={[
                                                 { value: 'Spedizione a domicilio', label: 'Spedizione a domicilio' },
-                                                { value: 'Ritiro al punto di incontro', label: 'Ritiro al punto di incontro' }
+                                                { value: 'Ritiro in sede (Verbania)', label: 'Ritiro in sede (Verbania)' }
                                             ]}
                                         />
                                     </div>
+                                    {formData.metodoEnvio.includes('Ritiro') && (
+                                        <div className="mt-2 p-3 bg-accent/10 border border-accent/20 rounded-xl flex items-start gap-2">
+                                            <MapPin className="text-accent mt-0.5 shrink-0" size={14} />
+                                            <p className="text-[11px] text-accent/90 leading-tight">
+                                                <strong>Ritiro in sede (Verbania).</strong><br />
+                                                Ti contatteremo su WhatsApp per concordare luogo e orario dell'incontro.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-1">

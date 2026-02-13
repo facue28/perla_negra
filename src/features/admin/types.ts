@@ -43,7 +43,8 @@ export interface AdminOrder {
     order_number: string;
     customer_name: string;
     customer_phone: string;
-    address: string;
+    delivery_address: string;
+    address?: string; // Legacy/Mapping support
     city?: string;
     delivery_notes?: string | null;
     status: OrderStatus;

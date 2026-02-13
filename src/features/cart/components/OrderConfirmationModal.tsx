@@ -140,10 +140,21 @@ const OrderConfirmationModal = ({
                                     <div className="flex items-start gap-3">
                                         <MapPin className="text-accent mt-0.5" size={18} />
                                         <div>
-                                            <p className="text-xs text-text-muted uppercase tracking-wider font-bold">Spedizione a</p>
-                                            <p className="text-text-primary font-medium">{formData.indirizzo} {formData.civico}</p>
-                                            <p className="text-text-muted text-sm">{formData.cap} {formData.citta} ({formData.provincia})</p>
-                                            {formData.dettagli && <p className="text-text-muted text-xs mt-1 italic">{formData.dettagli}</p>}
+                                            <p className="text-xs text-text-muted uppercase tracking-wider font-bold">
+                                                {formData.metodoEnvio.includes('Ritiro') ? 'Punto di Ritiro' : 'Spedizione a'}
+                                            </p>
+                                            {formData.metodoEnvio.includes('Ritiro') ? (
+                                                <>
+                                                    <p className="text-text-primary font-medium">Ritiro in sede (Verbania)</p>
+                                                    <p className="text-text-muted text-sm italic">Luogo e orario da concordare</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <p className="text-text-primary font-medium">{formData.indirizzo} {formData.civico}</p>
+                                                    <p className="text-text-muted text-sm">{formData.cap} {formData.citta} ({formData.provincia})</p>
+                                                    {formData.dettagli && <p className="text-text-muted text-xs mt-1 italic">{formData.dettagli}</p>}
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

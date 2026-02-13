@@ -12,9 +12,10 @@ interface SelectProps {
     options: SelectOption[];
     placeholder?: string;
     className?: string;
+    disabled?: boolean;
 }
 
-const Select = ({ value, onChange, options, placeholder = "Seleziona", className = "" }: SelectProps) => {
+const Select = ({ value, onChange, options, placeholder = "Seleziona", className = "", disabled = false }: SelectProps) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchBuffer = useRef<string>("");
@@ -36,6 +37,7 @@ const Select = ({ value, onChange, options, placeholder = "Seleziona", className
 
     // Keyboard Navigation (Type to Select)
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (disabled) return;
         // Handle Enter to confirm/close
         if (e.key === 'Enter' && isOpen) {
             e.preventDefault();
@@ -81,6 +83,7 @@ const Select = ({ value, onChange, options, placeholder = "Seleziona", className
     };
 
     const handleSelect = (optionValue: string) => {
+        if (disabled) return;
         onChange(optionValue);
         setIsOpen(false);
     };
@@ -90,8 +93,9 @@ const Select = ({ value, onChange, options, placeholder = "Seleziona", className
             {/* Trigger Button */}
             <button
                 type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 flex items-center justify-between transition-all ${isOpen ? 'border-accent ring-1 ring-accent/50' : ''} ${className}`}
+                onClick={() => !disabled && setIsOpen(!isOpen)}
+                disabled={disabled}
+                className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 flex items-center justify-between transition-all ${isOpen ? 'border-accent ring-1 ring-accent/50' : ''} ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''} ${className}`}
             >
                 <span className="truncate">
                     {selectedOption ? selectedOption.label : placeholder}

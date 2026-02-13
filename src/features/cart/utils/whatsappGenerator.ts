@@ -21,15 +21,22 @@ export const generateWhatsAppLink = (
     message += `*Cliente:* ${formData.nombre}\n`;
     message += `*Telefono:* ${formData.telefono}\n`;
 
-    // Formatted Address Block
-    message += `*Indirizzo:*\n`;
-    message += `${formData.indirizzo} ${formData.civico}\n`;
-    if (formData.dettagli) message += `(${formData.dettagli})\n`;
-    message += `${formData.cap} ${formData.citta} (${formData.provincia})\n`;
+    // Pickup vs Delivery Block
+    const isRitiro = formData.metodoEnvio.includes('Ritiro');
 
-    // GPS Coordinates Link
-    if (formData.latitude && formData.longitude) {
-        message += `📍 *Posizione GPS:* https://maps.google.com/?q=${formData.latitude},${formData.longitude}\n`;
+    if (isRitiro) {
+        message += `📍 *Metodo:* Ritiro in sede (Verbania)\n`;
+        message += `_Luogo e orario da concordare privatamente su WhatsApp._\n`;
+    } else {
+        message += `*Indirizzo:*\n`;
+        message += `${formData.indirizzo} ${formData.civico}\n`;
+        if (formData.dettagli) message += `(${formData.dettagli})\n`;
+        message += `${formData.cap} ${formData.citta} (${formData.provincia})\n`;
+
+        // GPS Coordinates Link
+        if (formData.latitude && formData.longitude) {
+            message += `📍 *Posizione GPS:* https://maps.google.com/?q=${formData.latitude},${formData.longitude}\n`;
+        }
     }
 
     if (formData.note) {

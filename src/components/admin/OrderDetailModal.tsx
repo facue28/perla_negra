@@ -134,7 +134,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, isOpen, onCl
                                                 <p className="text-text-muted text-xs uppercase mb-1">Dirección de Envío</p>
                                                 <p className="text-white font-medium flex items-start gap-2">
                                                     <MapPin size={14} className="text-accent mt-1 flex-shrink-0" />
-                                                    {order.address}{order.city ? `, ${order.city}` : ''}
+                                                    {(!order.delivery_address || order.delivery_address.replace(/[, ]/g, '').length === 0)
+                                                        ? "Ritiro in sede (Verbania)"
+                                                        : order.delivery_address
+                                                    }
                                                 </p>
                                             </div>
                                             {order.delivery_notes && (

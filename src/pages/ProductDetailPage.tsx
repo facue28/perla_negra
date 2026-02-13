@@ -209,14 +209,13 @@ const ProductDetailPage = (): React.ReactElement => {
     };
 
     // Structured Data for SEO (Rich Snippets)
-    const structuredData = {
-        "@context": "https://schema.org/",
+    const structuredData = product ? {
+        "@context": "https://schema.org",
         "@type": "Product",
         "name": product.name,
-        "image": product.image,
-        "description": product.description,
-        "sku": product.code || product.slug,
-        "mpn": product.code || product.slug,
+        "image": product.image ? [getOptimizedImageUrl(product.image, { width: 800 })] : [],
+        "description": product.subtitle || product.name,
+        "sku": product.id,
         "brand": {
             "@type": "Brand",
             "name": product.brand || "Perla Negra"
@@ -225,17 +224,17 @@ const ProductDetailPage = (): React.ReactElement => {
             "@type": "Offer",
             "url": window.location.href,
             "priceCurrency": "EUR",
-            "price": product.price,
+            "price": product.price.toFixed(2),
             "availability": "https://schema.org/InStock",
             "itemCondition": "https://schema.org/NewCondition"
         }
-    };
+    } : undefined;
 
     return (
-        <div className="bg-background-dark min-h-screen py-6 flex flex-col pb-32"> {/* Added pb-32 to provide breathing room from sticky bar */}
+        <div className="min-h-screen bg-background text-text-primary pb-20">
             <SEO
                 title={product.name}
-                description={`Acquista ${product.name} - ${product.subtitle || product.category} `}
+                description={product.subtitle || `Compra ${product.name} al miglior prezzo su Perla Negra.`}
                 image={product.image}
                 structuredData={structuredData}
             />
@@ -568,9 +567,10 @@ const ProductDetailPage = (): React.ReactElement => {
                             </button>
                         </div>
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                )
+                }
+            </AnimatePresence >
+        </div >
     );
 };
 
