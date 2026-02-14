@@ -2,6 +2,8 @@ interface OptimizeOptions {
     width?: number;
     height?: number;
     resize?: 'cover' | 'contain' | 'fill';
+    format?: 'origin' | 'jpeg' | 'png' | 'webp';
+    quality?: number;
 }
 
 /**
@@ -22,15 +24,33 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
         return url; // Return original if not hosted on Supabase Storage
     }
 
-    // [FREE PLAN LIMITATION]
-    // The user is currently on the Free Plan, which does NOT support the Transformation API.
-    // However, we can use our manual -min.webp thumbnails for better performance.
+    // 1. SUPABASE IMAGE TRANSFORMATION
+    // We confirmed that the Render API (/render/image/public) works even for this project.
+    // This allows us to force JPEG format (best for WhatsApp) and specific dimensions.
 
-    const { width } = options;
-    if (width && width <= 500 && url.endsWith('.webp') && !url.includes('-min.webp')) {
-        return url.replace('.webp', '-min.webp');
+    if (url.includes('supabase.co/storage/v1/object/public')) {
+        const { width, height, format, quality } = options;
+
+        let transformUrl = url.replace('/object/public/', '/render/image/public/');
+        const params = [];
+
+        if (width) params.push(`width=${width}`);
+        if (height) params.push(`height=${height}`);
+        if (format) params.push(`format=${format}`); // Important for WhatsApp (jpg)
+        if (quality) params.push(`quality=${quality}`);
+        else if (format === 'origin' || !format) params.push('quality=80');
+
+        // Add resize strategy (contain prevents cropping, cover fills)
+        params.push('resize=contain');
+
+        if (params.length > 0) {
+            transformUrl += `?${params.join('&')}`;
+        }
+
+        return transformUrl;
     }
 
+    // Fallback for non-Supabase URLs or other cases
     return url;
 
 

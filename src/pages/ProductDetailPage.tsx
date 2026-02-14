@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, MouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 // ... (rest of imports unchanged by instruction)
-import { useProducts } from '@/features/products/hooks/useProducts';
+import { useProduct } from '@/features/products/hooks/useProduct';
+import { useProducts } from '@/features/products/hooks/useProducts'; // Keep for "Related Products"
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ShoppingBag, Star, Check } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
@@ -28,8 +29,9 @@ const ProductDetailPage = (): React.ReactElement => {
 
     const { addToCart } = useCart();
 
-    const { products, loading } = useProducts();
-    const product = products.find(p => p.slug === slug);
+    const { product, loading } = useProduct(slug);
+    const { products: allProducts } = useProducts(); // Still needed for "Related Products" section
+
 
     // Zoom State
     const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -235,7 +237,7 @@ const ProductDetailPage = (): React.ReactElement => {
             <SEO
                 title={product.name}
                 description={product.subtitle || `Compra ${product.name} al miglior prezzo su Perla Negra.`}
-                image={product.image}
+                image={getOptimizedImageUrl(product.image, { width: 500, height: 500, format: 'jpeg' })}
                 structuredData={structuredData}
             />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow flex flex-col">
@@ -244,7 +246,7 @@ const ProductDetailPage = (): React.ReactElement => {
                 <nav className="flex items-center text-sm text-text-muted mb-4 space-x-2 flex-shrink-0 pt-24">
                     <Link to="/" className="hover:text-accent">Home</Link>
                     <ChevronRight size={14} />
-                    <Link to="/productos" className="hover:text-accent">Prodotti</Link>
+                    <Link to="/prodotti" className="hover:text-accent">Prodotti</Link>
                     <ChevronRight size={14} />
                     <span className="text-accent">{product.category}</span>
                 </nav>
@@ -432,7 +434,7 @@ const ProductDetailPage = (): React.ReactElement => {
                             {/* Enhanced Explore CTA - Compact */}
                             <div className="flex justify-center mt-1">
                                 <Link
-                                    to="/productos"
+                                    to="/prodotti"
                                     className="group flex items-center gap-2 px-4 py-2 border border-accent/20 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium text-xs uppercase tracking-wide"
                                 >
                                     <span>Continua a esplorare</span>
@@ -522,11 +524,11 @@ const ProductDetailPage = (): React.ReactElement => {
                 </div>
 
                 {/* Related Products Section */}
-                {products.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
+                {product && allProducts.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
                     <div className="border-t border-border/10 pt-16 pb-24 mt-16">
                         <h2 className="text-2xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
-                            {products
+                            {allProducts
                                 .filter(p => p.category === product.category && p.slug !== product.slug)
                                 .slice(0, 4)
                                 .map(relatedProduct => (
