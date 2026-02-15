@@ -27,7 +27,7 @@ const toTitleCase = (str: string | undefined): string => {
 const ProductDetailPage = (): React.ReactElement => {
     const { slug } = useParams<{ slug: string }>();
 
-    const { addToCart } = useCart();
+    const { addItem } = useCart();
 
     const { product, loading } = useProduct(slug);
     const { products: allProducts } = useProducts(); // Still needed for "Related Products" section
@@ -137,7 +137,7 @@ const ProductDetailPage = (): React.ReactElement => {
 
     const handleAddToCart = () => {
         if (!product) return;
-        addToCart(product, quantity);
+        addItem(product, quantity);
         trackAddToCart(product, quantity); // Analytics
         toast.success(`Aggiunto al carrello: ${product.name} `, {
             description: `${quantity} x ${product.name} `

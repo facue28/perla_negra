@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/apiClient';
-import { Product } from '@/features/products/types';
+import { Product, ProductDB } from '@/features/products/types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const storageUrl = `${supabaseUrl}/storage/v1/object/public/images`;
@@ -18,7 +18,65 @@ const getPlaceholderImage = (category: string | undefined): string => {
     if (cat.includes('olio') || cat.includes('aceite')) return `${storageUrl}/olio.webp`;
     if (cat.includes('gioco') || cat.includes('juego')) return `${storageUrl}/gioco.webp`;
 
-    return `${storageUrl}/lubricante.webp`; // Default fallback
+    return `${storageUrl}/lubricante.webp`; // Revert to known working fallback
+};
+
+// Internal secure mapper
+const mapProductDBToProduct = (db: ProductDB): Product => {
+    // 1. Safe Image Logic
+    const hasBrokenUrl = db.image_url && db.image_url.includes('afrodisiaco.png');
+    // Prioritize valid DB URL, then category fallback, then generic placeholder
+    const validImageUrl = (hasBrokenUrl || !db.image_url)
+        ? getPlaceholderImage(db.category)
+        : db.image_url;
+
+    // 2. Size Logic
+    let displaySize: string | number = 'N/A';
+    if (db.size_ml) {
+        displaySize = `${db.size_ml}ml`;
+    } else if (db.size_fl_oz) {
+        displaySize = `${db.size_fl_oz}oz`;
+    } else if (db.format) {
+        displaySize = db.format;
+    }
+
+    return {
+        id: db.id,
+        createdAt: new Date(db.created_at), // Strict Date conversion
+        name: db.name,
+        description: db.description || '', // Fallback to empty string
+        price: Number(db.price), // Ensure number
+        category: db.category,
+        image: validImageUrl,
+        stock: db.stock,
+        slug: db.slug,
+        featured: db.featured || false,
+
+        // Optional / Mapped
+        brand: db.brand || 'Perla Negra', // Fallback
+        b2bPrice: db.b2b_price,
+        ingredients: db.ingredients,
+        usageTips: db.usage_tips,
+        format: db.format,
+        sensation: db.sensation,
+        sizeMl: db.size_ml,
+        sizeFlOz: db.size_fl_oz,
+        image2: db.image2_url,
+        image3: db.image3_url,
+        subtitle: db.subtitle,
+        code: db.code,
+        usage: db.usage,
+
+        // Mapped helpers
+        fallbackImage: getPlaceholderImage(db.category),
+        size: displaySize,
+        productFilter: db.product_filter || db.usage_area,
+        usageArea: db.usage_area || db.product_filter,
+        targetAudience: db.target_audience,
+        tips: db.usage_tips, // Map usage_tips to tips
+        descriptionAdditional: db.description_additional || db.details,
+        details: db.details
+    };
 };
 
 export const productService = {
@@ -26,31 +84,8 @@ export const productService = {
         // Usamos apiClient para manejo automático de errores y logging
         const { data } = await apiClient.get('products', query => query.order('id'));
 
-        if (data && data.length > 0) {
-            return data.map((p: any): Product => {
-                // Fix: Ignore hardcoded 'afrodisiaco.png' in DB which might be broken or incorrect for Vigorizzanti
-                const hasBrokenUrl = p.image_url && p.image_url.includes('afrodisiaco.png');
-                const validImageUrl = hasBrokenUrl ? null : p.image_url;
-
-                return {
-                    ...p,
-                    image: validImageUrl || getPlaceholderImage(p.category),
-                    fallbackImage: getPlaceholderImage(p.category), // 🆕 Backup image for UI error handling
-                    image2: p.image2_url, // 🆕 New mapping for second image
-                    image3: p.image3_url, // 🆕 New mapping for third image
-                    sizeFlOz: p.size_fl_oz,
-                    size: p.size, // Correctly map to the DB text column
-                    sizeMl: p.size_ml, // Keeping this just in case
-                    productFilter: p.product_filter || p.usage_area, // Mapped to 'productFilter' (new standard)
-                    usageArea: p.product_filter || p.usage_area,     // Keep 'usageArea' for backward compatibility during refactor
-                    targetAudience: p.target_audience,
-                    brand: p.brand || 'Sexitive', // Default fallback for now if null
-                    ingredients: p.ingredients,
-                    tips: p.tips,
-                    descriptionAdditional: p.description_additional || p.details, // Fix: Use 'details' if 'description_additional' is empty
-                    createdAt: new Date(p.created_at)
-                };
-            });
+        if (data && Array.isArray(data) && data.length > 0) {
+            return data.map((item: any) => mapProductDBToProduct(item as ProductDB));
         }
 
         return [];

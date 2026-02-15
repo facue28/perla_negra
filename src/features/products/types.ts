@@ -1,11 +1,11 @@
-export interface Product {
+export interface ProductDB {
     id: string;
-    created_at?: string;
+    created_at: string;
     name: string;
     description?: string;
     price: number;
     category: string;
-    image: string;
+    image_url?: string;
     stock: number;
     slug: string;
     featured?: boolean;
@@ -16,34 +16,55 @@ export interface Product {
     format?: string;
     sensation?: string;
     size_ml?: number;
+    size_fl_oz?: number;
     image2_url?: string;
     image3_url?: string;
     subtitle?: string;
-
-    // Mapped fields from service
     code?: string;
     usage?: string;
+    product_filter?: string;
+    usage_area?: string;
+    target_audience?: string;
+    details?: string;
+    description_additional?: string;
+}
+
+export interface Product {
+    id: string;
+    createdAt: Date;
+    name: string;
+    description: string;
+    price: number;
+    category: string;
+    image: string;
+    stock: number;
+    slug: string;
+    featured: boolean;
+
+    // Optional fields
+    b2bPrice?: number;
+    ingredients?: string;
+    usageTips?: string;
+    brand: string;
+    format?: string;
+    sensation?: string;
+    sizeMl?: number;
+    sizeFlOz?: number;
     image2?: string;
     image3?: string;
+    subtitle?: string;
+    code?: string;
+    usage?: string;
 
-    fallbackImage?: string;
-    sizeFlOz?: number;
-    size?: string | number;
+    // Mapped fields
+    fallbackImage: string;
+    size: string | number;
     productFilter?: string;
     usageArea?: string;
     targetAudience?: string;
     tips?: string;
     descriptionAdditional?: string;
-    createdAt?: Date | string; // Allow both for flexibility during migration
-
-    // DB fields that might be present
-    size_fl_oz?: number;
-    target_audience?: string;
     details?: string;
-    description_additional?: string;
-    usage_area?: string;
-    product_filter?: string;
-    image_url?: string;
 }
 
 export interface Review {

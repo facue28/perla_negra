@@ -42,11 +42,11 @@ async function generateSitemap() {
             '',
             '/chi-sono',
             '/contatti',
-            '/productos',
-            '/terminos',
-            '/privacidad',
-            '/uso-responsable',
-            '/reseller'
+            '/prodotti',
+            '/termini-e-condizioni',
+            '/privacy-policy',
+            '/uso-responsabile',
+            '/rivenditori'
         ];
 
         // 3. Construir XML
@@ -68,7 +68,7 @@ async function generateSitemap() {
             const lastMod = product.created_at ? new Date(product.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
             sitemap += `
     <url>
-        <loc>${SITE_URL}/productos/${product.slug}</loc>
+        <loc>${SITE_URL}/prodotti/${product.slug}</loc>
         <lastmod>${lastMod}</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>

@@ -8,62 +8,103 @@ export const generateWhatsAppLink = (
     subtotal: number,
     orderNumber: string
 ): { whatsappUrl: string; orderId: string } => {
-    // 1. Validate Order Number (Mandatory)
-    if (!orderNumber) {
-        console.error('generateWhatsAppLink called without orderNumber');
-        throw new Error("Il numero dell'ordine è richiesto.");
-    }
 
+    // 1. Validation
+    if (!orderNumber) throw new Error("Il numero dell'ordine è richiesto.");
     const orderId = orderNumber;
+    const date = new Date().toLocaleDateString('it-IT');
 
-    // 2. Construct the message
-    let message = `*ORDINE #${orderId}* 🖤\n\n`;
-    message += `*Cliente:* ${formData.nombre}\n`;
+    // 2. Professional Invoice Style (Unicode Emojis)
+    let message = `*ORDINE #${orderId}* \uD83D\uDDA4\n`;
+    message += `*Data:* ${date}\n`;
+    message += `──────────────────\n\n`;
+
+    // Customer
+    message += `\uD83D\uDC64 *DETTAGLI CLIENTE*\n`;
+    message += `*Nome:* ${formData.nombre}\n`;
     message += `*Telefono:* ${formData.telefono}\n`;
 
-    // Pickup vs Delivery Block
+    // Delivery Method
     const isRitiro = formData.metodoEnvio.includes('Ritiro');
-
     if (isRitiro) {
-        message += `📍 *Metodo:* Ritiro in sede (Verbania)\n`;
-        message += `_Luogo e orario da concordare privatamente su WhatsApp._\n`;
+        message += `\uD83D\uDCCD *Metodo:* Ritiro in sede (Verbania)\n`;
+        message += `_Luogo e orario da concordare._\n`;
     } else {
-        message += `*Indirizzo:*\n`;
+        message += `\uD83D\uDE9A *SPEDIZIONE*\n`;
         message += `${formData.indirizzo} ${formData.civico}\n`;
         if (formData.dettagli) message += `(${formData.dettagli})\n`;
         message += `${formData.cap} ${formData.citta} (${formData.provincia})\n`;
 
-        // GPS Coordinates Link
         if (formData.latitude && formData.longitude) {
-            message += `📍 *Posizione GPS:* https://maps.google.com/?q=${formData.latitude},${formData.longitude}\n`;
+            message += `\uD83D\uDCCD *Posizione:* http://maps.google.com/maps?q=${formData.latitude},${formData.longitude}\n`;
         }
     }
 
     if (formData.note) {
-        message += `\n*Note:* ${formData.note}\n`;
+        message += `\n\uD83D\uDCDD *NOTE*\n${formData.note}\n`;
     }
 
-    message += `\n*Consegna:* ${formData.metodoEnvio}\n\n`;
-    message += `*DETTAGLIO DELL'ORDINE:*\n`;
+    message += `\n──────────────────\n`;
+    message += `\uD83D\uDED2 *RIEPILOGO ORDINE*\n\n`;
 
     cart.forEach(item => {
-        const itemSubtotal = item.price * item.quantity;
-        message += `- [${item.code || 'N/A'}] ${item.name} (x${item.quantity}): €${itemSubtotal.toFixed(2)}\n`;
+        const price = Number(item.price);
+        const qty = Number(item.quantity);
+        const itemSubtotal = price * qty;
+
+        message += `\u25AA\uFE0F *${item.name}*\n`;
+        message += `   ${qty} x €${price.toFixed(2)} = €${itemSubtotal.toFixed(2)}\n`;
+
+        // ULTIMATE CLEANER: Extract digits ONLY if it looks like a size.
+        let sizeDisplay = '';
+
+        // Build candidate string from available fields
+        let candidate = '';
+        if (item.sizeMl) candidate = String(item.sizeMl); // Best source
+        else if (item.size) candidate = String(item.size);
+        else if (item.format) candidate = String(item.format);
+
+        if (candidate && candidate !== 'N/A') {
+            // Strip everything that is NOT a digit or a dot
+            const numericPart = candidate.replace(/[^\d.]/g, '');
+
+            // Check if we extracted a valid number
+            if (numericPart && parseFloat(numericPart) > 0) {
+                // If we found a number (e.g. from "30ml" -> "30"), use it + "ml"
+                sizeDisplay = `${numericPart}ml`;
+            } else {
+                // If no number found (e.g. "Spray"), use original string cleaned up
+                // BUT strip ANY 'ml' occurrence to be safe
+                sizeDisplay = candidate.replace(/ml/gi, '').trim();
+            }
+        }
+
+        if (sizeDisplay) {
+            // Removed underscores as requested
+            message += `   Formato: ${sizeDisplay} \n`;
+        }
     });
 
+    message += `\n──────────────────\n`;
+
+    // Totals
+    const safeSubtotal = Number(subtotal);
+    const safeTotal = Number(total);
+
     if (discount) {
-        message += `\nSubtotale: €${subtotal.toFixed(2)}\n`;
-        message += `Sconto (${discount.code}): -€${(subtotal - total).toFixed(2)}\n`;
-        message += `*TOTALE: €${total.toFixed(2)}*`;
+        const discountAmount = safeSubtotal - safeTotal;
+        message += `Subtotale: €${safeSubtotal.toFixed(2)}\n`;
+        message += `Sconto (${discount.code}): -€${discountAmount.toFixed(2)}\n`;
+        message += `*TOTALE DA PAGARE: €${safeTotal.toFixed(2)}* \uD83D\uDCB0`;
     } else {
-        message += `\n*TOTALE: €${total.toFixed(2)}*`;
+        message += `*TOTALE DA PAGARE: €${safeTotal.toFixed(2)}* \uD83D\uDCB0`;
     }
 
-    // 3. Encode and Return
+    // 3. Generate Link
     const encodedMessage = encodeURIComponent(message);
     const shopNumber = "393778317091";
-    const whatsappUrl = `https://wa.me/${shopNumber}?text=${encodedMessage}`;
+
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${shopNumber}&text=${encodedMessage}`;
 
     return { whatsappUrl, orderId };
 };
-

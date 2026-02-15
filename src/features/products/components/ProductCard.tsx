@@ -19,18 +19,18 @@ interface ProductCardProps {
 }
 
 const ProductCard = memo(({ product }: ProductCardProps) => {
-    const { addToCart } = useCart();
+    const { addItem } = useCart();
 
     const handleQuickAdd = useCallback((e: MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        addToCart(product);
+        addItem(product);
         toast.success(`${product.name} aggiunto al carrello`);
-    }, [addToCart, product]);
+    }, [addItem, product]);
 
     return (
         <Link
-            to={`/productos/${product.slug}`}
+            to={`/prodotti/${product.slug}`}
             className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 transition-all duration-300 h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] hover:border-accent/40"
         >
             {/* Image Container */}

@@ -190,7 +190,7 @@ const HomePage: React.FC = () => {
                                 animate={{ opacity: 1, y: 0 }}
                             >
                                 <MotionLink
-                                    to="/productos"
+                                    to="/prodotti"
                                     className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
                                     whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
                                     whileTap={{ scale: 0.98 }}

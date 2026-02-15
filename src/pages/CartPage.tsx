@@ -24,12 +24,12 @@ import { useProducts } from '@/features/products/hooks/useProducts';
 import { CheckoutFormData, SuccessData } from '@/features/cart/types';
 
 const CartPage = (): React.ReactElement => {
-    const { cart, removeFromCart, updateQuantity, getCartTotal, getCartSubtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
+    const { items: cart, removeItem: removeFromCart, updateQuantity, total, subtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
     const { products } = useProducts();
 
     const [formData, setFormData] = useState<CheckoutFormData>({
         nombre: '',
-        telefono: '+',
+        telefono: '+39 ',
         indirizzo: '',
         civico: '',
         citta: '',
@@ -48,6 +48,20 @@ const CartPage = (): React.ReactElement => {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
     const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
+
+    // Security: Honeypot & Bot Detection
+    const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+    const [mountTime] = useState<number>(Date.now());
+
+    useEffect(() => {
+        const handleInteraction = () => setHasInteracted(true);
+        const events = ['scroll', 'click', 'touchstart', 'mousemove'];
+        events.forEach(event => window.addEventListener(event, handleInteraction, { once: true }));
+
+        return () => {
+            events.forEach(event => window.removeEventListener(event, handleInteraction));
+        };
+    }, []);
 
     // Coupon State
     const [couponCode, setCouponCode] = useState<string>('');
@@ -75,7 +89,7 @@ const CartPage = (): React.ReactElement => {
             try {
                 const parsed = JSON.parse(savedData);
                 if (!parsed.telefono || parsed.telefono.trim() === '') {
-                    parsed.telefono = '+';
+                    parsed.telefono = '+39 ';
                 }
                 setFormData(prev => ({ ...prev, ...parsed }));
             } catch (e) {
@@ -95,7 +109,20 @@ const CartPage = (): React.ReactElement => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
         const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+
+        if (name === 'telefono') {
+            // Phone UX: Anchor '+' symbol
+            if (!value.startsWith('+')) {
+                // If user tries to delete +, restore it immediately or keep previous if valid
+                // Let's force it to start with +
+                setFormData({ ...formData, [name]: '+' + value.replace(/^\+/, '') });
+            } else {
+                setFormData({ ...formData, [name]: value });
+            }
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+
         if (errors[name]) {
             setErrors({ ...errors, [name]: null });
         }
@@ -104,17 +131,18 @@ const CartPage = (): React.ReactElement => {
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
-        if (formData.website && formData.website.trim() !== '') {
-            console.warn('Honeypot triggered - potential bot detected');
-            return false;
-        }
-
         if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
 
-        if (!formData.telefono || formData.telefono.trim() === '+' || !formData.telefono.trim()) {
+        if (!formData.telefono || !formData.telefono.trim()) {
             newErrors.telefono = "Il telefono è obbligatorio";
-        } else if (!isValidPhoneNumber(formData.telefono)) {
-            newErrors.telefono = "Numero non valido (controlla prefisso e lunghezza).";
+        } else {
+            const phoneClean = formData.telefono.replace(/\s/g, '');
+            // Check if it's just the prefix (e.g., "+39" or "+")
+            if (phoneClean.length < 4) {
+                newErrors.telefono = "Inserisci un numero di telefono completo.";
+            } else if (!isValidPhoneNumber(formData.telefono)) {
+                newErrors.telefono = "Numero non valido.";
+            }
         }
 
         if (!formData.email.trim()) {
@@ -160,6 +188,22 @@ const CartPage = (): React.ReactElement => {
         e.preventDefault();
         if (cart.length === 0) return;
 
+        // Security Check: Smart Honeypot
+        // 1. Honeypot field must be empty
+        if (formData.website) {
+            console.warn('Bot detected: Honeypot filled');
+            return;
+        }
+
+        // 2. Time/Interaction Analysis
+        const timeOnPage = Date.now() - mountTime;
+        const isTooFast = timeOnPage < 4000; // 4 seconds
+
+        if (isTooFast && !hasInteracted) {
+            console.warn('Bot detected: Too fast and no interaction');
+            return;
+        }
+
         const now = Date.now();
         const timeSince = now - lastSubmitTime;
         if (timeSince < 5000) {
@@ -184,7 +228,8 @@ const CartPage = (): React.ReactElement => {
     const [successData, setSuccessData] = useState<SuccessData | null>(null);
 
     const confirmOrder = async (): Promise<void> => {
-        const total = getCartTotal();
+        // Total is now a property
+        const orderTotal = total;
         let orderNumber: string | null = null;
 
         if (currentOrderNumber) return;
@@ -199,7 +244,7 @@ const CartPage = (): React.ReactElement => {
                 const orderResult = await createOrder({
                     customerInfo: {
                         fullName: formData.nombre,
-                        phone: formData.telefono,
+                        phone: formData.telefono.replace(/\s/g, ''), // Sanitize: Remove spaces for DB/WhatsApp
                         email: formData.email,
                         address: finalAddress,
                         city: finalCity,
@@ -230,7 +275,7 @@ const CartPage = (): React.ReactElement => {
                     const retryResult = await createOrder({
                         customerInfo: {
                             fullName: formData.nombre,
-                            phone: formData.telefono,
+                            phone: formData.telefono.replace(/\s/g, ''),
                             email: formData.email,
                             address: finalAddress,
                             city: finalCity,
@@ -243,7 +288,7 @@ const CartPage = (): React.ReactElement => {
                     orderNumber = retryResult.orderNumber;
                     setCurrentOrderNumber(orderNumber);
 
-                    trackPurchase(cart, total, orderNumber);
+                    trackPurchase(cart, orderTotal, orderNumber);
                     logger.info('Order saved on retry', { orderNumber });
                     toast.success('Pedido guardado correctamente');
 
@@ -274,9 +319,9 @@ const CartPage = (): React.ReactElement => {
             const { whatsappUrl } = generateWhatsAppLink(
                 formData,
                 cart,
-                total,
+                orderTotal,
                 discount,
-                getCartSubtotal(),
+                subtotal,
                 orderNumber
             );
 
@@ -439,7 +484,7 @@ const CartPage = (): React.ReactElement => {
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between text-text-muted">
                                     <span>Subtotale</span>
-                                    <span>€{getCartSubtotal().toFixed(2)}</span>
+                                    <span>€{subtotal.toFixed(2)}</span>
                                 </div>
 
                                 {discount && (
@@ -448,13 +493,13 @@ const CartPage = (): React.ReactElement => {
                                             <span>Sconto {discount.code}</span>
                                             <button onClick={() => { removeCoupon(); toast.info("Codice rimosso"); }} className="text-xs text-red-400 hover:text-red-300 underline">(Rimuovi)</button>
                                         </div>
-                                        <span>-€{(getCartSubtotal() - getCartTotal()).toFixed(2)}</span>
+                                        <span>-€{(subtotal - total).toFixed(2)}</span>
                                     </div>
                                 )}
 
                                 <div className="flex justify-between text-2xl font-bold text-text-primary pt-4 border-t border-white/10">
                                     <span>Totale</span>
-                                    <span>€{getCartTotal().toFixed(2)}</span>
+                                    <span>€{total.toFixed(2)}</span>
                                 </div>
                             </div>
 
@@ -614,7 +659,7 @@ const CartPage = (): React.ReactElement => {
                 onClose={handleCloseModal}
                 onConfirm={confirmOrder}
                 formData={formData}
-                cartTotal={getCartTotal()}
+                cartTotal={total}
                 successData={successData}
             />
         </div>

@@ -36,16 +36,16 @@ export const AppRoutes = () => {
             <Route element={<MainLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="chi-sono" element={<ChiSonoPage />} />
-                <Route path="productos" element={<ProductListPage />} />
-                <Route path="productos/:slug" element={<ProductDetailPage />} />
-                <Route path="contacto" element={<ContactPage />} />
-                <Route path="carrito" element={<CartPage />} />
-                <Route path="revendedores" element={<ResellerPage />} />
+                <Route path="prodotti" element={<ProductListPage />} />
+                <Route path="prodotti/:slug" element={<ProductDetailPage />} />
+                <Route path="contatti" element={<ContactPage />} />
+                <Route path="carrello" element={<CartPage />} />
+                <Route path="rivenditori" element={<ResellerPage />} />
 
                 {/* Legal Routes */}
-                <Route path="termini" element={<TermsPage />} />
-                <Route path="privacy" element={<PrivacyPage />} />
-                <Route path="uso" element={<ResponsibleUsePage />} />
+                <Route path="termini-e-condizioni" element={<TermsPage />} />
+                <Route path="privacy-policy" element={<PrivacyPage />} />
+                <Route path="uso-responsabile" element={<ResponsibleUsePage />} />
                 <Route path="adulto" element={<TermsPage />} />
 
                 {/* 404 */}

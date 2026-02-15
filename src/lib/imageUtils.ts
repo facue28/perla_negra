@@ -17,17 +17,19 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
     if (!url) return '';
     if (typeof url !== 'string') return url as any; // Handle potential non-string legacy data
 
-    // const { width, height, resize = 'contain' } = options; // Unused in Free Plan
+    // TEMPORARY FIX: Disable Image Transformation to ensure images load
+    // The Render API might be failing or misconfigured. 
+    // Return original Storage URL.
+    return url;
 
+    // Original Logic Disabled:
+    /*
     // Check if it's a Supabase Storage URL
     if (!url.includes('supabase.co/storage/v1/object/public')) {
         return url; // Return original if not hosted on Supabase Storage
     }
 
     // 1. SUPABASE IMAGE TRANSFORMATION
-    // We confirmed that the Render API (/render/image/public) works even for this project.
-    // This allows us to force JPEG format (best for WhatsApp) and specific dimensions.
-
     if (url.includes('supabase.co/storage/v1/object/public')) {
         const { width, height, format, quality } = options;
 
@@ -36,11 +38,10 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
 
         if (width) params.push(`width=${width}`);
         if (height) params.push(`height=${height}`);
-        if (format) params.push(`format=${format}`); // Important for WhatsApp (jpg)
+        if (format) params.push(`format=${format}`);
         if (quality) params.push(`quality=${quality}`);
         else if (format === 'origin' || !format) params.push('quality=80');
 
-        // Add resize strategy (contain prevents cropping, cover fills)
         params.push('resize=contain');
 
         if (params.length > 0) {
@@ -49,27 +50,8 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
 
         return transformUrl;
     }
-
-    // Fallback for non-Supabase URLs or other cases
+    
     return url;
-
-
-    /*
-    // Replace '/object/public/' with '/render/image/public/' to access Transformation API
-    let optimizedUrl = url.replace('/object/public/', '/render/image/public/');
-
-    const params = new URLSearchParams();
-    if (width) params.append('width', width.toString());
-    if (height) params.append('height', height.toString());
-    if (resize) params.append('resize', resize);
-
-    // Default quality and format
-    params.append('quality', '80');
-    params.append('format', 'origin'); 
-
-    const queryString = params.toString();
-
-    return queryString ? `${optimizedUrl}?${queryString}` : optimizedUrl;
     */
 };
 
