@@ -47,9 +47,12 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
                             if (currentSrc.includes('-min.webp')) {
                                 // Fallback to original image if thumbnail is missing
                                 e.target.src = product.image;
-                            } else if (product.fallbackImage) {
+                            } else if (product.fallbackImage && currentSrc !== product.fallbackImage) {
                                 // Fallback to category placeholder if everything else fails
                                 e.target.src = product.fallbackImage;
+                            } else {
+                                // Final fallback: Generic placeholder
+                                e.target.src = '/placeholder-product.webp';
                             }
                         }}
                         className="w-full h-full object-contain mix-blend-multiply transition-opacity duration-300"

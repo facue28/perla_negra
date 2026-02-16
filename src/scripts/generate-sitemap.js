@@ -30,7 +30,7 @@ async function generateSitemap() {
         // 1. Obtener productos activos
         const { data: products, error } = await supabase
             .from('products')
-            .select('slug, created_at, updated_at, featured') // Requested: use updated_at and featured
+            .select('slug, created_at') // Simplified for debugging
             .eq('active', true);
 
         if (error) throw error;
@@ -65,8 +65,8 @@ async function generateSitemap() {
 
         // Agregar productos dinámicos
         products.forEach(product => {
-            // Priority: updated_at -> created_at -> now
-            const rawDate = product.updated_at || product.created_at || new Date();
+            // Priority: created_at -> now
+            const rawDate = product.created_at || new Date();
             const lastMod = new Date(rawDate).toISOString().split('T')[0];
 
             // Priority: 1.0 for featured, 0.9 for others (Standard: 0.5-0.8, but 0.9 emphasizes products)
@@ -96,7 +96,11 @@ async function generateSitemap() {
         console.log('✅ sitemap.xml generado exitosamente en public/sitemap.xml');
 
     } catch (error) {
-        console.error('❌ Error generando sitemap:', error);
+        console.error('❌ Error generando sitemap:', JSON.stringify(error, null, 2));
+        if (error instanceof Error) {
+            console.error(error.message);
+            console.error(error.stack);
+        }
         process.exit(1);
     }
 }

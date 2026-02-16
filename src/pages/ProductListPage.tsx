@@ -1,4 +1,5 @@
 import React from 'react';
+import ProductErrorBoundary from '@/features/products/components/ProductErrorBoundary';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { useProductFilters } from '@/features/products/hooks/useProductFilters';
 import ProductCard from '@/features/products/components/ProductCard';
@@ -261,7 +262,9 @@ const ProductListPage = (): React.ReactElement => {
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                                 {filteredAndSortedProducts.map((product) => (
                                     <div key={product.id} className="h-full">
-                                        <ProductCard product={product} />
+                                        <ProductErrorBoundary>
+                                            <ProductCard product={product} />
+                                        </ProductErrorBoundary>
                                     </div>
                                 ))}
                             </div>

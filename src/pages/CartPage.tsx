@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/features/cart/context/CartContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, ArrowLeft, Send, ShoppingBag, MapPin } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import { toast } from 'sonner';
@@ -26,6 +26,7 @@ import { CheckoutFormData, SuccessData } from '@/features/cart/types';
 const CartPage = (): React.ReactElement => {
     const { items: cart, removeItem: removeFromCart, updateQuantity, total, subtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
     const { products } = useProducts();
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState<CheckoutFormData>({
         nombre: '',
@@ -332,6 +333,15 @@ const CartPage = (): React.ReactElement => {
             });
 
             window.open(whatsappUrl, '_blank');
+
+            // Redirect to Success Page
+            navigate('/grazie', {
+                state: {
+                    orderNumber,
+                    whatsappUrl
+                }
+            });
+
             setIsSubmitting(false);
 
         } catch (error) {
