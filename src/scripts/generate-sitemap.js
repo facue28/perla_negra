@@ -30,7 +30,7 @@ async function generateSitemap() {
         // 1. Obtener productos activos
         const { data: products, error } = await supabase
             .from('products')
-            .select('slug, created_at')
+            .select('slug, created_at, updated_at, featured') // Requested: use updated_at and featured
             .eq('active', true);
 
         if (error) throw error;
@@ -65,13 +65,19 @@ async function generateSitemap() {
 
         // Agregar productos dinámicos
         products.forEach(product => {
-            const lastMod = product.created_at ? new Date(product.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+            // Priority: updated_at -> created_at -> now
+            const rawDate = product.updated_at || product.created_at || new Date();
+            const lastMod = new Date(rawDate).toISOString().split('T')[0];
+
+            // Priority: 1.0 for featured, 0.9 for others (Standard: 0.5-0.8, but 0.9 emphasizes products)
+            const priority = product.featured ? '1.0' : '0.9';
+
             sitemap += `
     <url>
         <loc>${SITE_URL}/prodotti/${product.slug}</loc>
         <lastmod>${lastMod}</lastmod>
-        <changefreq>daily</changefreq>
-        <priority>0.9</priority>
+        <changefreq>${product.featured ? 'daily' : 'weekly'}</changefreq>
+        <priority>${priority}</priority>
     </url>`;
         });
 
