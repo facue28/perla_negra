@@ -49,6 +49,31 @@ const ProductDetailPage = (): React.ReactElement => {
         }
     }, [slug, product]); // Fix: properly react to product changes
 
+    // ... (intermediate code unchanged)
+
+    <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+        <span className="text-text-muted font-medium">Formato</span>
+        <span className="text-text-primary text-right font-medium">
+            {(product.sizeMl || product.sizeFlOz) ? (
+                <span>
+                    {product.sizeMl ? `${product.sizeMl} ml` : ''}
+                    {(product.sizeMl && product.sizeFlOz) ? ' / ' : ''}
+                    {product.sizeFlOz ? `${product.sizeFlOz} fl oz` : ''}
+                </span>
+            ) : product.size ? (
+                <span>{product.size}</span>
+            ) : (
+                <span className="text-text-muted italic">N/A</span>
+            )}
+        </span>
+    </div>
+    useEffect(() => {
+        if (product) {
+            setActiveImage(product.image);
+            setImage2Error(false); // Reset error state ONLY when changing products
+        }
+    }, [slug, product]); // Fix: properly react to product changes
+
     // Product State (Restored)
     const [quantity, setQuantity] = useState<number>(1);
 
