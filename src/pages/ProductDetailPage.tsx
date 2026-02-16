@@ -477,10 +477,10 @@ const ProductDetailPage = (): React.ReactElement => {
                                     <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
                                         <span className="text-text-muted font-medium">Formato</span>
                                         <span className="text-text-primary text-right font-medium">
-                                            {(product.size_ml || product.sizeFlOz) ? (
+                                            {(product.sizeMl || product.sizeFlOz) ? (
                                                 <span>
-                                                    {product.size_ml ? `${product.size_ml} ml` : ''}
-                                                    {(product.size_ml && product.sizeFlOz) ? ' / ' : ''}
+                                                    {product.sizeMl ? `${product.sizeMl} ml` : ''}
+                                                    {(product.sizeMl && product.sizeFlOz) ? ' / ' : ''}
                                                     {product.sizeFlOz ? `${product.sizeFlOz} fl oz` : ''}
                                                 </span>
                                             ) : product.size ? (
