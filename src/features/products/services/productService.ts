@@ -23,12 +23,14 @@ const getPlaceholderImage = (category: string | undefined): string => {
 
 const getOptimizedImageUrl = (url: string | null | undefined, width: number = 800): string | undefined => {
     if (!url) return undefined;
-    if (!url.includes(storageUrl)) return url; // Don't touch external URLs
+
+    // Check if it's a Supabase Storage URL
+    if (!url.includes('supabase.co/storage')) return url; // Don't touch external URLs
     if (url.includes('.svg')) return url; // Don't optimize SVGs
 
     // Append transformation parameters
     const separator = url.includes('?') ? '&' : '?';
-    return `${url}${separator}width=${width}&format=webp&quality=80`;
+    return `${url}${separator}width=${width}&format=webp&quality=75`;
 };
 
 // Internal secure mapper
