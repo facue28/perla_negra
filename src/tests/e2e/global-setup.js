@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-async function globalSetup(config) {
+async function globalSetup(_config) {
     const state = {
         cookies: [],
         origins: [
