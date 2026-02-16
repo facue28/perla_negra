@@ -21,14 +21,27 @@ const getPlaceholderImage = (category: string | undefined): string => {
     return `${storageUrl}/lubricante.webp`; // Revert to known working fallback
 };
 
+const getOptimizedImageUrl = (url: string | null | undefined, width: number = 800): string | undefined => {
+    if (!url) return undefined;
+    if (!url.includes(storageUrl)) return url; // Don't touch external URLs
+    if (url.includes('.svg')) return url; // Don't optimize SVGs
+
+    // Append transformation parameters
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}width=${width}&format=webp&quality=80`;
+};
+
 // Internal secure mapper
 const mapProductDBToProduct = (db: ProductDB): Product => {
     // 1. Safe Image Logic
     const hasBrokenUrl = db.image_url && db.image_url.includes('afrodisiaco.png');
     // Prioritize valid DB URL, then category fallback, then generic placeholder
-    const validImageUrl = (hasBrokenUrl || !db.image_url)
+    const rawImageUrl = (hasBrokenUrl || !db.image_url)
         ? getPlaceholderImage(db.category)
-        : db.image_url;
+        : db.image_url || '';
+
+    // Optimize the final chosen URL
+    const validImageUrl = getOptimizedImageUrl(rawImageUrl) || rawImageUrl;
 
     // 2. Size Logic
     let displaySize: string | number = 'N/A';
@@ -61,8 +74,8 @@ const mapProductDBToProduct = (db: ProductDB): Product => {
         sensation: db.sensation,
         sizeMl: db.size_ml,
         sizeFlOz: db.size_fl_oz,
-        image2: db.image2_url,
-        image3: db.image3_url,
+        image2: getOptimizedImageUrl(db.image2_url),
+        image3: getOptimizedImageUrl(db.image3_url),
         subtitle: db.subtitle,
         code: db.code,
         usage: db.usage,

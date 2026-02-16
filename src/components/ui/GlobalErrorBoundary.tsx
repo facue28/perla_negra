@@ -22,6 +22,15 @@ class GlobalErrorBoundary extends Component<Props, State> {
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("Global Error Caught:", error, errorInfo);
+
+        // Dynamic Sentry Import (to avoid bundling issues if not used elsewhere)
+        import('@sentry/react').then(Sentry => {
+            Sentry.captureException(error, {
+                extra: {
+                    componentStack: errorInfo.componentStack
+                }
+            });
+        }).catch(err => console.error("Failed to load Sentry", err));
     }
 
     public handleReload = () => {

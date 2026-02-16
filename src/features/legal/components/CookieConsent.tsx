@@ -44,6 +44,10 @@ const CookieConsent = (): React.ReactElement | null => {
     const handleAccept = () => {
         localStorage.setItem('cookieConsent', 'accepted');
         setShowBanner(false);
+        // Trigger analytics immediately
+        import('@/lib/analytics').then(({ initGADeferred }) => initGADeferred());
+        // Trigger Pixel immediately
+        import('@/lib/pixel').then(({ initPixel }) => initPixel());
     };
 
     const handleReject = () => {
@@ -75,7 +79,7 @@ const CookieConsent = (): React.ReactElement | null => {
                             <p className="text-text-muted text-sm leading-relaxed">
                                 Utilizziamo cookie essenziali per garantire il corretto funzionamento del sito e migliorare la tua esperienza di navigazione.
                                 Continuando a navigare, accetti il nostro utilizzo dei cookie.{' '}
-                                <Link to="/privacy" className="text-accent hover:underline font-medium">
+                                <Link to="/privacy-policy" className="text-accent hover:underline font-medium">
                                     Leggi la Privacy Policy
                                 </Link>
                             </p>

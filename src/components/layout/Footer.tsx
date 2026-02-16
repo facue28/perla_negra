@@ -22,10 +22,10 @@ const Footer = (): React.ReactElement => {
                     {/* Quick Links */}
                     <div className="flex flex-col space-y-2 items-center">
                         <h3 className="text-text-primary font-medium mb-2">Links</h3>
-                        <a href="/termini" className="text-sm hover:text-accent transition-colors">Termini e condizioni</a>
-                        <a href="/privacy" className="text-sm hover:text-accent transition-colors">Privacy policy</a>
-                        <a href="/uso" className="text-sm hover:text-accent transition-colors">Uso responsabile</a>
-                        <a href="/adulto" className="text-sm hover:text-accent transition-colors">+18 | Uso adulto</a>
+                        <a href="/termini-e-condizioni" className="text-sm hover:text-accent transition-colors">Termini e condizioni</a>
+                        <a href="/privacy-policy" className="text-sm hover:text-accent transition-colors">Privacy policy</a>
+                        <a href="/uso-responsabile" className="text-sm hover:text-accent transition-colors">Uso responsabile</a>
+                        <a href="/termini-e-condizioni" className="text-sm hover:text-accent transition-colors">+18 | Uso adulto</a>
                     </div>
 
                     {/* Social / Contact */}

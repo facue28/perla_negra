@@ -12,6 +12,8 @@
     "convert": "node src/scripts/convert-images.js"
   },
   "dependencies": {
+    "@sentry/react": "^10.39.0",
+    "@sentry/vite-plugin": "^4.9.1",
     "@supabase/supabase-js": "^2.93.2",
     "@vercel/analytics": "^1.6.1",
     "clsx": "^2.1.1",

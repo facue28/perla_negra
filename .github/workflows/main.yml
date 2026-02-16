@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    # Verificación de Tipos (TypeScript)
+    # Nota: 'tsc --noEmit' solo chequea tipos, no genera archivos.
+    - name: Type Check
+      run: npx tsc --noEmit
+
+    # Linting (ESLint)
+    - name: Run Linter
+      run: npm run lint
+
+    # Build de Producción
+    - name: Build Project
+      run: npm run build
+      env:
+        # Si el build requiere variables de entorno (ej. Supabase URL),
+        # agrégalas aquí como secrets del repositorio.
+        VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}

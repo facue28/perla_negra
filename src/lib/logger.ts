@@ -57,5 +57,17 @@ export const logger = {
         };
 
         console.error(`[ERROR] ${message}`, errorData);
+
+        // Send to Sentry in Production
+        if (!isDev) {
+            import('@sentry/react').then(Sentry => {
+                Sentry.captureException(error, {
+                    extra: {
+                        message,
+                        ...safeContext
+                    }
+                });
+            });
+        }
     }
 };
