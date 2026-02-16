@@ -122,8 +122,22 @@ interface CartItemGA extends Product {
 export const trackPurchase = (cart: CartItemGA[], total: number, transactionId?: string): void => {
     const tId = transactionId || "WA-" + Date.now();
 
-    // GA4
+    // Standard GA4 Purchase (for native Monetization reports)
     ReactGA.event("purchase", {
+        transaction_id: tId,
+        value: total,
+        currency: "EUR",
+        items: cart.map(item => ({
+            item_id: item.id,
+            item_name: item.name,
+            item_category: item.category,
+            price: item.price,
+            quantity: item.quantity
+        }))
+    });
+
+    // Custom GA4 Event (for specific WhatsApp tracking as requested)
+    ReactGA.event("purchase_whatsapp", {
         transaction_id: tId,
         value: total,
         currency: "EUR",
