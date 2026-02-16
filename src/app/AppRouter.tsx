@@ -13,6 +13,9 @@ const useAnalyticsLazyLoad = () => {
     // Load GA only after page stability (idle callback) or user interaction
     // This removes GA from critical rendering path
     initGADeferred();
+
+    // Initialize Pixel (if consent exists)
+    import('@/lib/pixel').then(({ initPixel }) => initPixel());
   }, []);
 };
 

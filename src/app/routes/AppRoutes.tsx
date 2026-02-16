@@ -11,6 +11,7 @@ const ProductListPage = lazy(() => import('@/pages/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const CartPage = lazy(() => import('@/pages/CartPage'));
+const SuccessPage = lazy(() => import('@/pages/SuccessPage'));
 const ResellerPage = lazy(() => import('@/pages/ResellerPage'));
 
 // Legal Pages (Lazy)
@@ -40,12 +41,13 @@ export const AppRoutes = () => {
                 <Route path="prodotti/:slug" element={<ProductDetailPage />} />
                 <Route path="contatti" element={<ContactPage />} />
                 <Route path="carrello" element={<CartPage />} />
+                <Route path="grazie" element={<SuccessPage />} />
                 <Route path="rivenditori" element={<ResellerPage />} />
 
                 {/* Legal Routes */}
-                <Route path="termini" element={<TermsPage />} />
-                <Route path="privacy" element={<PrivacyPage />} />
-                <Route path="uso" element={<ResponsibleUsePage />} />
+                <Route path="termini-e-condizioni" element={<TermsPage />} />
+                <Route path="privacy-policy" element={<PrivacyPage />} />
+                <Route path="uso-responsabile" element={<ResponsibleUsePage />} />
                 <Route path="adulto" element={<TermsPage />} />
 
                 {/* 404 */}

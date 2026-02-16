@@ -1,4 +1,5 @@
 import React from 'react';
+import ProductErrorBoundary from '@/features/products/components/ProductErrorBoundary';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { useProductFilters } from '@/features/products/hooks/useProductFilters';
 import ProductCard from '@/features/products/components/ProductCard';
@@ -6,12 +7,12 @@ import ProductSearchBar from '@/features/products/components/ProductSearchBar';
 import ProductFilters from '@/features/products/components/ProductFilters';
 import SkeletonProductCard from '@/features/products/components/SkeletonProductCard';
 import Drawer from '@/components/ui/Drawer';
-import { Loader2, Filter, Search } from 'lucide-react';
+import { Loader2, Filter, Search, AlertTriangle, RefreshCw } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 
 const ProductListPage = (): React.ReactElement => {
     // Data Fetching
-    const { products, loading } = useProducts();
+    const { products, loading, error, refetch } = useProducts();
 
     // Use Custom Hook for Filtering
     const {
@@ -240,11 +241,30 @@ const ProductListPage = (): React.ReactElement => {
                                     <SkeletonProductCard key={i} />
                                 ))}
                             </div>
+                        ) : error ? (
+                            <div className="text-center py-20 bg-red-500/10 rounded-3xl border border-red-500/20 flex flex-col items-center justify-center p-8">
+                                <div className="bg-red-500/20 p-4 rounded-full mb-4">
+                                    <AlertTriangle className="text-red-500" size={32} />
+                                </div>
+                                <h3 className="text-xl text-red-400 font-serif font-medium mb-2">Ops! Abbiamo problemi a connetterci al catalogo.</h3>
+                                <p className="text-text-muted mb-6 max-w-md">
+                                    Non siamo riusciti a caricare i prodotti. Per favore, controlla la tua connessione o riprova tra poco.
+                                </p>
+                                <button
+                                    onClick={() => refetch()}
+                                    className="px-6 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-full font-medium transition-all flex items-center gap-2 border border-red-500/30"
+                                >
+                                    <RefreshCw size={16} />
+                                    <span>Riprova</span>
+                                </button>
+                            </div>
                         ) : filteredAndSortedProducts.length > 0 ? (
                             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                                 {filteredAndSortedProducts.map((product) => (
                                     <div key={product.id} className="h-full">
-                                        <ProductCard product={product} />
+                                        <ProductErrorBoundary>
+                                            <ProductCard product={product} />
+                                        </ProductErrorBoundary>
                                     </div>
                                 ))}
                             </div>

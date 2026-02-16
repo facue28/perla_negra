@@ -22,6 +22,15 @@ const SEO = ({ title, description, image, url, type = 'website', structuredData,
         document.title = fullTitle;
     }, [fullTitle]);
 
+    // Helper to determine image type
+    const getImageType = (imgUrl: string | undefined) => {
+        if (!imgUrl) return undefined;
+        if (imgUrl.endsWith('.webp')) return 'image/webp';
+        if (imgUrl.endsWith('.png')) return 'image/png';
+        if (imgUrl.endsWith('.jpg') || imgUrl.endsWith('.jpeg')) return 'image/jpeg';
+        return undefined; // Default fallback
+    };
+
     return (
         <Helmet>
             {/* Standard metadata */}
@@ -37,13 +46,22 @@ const SEO = ({ title, description, image, url, type = 'website', structuredData,
             <meta property="og:type" content={type} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={description} />
-            {image && <meta property="og:image" content={image} />}
+            {/* Generic Metadata */}
+            <meta property="image" content={image} />
+            <meta property="og:image" content={image} />
+
+            {/* WhatsApp/Social optimizations */}
+            {image && <meta property="og:image:type" content="image/jpeg" />}
+            {image && <meta property="og:image:width" content="500" />}
+            {image && <meta property="og:image:height" content="500" />}
+            {image && <meta property="og:image:alt" content={title || siteTitle} />}
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:title" content={fullTitle} />
             <meta name="twitter:description" content={description} />
             {image && <meta name="twitter:image" content={image} />}
+            {image && <meta name="twitter:image:alt" content={title || siteTitle} />}
 
             {/* Prerender.io Status Code */}
             {statusCode ? <meta name="prerender-status-code" content={statusCode.toString()} /> : null}

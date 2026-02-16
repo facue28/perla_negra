@@ -1,5 +1,6 @@
 import ReactGA from "react-ga4";
 import { Product } from "@/features/products/types";
+import { trackPixelViewContent, trackPixelAddToCart, trackPixelPurchase } from '@/lib/pixel';
 
 // Initialize GA4 (standard - immediate)
 export const initGA = (): void => {
@@ -22,6 +23,14 @@ export const initGADeferred = (): void => {
 
     const loadGA = () => {
         if (gaInitialized) return;
+
+        // GDPR CHECK: Do not load unless consent is explicitly granted
+        const consent = localStorage.getItem('cookieConsent');
+        if (consent !== 'accepted') {
+            console.log("GA4 blocked: Waiting for user consent.");
+            return;
+        }
+
         gaInitialized = true;
 
         initGA();
@@ -29,7 +38,7 @@ export const initGADeferred = (): void => {
         // Send initial page_view after GA loads
         logPageView();
 
-        console.log("GA4 loaded (deferred)");
+        console.log("GA4 loaded (deferred & consented)");
     };
 
     // Strategy 1: Load on requestIdleCallback (when browser is idle)
@@ -68,8 +77,11 @@ export const logEvent = (category: string, action: string, label?: string): void
     });
 };
 
+
+
 // Pre-defined E-commerce Events
 export const trackViewItem = (product: Product): void => {
+    // GA4
     ReactGA.event("view_item", {
         currency: "EUR",
         value: product.price,
@@ -80,9 +92,13 @@ export const trackViewItem = (product: Product): void => {
             price: product.price
         }]
     });
+
+    // Facebook Pixel
+    trackPixelViewContent(product);
 };
 
 export const trackAddToCart = (product: Product, quantity: number = 1): void => {
+    // GA4
     ReactGA.event("add_to_cart", {
         currency: "EUR",
         value: product.price * quantity,
@@ -94,6 +110,9 @@ export const trackAddToCart = (product: Product, quantity: number = 1): void => 
             quantity: quantity
         }]
     });
+
+    // Facebook Pixel
+    trackPixelAddToCart(product);
 };
 
 interface CartItemGA extends Product {
@@ -101,8 +120,11 @@ interface CartItemGA extends Product {
 }
 
 export const trackPurchase = (cart: CartItemGA[], total: number, transactionId?: string): void => {
+    const tId = transactionId || "WA-" + Date.now();
+
+    // GA4
     ReactGA.event("purchase", {
-        transaction_id: transactionId || "WA-" + Date.now(),
+        transaction_id: tId,
         value: total,
         currency: "EUR",
         items: cart.map(item => ({
@@ -112,5 +134,12 @@ export const trackPurchase = (cart: CartItemGA[], total: number, transactionId?:
             price: item.price,
             quantity: item.quantity
         }))
+    });
+
+    // Facebook Pixel
+    trackPixelPurchase({
+        value: total,
+        currency: 'EUR',
+        transaction_id: tId
     });
 };

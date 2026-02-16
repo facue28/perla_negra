@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useLayoutEffect, MouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 // ... (rest of imports unchanged by instruction)
-import { useProducts } from '@/features/products/hooks/useProducts';
+import { useProduct } from '@/features/products/hooks/useProduct';
+import { useProducts } from '@/features/products/hooks/useProducts'; // Keep for "Related Products"
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ShoppingBag, Star, Check } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
@@ -26,10 +27,11 @@ const toTitleCase = (str: string | undefined): string => {
 const ProductDetailPage = (): React.ReactElement => {
     const { slug } = useParams<{ slug: string }>();
 
-    const { addToCart } = useCart();
+    const { addItem } = useCart();
 
-    const { products, loading } = useProducts();
-    const product = products.find(p => p.slug === slug);
+    const { product, loading } = useProduct(slug);
+    const { products: allProducts } = useProducts(); // Still needed for "Related Products" section
+
 
     // Zoom State
     const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -40,6 +42,31 @@ const ProductDetailPage = (): React.ReactElement => {
     const [image2Error, setImage2Error] = useState<boolean>(false); // New: Track if secondary image is broken
 
     // Initialize active image when product loads
+    useEffect(() => {
+        if (product) {
+            setActiveImage(product.image);
+            setImage2Error(false); // Reset error state ONLY when changing products
+        }
+    }, [slug, product]); // Fix: properly react to product changes
+
+    // ... (intermediate code unchanged)
+
+    <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
+        <span className="text-text-muted font-medium">Formato</span>
+        <span className="text-text-primary text-right font-medium">
+            {(product.sizeMl || product.sizeFlOz) ? (
+                <span>
+                    {product.sizeMl ? `${product.sizeMl} ml` : ''}
+                    {(product.sizeMl && product.sizeFlOz) ? ' / ' : ''}
+                    {product.sizeFlOz ? `${product.sizeFlOz} fl oz` : ''}
+                </span>
+            ) : product.size ? (
+                <span>{product.size}</span>
+            ) : (
+                <span className="text-text-muted italic">N/A</span>
+            )}
+        </span>
+    </div>
     useEffect(() => {
         if (product) {
             setActiveImage(product.image);
@@ -135,7 +162,7 @@ const ProductDetailPage = (): React.ReactElement => {
 
     const handleAddToCart = () => {
         if (!product) return;
-        addToCart(product, quantity);
+        addItem(product, quantity);
         trackAddToCart(product, quantity); // Analytics
         toast.success(`Aggiunto al carrello: ${product.name} `, {
             description: `${quantity} x ${product.name} `
@@ -235,7 +262,7 @@ const ProductDetailPage = (): React.ReactElement => {
             <SEO
                 title={product.name}
                 description={product.subtitle || `Compra ${product.name} al miglior prezzo su Perla Negra.`}
-                image={product.image}
+                image={getOptimizedImageUrl(product.image, { width: 500, height: 500, format: 'jpeg' })}
                 structuredData={structuredData}
             />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-grow flex flex-col">
@@ -450,10 +477,10 @@ const ProductDetailPage = (): React.ReactElement => {
                                     <div className="flex justify-between items-center px-4 py-3 hover:bg-white/5 transition-colors">
                                         <span className="text-text-muted font-medium">Formato</span>
                                         <span className="text-text-primary text-right font-medium">
-                                            {(product.size_ml || product.sizeFlOz) ? (
+                                            {(product.sizeMl || product.sizeFlOz) ? (
                                                 <span>
-                                                    {product.size_ml ? `${product.size_ml} ml` : ''}
-                                                    {(product.size_ml && product.sizeFlOz) ? ' / ' : ''}
+                                                    {product.sizeMl ? `${product.sizeMl} ml` : ''}
+                                                    {(product.sizeMl && product.sizeFlOz) ? ' / ' : ''}
                                                     {product.sizeFlOz ? `${product.sizeFlOz} fl oz` : ''}
                                                 </span>
                                             ) : product.size ? (
@@ -522,11 +549,11 @@ const ProductDetailPage = (): React.ReactElement => {
                 </div>
 
                 {/* Related Products Section */}
-                {products.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
+                {product && allProducts.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
                     <div className="border-t border-border/10 pt-16 pb-24 mt-16">
                         <h2 className="text-2xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
-                            {products
+                            {allProducts
                                 .filter(p => p.category === product.category && p.slug !== product.slug)
                                 .slice(0, 4)
                                 .map(relatedProduct => (

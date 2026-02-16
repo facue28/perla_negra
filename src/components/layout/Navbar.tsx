@@ -10,8 +10,8 @@ const Navbar = (): React.ReactElement => {
     const location = useLocation();
     const { user } = useAuth();
 
-    const { getCartCount } = useCart();
-    const cartCount = getCartCount();
+    const { itemCount } = useCart();
+    const cartCount = itemCount;
 
     const navLinks = [
         { name: 'PRODOTTI', path: '/prodotti' },

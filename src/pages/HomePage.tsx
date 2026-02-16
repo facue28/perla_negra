@@ -5,6 +5,7 @@ import SEO from '@/components/ui/SEO';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import B2BTeaserSection from '@/components/layout/B2BTeaserSection';
 import InfiniteMarquee from '@/components/ui/InfiniteMarquee';
+import AbandonedCartToast from '@/features/cart/components/AbandonedCartToast';
 
 const InstagramSection = lazy(() => import('@/components/layout/InstagramSection'));
 
@@ -108,6 +109,7 @@ const HomePage: React.FC = () => {
 
     return (
         <>
+            <AbandonedCartToast />
             {/* Hero Container - Wraps both static and React heroes */}
             <div className="relative" style={{ minHeight: '80vh' }}>
                 {/* React Hero Section - ONLY renders when active (post-interaction) */}
