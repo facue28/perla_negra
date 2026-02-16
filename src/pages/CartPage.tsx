@@ -264,6 +264,8 @@ const CartPage = (): React.ReactElement => {
                 }
 
                 trackPurchase(cart, total, orderNumber);
+                // Allow a small window for GA4 beacons to be sent before state changes
+                await new Promise(resolve => setTimeout(resolve, 500));
                 logger.info('Order saved successfully', { orderNumber });
 
             } catch (orderError) {
@@ -290,6 +292,8 @@ const CartPage = (): React.ReactElement => {
                     setCurrentOrderNumber(orderNumber);
 
                     trackPurchase(cart, orderTotal, orderNumber);
+                    // Allow a small window for GA4 beacons to be sent before state changes
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     logger.info('Order saved on retry', { orderNumber });
                     toast.success('Pedido guardado correctamente');
 
