@@ -1,6 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { ContactSchema } from '../src/features/forms/schemas';
+import { z } from 'zod';
+
+const ContactSchema = z.object({
+    nombre: z.string().min(2).max(100),
+    email: z.string().email().max(100),
+    mensaje: z.string().min(10).max(2000),
+    trap: z.string().max(0).optional(),
+    turnstileToken: z.string().min(1)
+});
 
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 const SMTP_HOST = process.env.SMTP_HOST;

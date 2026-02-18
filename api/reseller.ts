@@ -1,6 +1,19 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
-import { ResellerSchema } from '../src/features/forms/schemas';
+import { z } from 'zod';
+
+const ResellerSchema = z.object({
+    nombre: z.string().min(2).max(100),
+    cognome: z.string().min(2).max(100),
+    email: z.string().email().max(100),
+    telefono: z.string().min(6).max(30),
+    provincia: z.string().min(1),
+    citta: z.string().min(1),
+    conoscenza: z.string().min(1),
+    messaggio: z.string().max(2000).optional(),
+    trap: z.string().max(0).optional(),
+    turnstileToken: z.string().min(1)
+});
 
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
 const SMTP_HOST = process.env.SMTP_HOST;
