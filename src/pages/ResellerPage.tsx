@@ -1,49 +1,40 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, useScroll, useTransform, Variants } from 'framer-motion';
-import { Send, MapPin, User, Mail, Phone, MessageSquare, CheckCircle } from 'lucide-react';
+import { Send, MapPin, User, Mail, Phone, MessageSquare, CheckCircle, Loader2 } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import Select from '@/components/ui/Select';
 import { toast } from 'sonner';
-import { validatePhoneAsync } from '@/utils/phoneUtils';
-
-interface ResellerFormData {
-    nombre: string;
-    cognome: string;
-    email: string;
-    telefono: string;
-    provincia: string;
-    citta: string;
-    conoscenza: string;
-    messaggio: string;
-    trap: string;
-}
-
-interface ResellerErrors {
-    nombre?: string | null;
-    cognome?: string | null;
-    email?: string | null;
-    telefono?: string | null;
-    provincia?: string | null;
-    citta?: string | null;
-    conoscenza?: string | null;
-}
+import { ResellerSchema, ResellerFormData } from '@/features/forms/schemas';
+import Turnstile from '@/components/ui/Turnstile';
 
 const ResellerPage: React.FC = () => {
-    const [formData, setFormData] = useState<ResellerFormData>({
-        nombre: '',
-        cognome: '',
-        email: '',
-        telefono: '+39',
-        provincia: '',
-        citta: '',
-        conoscenza: '',
-        messaggio: '',
-        trap: '' // Honeypot
-    });
-
-    const [errors, setErrors] = useState<ResellerErrors>({});
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        reset,
+        watch,
+        formState: { errors, isSubmitting }
+    } = useForm<ResellerFormData>({
+        resolver: zodResolver(ResellerSchema),
+        defaultValues: {
+            nombre: '',
+            cognome: '',
+            email: '',
+            telefono: '+39',
+            provincia: '',
+            citta: '',
+            conoscenza: '',
+            messaggio: '',
+            trap: '',
+            turnstileToken: ''
+        }
+    });
 
     // Parallax Logic
     const { scrollY } = useScroll();
@@ -59,101 +50,30 @@ const ResellerPage: React.FC = () => {
         }
     };
 
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        if (errors[name as keyof ResellerErrors]) {
-            setErrors({ ...errors, [name]: null });
-        }
-    };
-
-    const validateForm = async (): Promise<boolean> => {
-        const newErrors: ResellerErrors = {};
-
-        // Name & Surname
-        if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
-        if (!formData.cognome.trim()) newErrors.cognome = "Il cognome è obbligatoio";
-
-        // Email
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!formData.email.trim()) {
-            newErrors.email = "L'email è obbligatoria";
-        } else if (formData.email.length > 100) {
-            newErrors.email = "L'email è troppo lunga";
-        } else if (!emailRegex.test(formData.email)) {
-            newErrors.email = "Inserisci un'email valida";
-        }
-
-        // Phone
-        if (!formData.telefono || formData.telefono.trim() === '+' || !formData.telefono.trim()) {
-            newErrors.telefono = "Il telefono è obbligaorio";
-        } else {
-            const isValid = await validatePhoneAsync(formData.telefono);
-            if (!isValid) {
-                newErrors.telefono = "Numero non valido (controlla prefisso).";
-            }
-        }
-
-        // Location
-        if (!formData.provincia) newErrors.provincia = "Seleziona una provincia";
-        if (!formData.citta.trim()) newErrors.citta = "La città è obbligatoria";
-
-        // How did you find us
-        if (!formData.conoscenza) newErrors.conoscenza = "Seleziona un'opzione";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const isValid = await validateForm();
-        if (!isValid) {
-            toast.error("Per favorere correggi gli errori nel modulo.", {
-                style: { backgroundColor: '#fee2e2', color: '#dc2626' }
-            });
-            return;
-        }
-
-        setIsSubmitting(true);
-
+    const onSubmit = async (data: ResellerFormData) => {
         try {
-            const response = await fetch("https://formsubmit.co/ajax/panteranegrait@gmail.com", {
+            const response = await fetch("/api/reseller", {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    _subject: `Nuova Candidatura Rivenditore: ${formData.nombre} ${formData.cognome}`,
-                    _template: "table",
-                    _captcha: "false",
-                    _honey: formData.trap,
-                    Nome: formData.nombre,
-                    Cognome: formData.cognome,
-                    Email: formData.email,
-                    Telefono: formData.telefono,
-                    Citta: `${formData.citta} (${formData.provincia})`,
-                    Conosciuto_Tramite: formData.conoscenza,
-                    Messaggio: formData.messaggio
-                })
+                body: JSON.stringify(data)
             });
+
+            const result = await response.json();
 
             if (response.ok) {
                 toast.success("Candidatura inviata con successo!");
-                setFormData({
-                    nombre: '', cognome: '', email: '', telefono: '+39',
-                    provincia: '', citta: '', conoscenza: '', messaggio: '', trap: ''
-                });
+                reset();
                 setIsSuccess(true);
             } else {
-                toast.error("Si è verificato un errore.", { description: "Riprova più tardi." });
+                toast.error("Errore nell'invio", {
+                    description: result.error || "Riprova più tardi."
+                });
             }
         } catch (error) {
-            toast.error("Errore di connesione.");
-        } finally {
-            setIsSubmitting(false);
+            console.error(error);
+            toast.error("Errore di connessione.");
         }
     };
 
@@ -208,7 +128,7 @@ const ResellerPage: React.FC = () => {
                             <span className="text-accent italic">Business</span>
                         </h1>
                         <p className="text-text-muted text-lg lg:text-xl max-w-md leading-relaxed mb-8">
-                            Unisciti alle migliaia di imprenditori che ci scelgono, potenziando il loro business e moltiplicando i profitti con l'eleganza di Perla Negra.
+                            Unisciti alle migliaia di imprenditori che ci scelgono, potenziando el loro business e moltiplicando i profitti con l'eleganza di Perla Negra.
                         </p>
                         <div className="hidden lg:flex items-center gap-4 text-sm text-white/50 uppercase tracking-widest">
                             <span>Esclusività</span>
@@ -250,34 +170,28 @@ const ResellerPage: React.FC = () => {
                             </button>
                         </motion.div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-5 bg-zinc-900/30 p-8 rounded-3xl backdrop-blur-sm border border-white/5 shadow-2xl">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 bg-zinc-900/30 p-8 rounded-3xl backdrop-blur-sm border border-white/5 shadow-2xl">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Nome</label>
                                     <div className="relative">
                                         <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
                                         <input
-                                            type="text"
-                                            name="nombre"
-                                            value={formData.nombre}
-                                            onChange={handleInputChange}
+                                            {...register('nombre')}
                                             className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="Mario"
                                         />
                                     </div>
-                                    {errors.nombre && <p className="text-red-500 text-xs mt-1 ml-2">{errors.nombre}</p>}
+                                    {errors.nombre && <p className="text-red-500 text-xs mt-1 ml-2">{errors.nombre.message}</p>}
                                 </div>
                                 <div>
                                     <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Cognome</label>
                                     <input
-                                        type="text"
-                                        name="cognome"
-                                        value={formData.cognome}
-                                        onChange={handleInputChange}
+                                        {...register('cognome')}
                                         className={`w-full bg-background-dark border ${errors.cognome ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         placeholder="Rossi"
                                     />
-                                    {errors.cognome && <p className="text-red-500 text-xs mt-1 ml-2">{errors.cognome}</p>}
+                                    {errors.cognome && <p className="text-red-500 text-xs mt-1 ml-2">{errors.cognome.message}</p>}
                                 </div>
                             </div>
 
@@ -287,15 +201,12 @@ const ResellerPage: React.FC = () => {
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
                                         <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleInputChange}
+                                            {...register('email')}
                                             className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="mario@azienda.com"
                                         />
                                     </div>
-                                    {errors.email && <p className="text-red-500 text-xs mt-1 ml-2">{errors.email}</p>}
+                                    {errors.email && <p className="text-red-500 text-xs mt-1 ml-2">{errors.email.message}</p>}
                                 </div>
 
                                 <div>
@@ -303,15 +214,12 @@ const ResellerPage: React.FC = () => {
                                     <div className="relative">
                                         <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4" />
                                         <input
-                                            type="tel"
-                                            name="telefono"
-                                            value={formData.telefono}
-                                            onChange={handleInputChange}
+                                            {...register('telefono')}
                                             className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                             placeholder="+39 333 1234567"
                                         />
                                     </div>
-                                    {errors.telefono && <p className="text-red-500 text-xs mt-1 ml-2">{errors.telefono}</p>}
+                                    {errors.telefono && <p className="text-red-500 text-xs mt-1 ml-2">{errors.telefono.message}</p>}
                                 </div>
                             </div>
 
@@ -322,28 +230,22 @@ const ResellerPage: React.FC = () => {
                                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-4 h-4 z-10" />
                                         <Select
                                             options={provinceOptions}
-                                            value={formData.provincia}
-                                            onChange={(val) => {
-                                                setFormData({ ...formData, provincia: val });
-                                                if (errors.provincia) setErrors({ ...errors, provincia: null });
-                                            }}
+                                            value={watch('provincia')}
+                                            onChange={(val) => setValue('provincia', val, { shouldValidate: true })}
                                             placeholder="Seleziona"
                                             className={`w-full bg-background-dark border ${errors.provincia ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         />
                                     </div>
-                                    {errors.provincia && <p className="text-red-500 text-xs mt-1 ml-2">{errors.provincia}</p>}
+                                    {errors.provincia && <p className="text-red-500 text-xs mt-1 ml-2">{errors.provincia.message}</p>}
                                 </div>
                                 <div>
                                     <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Città</label>
                                     <input
-                                        type="text"
-                                        name="citta"
-                                        value={formData.citta}
-                                        onChange={handleInputChange}
+                                        {...register('citta')}
                                         className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                         placeholder="Milano"
                                     />
-                                    {errors.citta && <p className="text-red-500 text-xs mt-1 ml-2">{errors.citta}</p>}
+                                    {errors.citta && <p className="text-red-500 text-xs mt-1 ml-2">{errors.citta.message}</p>}
                                 </div>
                             </div>
 
@@ -351,15 +253,12 @@ const ResellerPage: React.FC = () => {
                                 <label className="text-xs text-text-muted ml-2 uppercase tracking-wider font-bold">Come ci hai conosciuto?</label>
                                 <Select
                                     options={sourceOptions}
-                                    value={formData.conoscenza}
-                                    onChange={(val) => {
-                                        setFormData({ ...formData, conoscenza: val });
-                                        if (errors.conoscenza) setErrors({ ...errors, conoscenza: null });
-                                    }}
+                                    value={watch('conoscenza')}
+                                    onChange={(val) => setValue('conoscenza', val, { shouldValidate: true })}
                                     placeholder="Seleziona un'opzione"
                                     className={`w-full bg-background-dark border ${errors.conoscenza ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all`}
                                 />
-                                {errors.conoscenza && <p className="text-red-500 text-xs mt-1 ml-2">{errors.conoscenza}</p>}
+                                {errors.conoscenza && <p className="text-red-500 text-xs mt-1 ml-2">{errors.conoscenza.message}</p>}
                             </div>
 
                             <div>
@@ -367,21 +266,22 @@ const ResellerPage: React.FC = () => {
                                 <div className="relative">
                                     <MessageSquare className="absolute left-4 top-4 text-text-muted w-4 h-4" />
                                     <textarea
-                                        name="messaggio"
+                                        {...register('messaggio')}
                                         rows={3}
-                                        value={formData.messaggio}
-                                        onChange={handleInputChange}
                                         className="w-full bg-background-dark border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none"
                                         placeholder="Raccontaci del tuo business..."
                                     ></textarea>
                                 </div>
                             </div>
 
+                            <Turnstile
+                                siteKey={TURNSTILE_SITE_KEY}
+                                onVerify={(token) => setValue('turnstileToken', token, { shouldValidate: true })}
+                            />
+                            {errors.turnstileToken && <p className="text-red-500 text-xs text-center">{errors.turnstileToken.message}</p>}
+
                             <input
-                                type="text"
-                                name="trap"
-                                value={formData.trap}
-                                onChange={handleInputChange}
+                                {...register('trap')}
                                 style={{ display: 'none' }}
                                 tabIndex={-1}
                                 autoComplete="off"
@@ -396,7 +296,7 @@ const ResellerPage: React.FC = () => {
                                     className={`w-full bg-accent text-background-dark font-bold py-4 rounded-xl shadow-lg shadow-accent/20 flex items-center justify-center gap-2 uppercase tracking-widest ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent-light'}`}
                                 >
                                     {isSubmitting ? (
-                                        <span>Invio in corso...</span>
+                                        <Loader2 className="w-6 h-6 animate-spin" />
                                     ) : (
                                         <>
                                             <Send size={18} />

@@ -76,7 +76,8 @@ export const createOrder = async (orderData: CreateOrderInput): Promise<CreateOr
         p_delivery_address: sanitizedData.address,
         p_delivery_notes: sanitizedData.delivery_notes,
         p_items: sanitizedData.items,
-        p_coupon_code: sanitizedData.coupon_code
+        p_coupon_code: sanitizedData.coupon_code,
+        p_idempotency_key: orderData.idempotencyKey || crypto.randomUUID()
     });
 
     if (!data) {

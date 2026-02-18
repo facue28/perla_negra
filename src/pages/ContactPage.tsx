@@ -1,69 +1,61 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import SEO from '@/components/ui/SEO';
 import { motion } from 'framer-motion';
-import { Mail, User, MessageSquare, Send, MapPin } from 'lucide-react';
-
-interface ContactFormData {
-    nombre: string;
-    apellido: string;
-    email: string;
-    mensaje: string;
-    trap: string;
-}
+import { Mail, User, MessageSquare, Send, MapPin, Loader2 } from 'lucide-react';
+import { ContactSchema, ContactFormData } from '@/features/forms/schemas';
+import Turnstile from '@/components/ui/Turnstile';
 
 const ContactPage: React.FC = () => {
-    const [formData, setFormData] = useState<ContactFormData>({
-        nombre: '',
-        apellido: '',
-        email: '',
-        mensaje: '',
-        trap: '' // Honeypot for bots
+    const [isSuccess, setIsSuccess] = useState<boolean>(false);
+    const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'; // Test key fallback
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        reset,
+        watch,
+        formState: { errors, isSubmitting }
+    } = useForm<ContactFormData>({
+        resolver: zodResolver(ContactSchema),
+        defaultValues: {
+            nombre: '',
+            email: '',
+            mensaje: '',
+            trap: '',
+            turnstileToken: ''
+        }
     });
 
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [isSuccess, setIsSuccess] = useState<boolean>(false);
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
+    const onSubmit = async (data: ContactFormData) => {
         try {
-            const response = await fetch("https://formsubmit.co/ajax/panteranegrait@gmail.com", {
+            const response = await fetch("/api/contact", {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    _subject: `Nuovo Messaggio da Contatti: ${formData.nombre}`,
-                    _template: "table",
-                    _captcha: "false",
-                    _honey: formData.trap
-                })
+                body: JSON.stringify(data)
             });
+
+            const result = await response.json();
 
             if (response.ok) {
                 toast.success("Messaggio inviato!");
-                setFormData({ nombre: '', apellido: '', email: '', mensaje: '', trap: '' });
+                reset();
                 setIsSuccess(true);
             } else {
-                toast.error("Si è verificato un errore.", {
-                    description: "Per favore riprova o scrivici su WhatsApp."
+                toast.error("Errore nell'invio", {
+                    description: result.error || "Riprova più tardi."
                 });
             }
         } catch (error) {
             console.error(error);
-            toast.error("Errore di connesione.", {
-                description: "Controlla la tua connesione internet."
+            toast.error("Errore di connessione", {
+                description: "Controlla la tua connessione internet."
             });
-        } finally {
-            setIsSubmitting(false);
         }
     };
 
@@ -179,32 +171,26 @@ const ContactPage: React.FC = () => {
                                     </button>
                                 </motion.div>
                             ) : (
-                                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
                                             <label htmlFor="nombre" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Nome</label>
                                             <div className="relative group">
                                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
                                                 <input
-                                                    type="text"
+                                                    {...register('nombre')}
                                                     id="nombre"
-                                                    name="nombre"
-                                                    value={formData.nombre}
-                                                    onChange={handleChange}
-                                                    className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                    className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20`}
                                                     placeholder="Il tuo nome"
-                                                    required
                                                 />
                                             </div>
+                                            {errors.nombre && <p className="text-red-500 text-xs mt-1 ml-2">{errors.nombre.message}</p>}
                                         </div>
                                         <div className="space-y-2">
                                             <label htmlFor="apellido" className="text-xs uppercase tracking-wider font-bold text-text-muted ml-2">Cognome</label>
                                             <input
-                                                type="text"
+                                                {...register('apellido')}
                                                 id="apellido"
-                                                name="apellido"
-                                                value={formData.apellido}
-                                                onChange={handleChange}
                                                 className="w-full bg-background-dark border border-white/10 rounded-xl px-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
                                                 placeholder="Il tuo cognome"
                                             />
@@ -216,16 +202,13 @@ const ContactPage: React.FC = () => {
                                         <div className="relative group">
                                             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
                                             <input
-                                                type="email"
+                                                {...register('email')}
                                                 id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20"
+                                                className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all placeholder:text-white/20`}
                                                 placeholder="latua@email.com"
-                                                required
                                             />
                                         </div>
+                                        {errors.email && <p className="text-red-500 text-xs mt-1 ml-2">{errors.email.message}</p>}
                                     </div>
 
                                     <div className="space-y-2">
@@ -233,24 +216,25 @@ const ContactPage: React.FC = () => {
                                         <div className="relative group">
                                             <MessageSquare className="absolute left-4 top-5 text-text-muted group-hover:text-accent transition-colors w-5 h-5" />
                                             <textarea
+                                                {...register('mensaje')}
                                                 id="mensaje"
-                                                name="mensaje"
                                                 rows={5}
-                                                value={formData.mensaje}
-                                                onChange={handleChange}
-                                                className="w-full bg-background-dark border border-white/10 rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none placeholder:text-white/20"
+                                                className={`w-full bg-background-dark border ${errors.mensaje ? 'border-red-500' : 'border-white/10'} rounded-xl pl-12 pr-4 py-4 text-white hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none placeholder:text-white/20`}
                                                 placeholder="Come podemos ayudarte?"
-                                                required
                                             ></textarea>
                                         </div>
+                                        {errors.mensaje && <p className="text-red-500 text-xs mt-1 ml-2">{errors.mensaje.message}</p>}
                                     </div>
+
+                                    <Turnstile
+                                        siteKey={TURNSTILE_SITE_KEY}
+                                        onVerify={(token) => setValue('turnstileToken', token, { shouldValidate: true })}
+                                    />
+                                    {errors.turnstileToken && <p className="text-red-500 text-xs text-center">{errors.turnstileToken.message}</p>}
 
                                     {/* Honeypot Trap */}
                                     <input
-                                        type="text"
-                                        name="trap"
-                                        value={formData.trap}
-                                        onChange={handleChange}
+                                        {...register('trap')}
                                         style={{ display: 'none' }}
                                         tabIndex={-1}
                                         autoComplete="off"
@@ -263,7 +247,9 @@ const ContactPage: React.FC = () => {
                                         disabled={isSubmitting}
                                         className={`w-full bg-accent text-background-dark py-4 rounded-xl font-bold text-lg hover:bg-accent-light transition-all shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] flex items-center justify-center gap-3 uppercase tracking-widest ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     >
-                                        {isSubmitting ? 'Invio in corso...' : (
+                                        {isSubmitting ? (
+                                            <Loader2 className="w-6 h-6 animate-spin" />
+                                        ) : (
                                             <>
                                                 <span>Invia Messaggio</span>
                                                 <Send size={20} />

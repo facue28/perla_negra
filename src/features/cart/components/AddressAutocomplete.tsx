@@ -4,10 +4,10 @@ import { provinces } from '@/features/cart/data/italy_provinces';
 import Select from '@/components/ui/Select';
 
 interface AddressAutocompleteProps {
-    formData: any; // Ideally this should be a shared CheckoutForm interface
-    setFormData: (data: any) => void;
-    errors: Record<string, string>;
-    setErrors: (errors: Record<string, string>) => void;
+    register: any;
+    setValue: any;
+    watch: any;
+    errors: any;
     disabled?: boolean;
 }
 
@@ -26,17 +26,25 @@ interface RadarAddress {
     longitude?: number;
 }
 
-const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disabled }: AddressAutocompleteProps) => {
+const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: AddressAutocompleteProps) => {
     const [query, setQuery] = useState<string>('');
     const [suggestions, setSuggestions] = useState<RadarAddress[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
     const [addressVerified, setAddressVerified] = useState<boolean>(false);
-    const [validationError, setValidationError] = useState<string | null>(null); // New validation state
-    const [isValidating, setIsValidating] = useState<boolean>(false); // New loading state
+    const [validationError, setValidationError] = useState<string | null>(null);
+    const [isValidating, setIsValidating] = useState<boolean>(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
     const API_KEY = import.meta.env.VITE_RADAR_KEY;
+
+    // Load initial query if defined
+    useEffect(() => {
+        const currentAddr = watch('indirizzo');
+        if (currentAddr && !query) {
+            setQuery(currentAddr);
+        }
+    }, [watch('indirizzo')]);
 
     const fetchSuggestions = async (text: string) => {
         setIsLoading(true);
@@ -69,9 +77,6 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
 
         return () => clearTimeout(timer);
     }, [query, addressVerified, API_KEY]);
-    // fetchSuggestions is stable enough here essentially, suppressing dep warning implicitly by not listing it
-    // because listing it requires wrapping it in useCallback which requires API_KEY in dep... cyclical logic.
-    // It is fine.
 
     // Close suggestions on click outside
     useEffect(() => {
@@ -87,14 +92,14 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
 
     // New: Validate CAP vs City
     const validateLocation = async () => {
-        const { cap, citta } = formData;
+        const cap = watch('cap');
+        const citta = watch('citta');
         if (!cap || !citta || cap.length < 5) return;
 
         setIsValidating(true);
         setValidationError(null);
 
         try {
-            // Search specifically for the CAP and City combination
             const response = await fetch(
                 `https://api.radar.io/v1/search/autocomplete?query=${encodeURIComponent(`${cap} ${citta}`)}&country=IT&layers=postalCode,locality&limit=1`,
                 { headers: { 'Authorization': API_KEY } }
@@ -108,15 +113,13 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
 
             const match: RadarAddress = data.addresses[0];
 
-            // Loose comparison (case insensitive)
             const cityMatch = match.city?.toLowerCase().includes(citta.toLowerCase()) ||
                 citta.toLowerCase().includes(match.city?.toLowerCase() || '');
 
-            // Check matching (allow some flexibility)
             if (!cityMatch && match.postalCode !== cap) {
                 setValidationError(`Il CAP ${cap} sembra non corrispondere a ${citta}.`);
             } else {
-                setValidationError(null); // Valid
+                setValidationError(null);
             }
 
         } catch (error) {
@@ -127,26 +130,18 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
     };
 
     const handleSelect = (item: RadarAddress) => {
-        // Radar Item Structure
         const props = item;
 
-        // Helper to find province code by name
         const findProvinceCode = (apiProps: RadarAddress) => {
-            // 1. Try direct match with stateCode (e.g., 'RM')
             if (apiProps.stateCode && apiProps.stateCode.length === 2) {
                 const code = apiProps.stateCode.toUpperCase();
-                // Validate it exists in our list
                 const match = provinces.find(p => p.code === code);
                 if (match) return match.code;
             }
-
-            // 2. Search by Name (County/Province name)
-            // Radar puts Province in 'county' often, but sometimes in 'state' or even 'city' for some regions
             const searchTerms = [apiProps.county, apiProps.city, apiProps.state].filter(Boolean) as string[];
 
             for (const term of searchTerms) {
                 const cleanTerm = term.toLowerCase();
-                // Find strict or partial match (e.g. "Città Metropolitana di Roma" contains "Roma")
                 const match = provinces.find(p =>
                     p.name.toLowerCase() === cleanTerm ||
                     cleanTerm.includes(p.name.toLowerCase())
@@ -159,57 +154,32 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
 
         const provinceCode = findProvinceCode(props);
 
-        // Auto-fill form data
-        const newData = {
-            ...formData,
-            indirizzo: props.street || props.addressLabel || '', // Prioritize pure street name to avoid number duplication
-            civico: props.number || '',
-            cap: props.postalCode || '',
-            citta: props.city || props.placeLabel || '',
-            provincia: provinceCode,
-            latitude: props.latitude,
-            longitude: props.longitude
-            // Keep existing details
-        };
+        // Auto-fill form data using react-hook-form setValue
+        const options = { shouldValidate: true, shouldDirty: true };
+        setValue('indirizzo', props.street || props.addressLabel || '', options);
+        setValue('civico', props.number || '', options);
+        setValue('cap', props.postalCode || '', options);
+        setValue('citta', props.city || props.placeLabel || '', options);
+        setValue('provincia', provinceCode, options);
 
-        setFormData(newData);
-        setQuery(`${props.street || props.addressLabel || props.formattedAddress}`); // Update input to show only street
+        // Note: latitude/longitude are not in the Zod schema but kept in form state if needed
+        // For checkout, we mostly need address strings.
+
+        setQuery(`${props.street || props.addressLabel || props.formattedAddress}`);
         setShowSuggestions(false);
         setAddressVerified(true);
-
-        // Clear hard errors if valid
-        if (props.postalCode) clearError('cap');
-        if (props.city) clearError('citta');
-        if (provinceCode) clearError('provincia');
     };
 
-    const handleManualChange = (field: string, value: string) => {
-        setFormData({ ...formData, [field]: value });
-
-        // Mark as needing review if core fields change after verification
-        if (addressVerified && ['indirizzo', 'civico', 'cap', 'citta', 'provincia'].includes(field)) {
-            // We could set a specific 'needs_review' flag here if needed
-        }
-    };
-
-    // Helper to update query input manually
     const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setQuery(val);
-        setAddressVerified(false); // Reset verification on manual edit
-
-        // CRITICAL FIX: Also update form data immediately for manual entry
-        setFormData((prev: any) => ({ ...prev, indirizzo: val }));
-
+        setAddressVerified(false);
+        setValue('indirizzo', val, { shouldDirty: true });
         setShowSuggestions(true);
     };
 
-    const clearError = (field: string) => {
-        if (errors[field]) {
-            const newErrors = { ...errors };
-            delete newErrors[field];
-            setErrors(newErrors);
-        }
+    const handleManualChange = (field: string, value: string) => {
+        setValue(field, value, { shouldValidate: true, shouldDirty: true });
     };
 
     return (
@@ -225,7 +195,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                         id="checkout-address"
                         name="indirizzo"
                         type="text"
-                        value={disabled ? '' : (query || formData.indirizzo)} // Clear or show address
+                        value={disabled ? '' : (query || watch('indirizzo'))}
                         onChange={handleQueryChange}
                         disabled={disabled}
                         placeholder={disabled ? "Non richiesto per il ritiro" : "Es. Via Roma"}
@@ -272,11 +242,9 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                         N. Civico *
                     </label>
                     <input
+                        {...register('civico')}
                         id="checkout-civico"
-                        name="civico"
                         type="text"
-                        value={disabled ? '' : formData.civico}
-                        onChange={(e) => handleManualChange('civico', e.target.value)}
                         disabled={disabled}
                         placeholder={disabled ? "-" : "12/A"}
                         className={`w-full bg-background-dark border ${errors.civico ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
@@ -289,12 +257,10 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                         CAP *
                     </label>
                     <input
+                        {...register('cap')}
                         id="checkout-cap"
-                        name="cap"
                         type="text"
-                        value={disabled ? '' : formData.cap}
-                        onChange={(e) => handleManualChange('cap', e.target.value)}
-                        onBlur={validateLocation} // Trigger validation
+                        onBlur={validateLocation}
                         disabled={disabled}
                         placeholder={disabled ? "-" : "00100"}
                         maxLength={5}
@@ -303,7 +269,7 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                     {/* Validation Feedback */}
                     {isValidating && <span className="text-xs text-text-muted absolute right-3 mt-4">Verificando...</span>}
                     {validationError && <p className="text-red-400 text-xs ml-1 mt-1">{validationError}</p>}
-                    {errors.cap && <p className="text-red-400 text-xs ml-1">{errors.cap}</p>}
+                    {errors.cap && <p className="text-red-400 text-xs ml-1">{errors.cap.message}</p>}
                 </div>
             </div>
 
@@ -314,17 +280,15 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                         Comune *
                     </label>
                     <input
+                        {...register('citta')}
                         id="checkout-city"
-                        name="citta"
                         type="text"
-                        value={disabled ? '' : formData.citta}
-                        onChange={(e) => handleManualChange('citta', e.target.value)}
-                        onBlur={validateLocation} // Trigger validation
+                        onBlur={validateLocation}
                         disabled={disabled}
                         placeholder={disabled ? "-" : "Roma"}
                         className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />
-                    {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta}</p>}
+                    {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta.message}</p>}
                 </div>
 
                 {/* 5. Provincia */}
@@ -333,14 +297,14 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                         Provincia *
                     </label>
                     <Select
-                        value={formData.provincia}
+                        value={watch('provincia')}
                         onChange={(val) => handleManualChange('provincia', val)}
                         options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
                         placeholder={disabled ? "-" : "Seleziona"}
                         disabled={disabled}
                         className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
                     />
-                    {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia}</p>}
+                    {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia.message}</p>}
                 </div>
             </div>
 
@@ -350,24 +314,20 @@ const AddressAutocomplete = ({ formData, setFormData, errors, setErrors, disable
                     Dettagli (Scala, Piano, Citofono)
                 </label>
                 <input
+                    {...register('dettagli')}
                     id="checkout-details"
-                    name="dettagli"
                     type="text"
-                    value={disabled ? '' : formData.dettagli}
-                    onChange={(e) => handleManualChange('dettagli', e.target.value)}
                     disabled={disabled}
                     placeholder={disabled ? "Ritiro in sede (Verbania)" : "Scala A, Int 4..."}
                     className={`w-full bg-background-dark border border-white/10 rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all resize-none ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                 />
             </div>
 
-
-
             {/* Soft Validation Warning */}
-            {addressVerified && (formData.cap.length !== 5 || formData.provincia.length !== 2) && (
+            {addressVerified && (watch('cap').length !== 5 || watch('provincia').length !== 2) && (
                 <div className="flex items-start gap-2 text-yellow-400 text-xs bg-yellow-400/10 p-2 rounded-lg">
                     <AlertTriangle size={14} className="mt-0.5" />
-                    <span>Verifica CAP e Provincia: potrebbero non essere corretti.</span>
+                    <span>Verifica CAP e Provincia: podrían no ser correctos.</span>
                 </div>
             )}
         </div>

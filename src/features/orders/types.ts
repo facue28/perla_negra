@@ -29,6 +29,7 @@ export interface CreateOrderInput {
         // Allow string quantity from inputs, to be parsed
     }[];
     couponCode?: string;
+    idempotencyKey?: string;
 }
 
 export interface Order {

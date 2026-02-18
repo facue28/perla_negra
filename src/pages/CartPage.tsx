@@ -1,68 +1,86 @@
 import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '@/features/cart/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Trash2, Plus, Minus, ArrowLeft, Send, ShoppingBag, MapPin } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft, Send, ShoppingBag, MapPin, Loader2 } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 import { toast } from 'sonner';
 import AddressAutocomplete from '@/features/cart/components/AddressAutocomplete';
 import Select from '@/components/ui/Select';
-import { validatePhoneAsync } from '@/utils/phoneUtils';
-// ... other imports
-
-// ... inside CartPage component
-
-
+import { CheckoutSchema, CheckoutFormData } from '@/features/forms/schemas';
+import Turnstile from '@/components/ui/Turnstile';
 import OrderConfirmationModal from '@/features/cart/components/OrderConfirmationModal';
 import { generateWhatsAppLink } from '@/features/cart/utils/whatsappGenerator';
-import { isValidPhoneNumber } from 'libphonenumber-js';
 import { trackPurchase } from '@/lib/analytics';
 import { couponService } from '@/features/cart/services/couponService';
 import { createOrder } from '@/features/orders/services/orderService';
 import { logger } from '@/lib/logger';
 import { useProducts } from '@/features/products/hooks/useProducts';
-import { CheckoutFormData, SuccessData } from '@/features/cart/types';
+import { SuccessData } from '@/features/cart/types';
 
 const CartPage = (): React.ReactElement => {
     const { items: cart, removeItem: removeFromCart, updateQuantity, total, subtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
     const { products } = useProducts();
     const navigate = useNavigate();
 
-    const [formData, setFormData] = useState<CheckoutFormData>({
-        nombre: '',
-        telefono: '+39 ',
-        indirizzo: '',
-        civico: '',
-        citta: '',
-        provincia: '',
-        cap: '',
-        dettagli: '',
-        note: '',
-        email: '',
-        metodoEnvio: 'Spedizione a domicilio',
-        latitude: null,
-        longitude: null,
-        website: ''
+    // Idempotency Token (Generated once per session/mount)
+    const [idempotencyKey] = useState(() => crypto.randomUUID());
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        reset,
+        formState: { errors }
+    } = useForm<CheckoutFormData>({
+        resolver: zodResolver(CheckoutSchema),
+        defaultValues: {
+            nombre: '',
+            telefono: '+39 ',
+            email: '',
+            indirizzo: '',
+            civico: '',
+            citta: '',
+            provincia: '',
+            cap: '',
+            note: '',
+            metodoEnvio: 'Spedizione a domicilio',
+            website: '',
+            turnstileToken: ''
+        }
     });
 
-    const [errors, setErrors] = useState<Record<string, string | null>>({});
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const formData = watch(); // Maintain compatibility with existing UI logic
     const [currentOrderNumber, setCurrentOrderNumber] = useState<string | null>(null);
     const [lastSubmitTime, setLastSubmitTime] = useState<number>(0);
+    const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
-    // Security: Honeypot & Bot Detection
-    const [hasInteracted, setHasInteracted] = useState<boolean>(false);
-    const [mountTime] = useState<number>(Date.now());
-
+    // 1. Persistence: Load data on mount
     useEffect(() => {
-        const handleInteraction = () => setHasInteracted(true);
-        const events = ['scroll', 'click', 'touchstart', 'mousemove'];
-        events.forEach(event => window.addEventListener(event, handleInteraction, { once: true }));
+        const savedData = localStorage.getItem('checkoutFormData');
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (!parsed.telefono || parsed.telefono.trim() === '') {
+                    parsed.telefono = '+39 ';
+                }
+                reset(parsed);
+            } catch (e) {
+                console.error("Error loading saved form data", e);
+            }
+        }
+    }, [reset]);
 
-        return () => {
-            events.forEach(event => window.removeEventListener(event, handleInteraction));
-        };
-    }, []);
+    // 2. Persistence: Save data on change
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            localStorage.setItem('checkoutFormData', JSON.stringify(formData));
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [formData]);
 
     // Coupon State
     const [couponCode, setCouponCode] = useState<string>('');
@@ -83,100 +101,6 @@ const CartPage = (): React.ReactElement => {
         }
     };
 
-    // 1. Persistence: Load data on mount
-    useEffect(() => {
-        const savedData = localStorage.getItem('checkoutFormData');
-        if (savedData) {
-            try {
-                const parsed = JSON.parse(savedData);
-                if (!parsed.telefono || parsed.telefono.trim() === '') {
-                    parsed.telefono = '+39 ';
-                }
-                setFormData(prev => ({ ...prev, ...parsed }));
-            } catch (e) {
-                console.error("Error loading saved form data", e);
-            }
-        }
-    }, []);
-
-    // 2. Persistence: Save data on change
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            localStorage.setItem('checkoutFormData', JSON.stringify(formData));
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [formData]);
-
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
-        const { name, value } = e.target;
-
-        if (name === 'telefono') {
-            // Phone UX: Anchor '+' symbol
-            if (!value.startsWith('+')) {
-                // If user tries to delete +, restore it immediately or keep previous if valid
-                // Let's force it to start with +
-                setFormData({ ...formData, [name]: '+' + value.replace(/^\+/, '') });
-            } else {
-                setFormData({ ...formData, [name]: value });
-            }
-        } else {
-            setFormData({ ...formData, [name]: value });
-        }
-
-        if (errors[name]) {
-            setErrors({ ...errors, [name]: null });
-        }
-    };
-
-    const validateForm = (): Record<string, string> => {
-        const newErrors: Record<string, string> = {};
-
-        if (!formData.nombre.trim()) newErrors.nombre = "Il nome è obbligatorio";
-
-        if (!formData.telefono || !formData.telefono.trim()) {
-            newErrors.telefono = "Il telefono è obbligatorio";
-        } else {
-            const phoneClean = formData.telefono.replace(/\s/g, '');
-            // Check if it's just the prefix (e.g., "+39" or "+")
-            if (phoneClean.length < 4) {
-                newErrors.telefono = "Inserisci un numero di telefono completo.";
-            } else if (!isValidPhoneNumber(formData.telefono)) {
-                newErrors.telefono = "Numero non valido.";
-            }
-        }
-
-        if (!formData.email.trim()) {
-            newErrors.email = "L'email è obbligatoria";
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = "Inserisci un indirizzo email valido.";
-        }
-
-        const isPuntoRitiro = formData.metodoEnvio.includes('Ritiro');
-
-        if (!isPuntoRitiro) {
-            if (!formData.indirizzo.trim()) newErrors.indirizzo = "L'indirizzo è obbligatorio";
-            if (!formData.civico.trim()) newErrors.civico = "Il civico è obbligatorio";
-
-            if (!formData.cap.trim() || !/^\d{5}$/.test(formData.cap)) {
-                newErrors.cap = "Inserisci un CAP valido (5 cifre).";
-            }
-
-            if (!formData.citta.trim()) newErrors.citta = "Inserisci il Comune.";
-
-            if (!formData.provincia.trim() || !/^[A-Za-z]{2}$/.test(formData.provincia)) {
-                newErrors.provincia = "Provincia (2 lettere).";
-            }
-        }
-
-        if (formData.note && /(http|https|www\.|ftp)/i.test(formData.note)) {
-            newErrors.note = "Per sicurezza, non è consentito inserire link nelle note.";
-        }
-
-        setErrors(newErrors);
-        return newErrors;
-    };
-
     const handleKeyDown = (e: React.KeyboardEvent): void => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -184,26 +108,11 @@ const CartPage = (): React.ReactElement => {
     };
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isFinalSubmitting, setIsFinalSubmitting] = useState<boolean>(false);
 
-    const handlePreSubmit = (e: React.FormEvent): void => {
-        e.preventDefault();
+    // Pre-submission handler
+    const onSubmitHandler = (data: CheckoutFormData): void => {
         if (cart.length === 0) return;
-
-        // Security Check: Smart Honeypot
-        // 1. Honeypot field must be empty
-        if (formData.website) {
-            console.warn('Bot detected: Honeypot filled');
-            return;
-        }
-
-        // 2. Time/Interaction Analysis
-        const timeOnPage = Date.now() - mountTime;
-        const isTooFast = timeOnPage < 4000; // 4 seconds
-
-        if (isTooFast && !hasInteracted) {
-            console.warn('Bot detected: Too fast and no interaction');
-            return;
-        }
 
         const now = Date.now();
         const timeSince = now - lastSubmitTime;
@@ -212,42 +121,18 @@ const CartPage = (): React.ReactElement => {
             return;
         }
 
-        const formErrors = validateForm();
-        if (Object.keys(formErrors).length > 0) {
-            // Create a readable list of errors
-            const errorMessages = Object.values(formErrors).map(msg => `• ${msg}`).join('\n');
-
-            toast.error("Attenzione: Dati mancanti", {
-                description: (
-                    <div className="mt-2 text-xs font-medium text-red-900 opacity-90 whitespace-pre-line leading-relaxed">
-                        {errorMessages}
-                    </div>
-                ),
-                duration: 5000,
-                style: {
-                    backgroundColor: '#fee2e2',
-                    color: '#991b1b', // Dark red for title
-                    borderColor: '#fca5a5'
-                }
-            });
-            return;
-        }
-
         setLastSubmitTime(now);
-        setIsSubmitting(true);
         setIsModalOpen(true);
-
-        setTimeout(() => setIsSubmitting(false), 60000);
     };
 
     const [successData, setSuccessData] = useState<SuccessData | null>(null);
 
     const confirmOrder = async (): Promise<void> => {
-        // Total is now a property
+        if (currentOrderNumber || isFinalSubmitting) return;
+
+        setIsFinalSubmitting(true);
         const orderTotal = total;
         let orderNumber: string | null = null;
-
-        if (currentOrderNumber) return;
 
         const isPickup = formData.metodoEnvio.includes('Ritiro');
         const finalAddress = isPickup ? 'Ritiro in sede (Verbania)' : `${formData.indirizzo}, ${formData.civico}`;
@@ -255,20 +140,19 @@ const CartPage = (): React.ReactElement => {
 
         try {
             try {
-
                 const orderResult = await createOrder({
                     customerInfo: {
                         fullName: formData.nombre,
-                        phone: formData.telefono.replace(/\s/g, ''), // Sanitize: Remove spaces for DB/WhatsApp
+                        phone: formData.telefono.replace(/\s/g, ''),
                         email: formData.email,
                         address: finalAddress,
                         city: finalCity,
                         notes: formData.note
                     },
                     items: cart,
-                    couponCode: discount?.code
+                    couponCode: discount?.code,
+                    idempotencyKey: idempotencyKey
                 });
-
 
                 orderNumber = orderResult.orderNumber;
                 setCurrentOrderNumber(orderNumber);
@@ -278,7 +162,6 @@ const CartPage = (): React.ReactElement => {
                 }
 
                 trackPurchase(cart, total, orderNumber);
-                // Allow a small window for GA4 beacons to be sent before state changes
                 await new Promise(resolve => setTimeout(resolve, 500));
                 logger.info('Order saved successfully', { orderNumber });
 
@@ -299,14 +182,14 @@ const CartPage = (): React.ReactElement => {
                             notes: formData.note
                         },
                         items: cart,
-                        couponCode: discount?.code
+                        couponCode: discount?.code,
+                        idempotencyKey: idempotencyKey
                     });
 
                     orderNumber = retryResult.orderNumber;
                     setCurrentOrderNumber(orderNumber);
 
                     trackPurchase(cart, orderTotal, orderNumber);
-                    // Allow a small window for GA4 beacons to be sent before state changes
                     await new Promise(resolve => setTimeout(resolve, 500));
                     logger.info('Order saved on retry', { orderNumber });
                     toast.success('Pedido guardado correctamente');
@@ -316,8 +199,7 @@ const CartPage = (): React.ReactElement => {
                     toast.error('Errore nel salvataggio dell\'ordine. Contatta il supporto o riprova.', {
                         duration: 8000
                     });
-
-                    setIsSubmitting(false);
+                    setIsFinalSubmitting(false);
                     setIsModalOpen(false);
                     return;
                 }
@@ -336,7 +218,7 @@ const CartPage = (): React.ReactElement => {
             }
 
             const { whatsappUrl } = generateWhatsAppLink(
-                formData,
+                formData as any,
                 cart,
                 orderTotal,
                 discount,
@@ -352,7 +234,6 @@ const CartPage = (): React.ReactElement => {
 
             window.open(whatsappUrl, '_blank');
 
-            // Redirect to Success Page
             navigate('/grazie', {
                 state: {
                     orderNumber,
@@ -360,12 +241,11 @@ const CartPage = (): React.ReactElement => {
                 }
             });
 
-            setIsSubmitting(false);
-
         } catch (error) {
             logger.error('Order confirmation flow failed', error);
             toast.error('Ha ocurrido un error inesperado.');
-            setIsSubmitting(false);
+        } finally {
+            setIsFinalSubmitting(false);
         }
     };
 
@@ -419,7 +299,7 @@ const CartPage = (): React.ReactElement => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
-                    <div className="lg:col-span-7 space-y-6">
+                    <div className="lg:col-span-12 xl:col-span-7 space-y-6">
                         <AnimatePresence mode="popLayout">
                             {cart.map((item) => (
                                 <motion.div
@@ -503,7 +383,7 @@ const CartPage = (): React.ReactElement => {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-5 lg:sticky lg:top-24">
+                    <div className="lg:col-span-12 xl:col-span-5 lg:sticky lg:top-24">
                         <div className="bg-background-alt p-8 rounded-3xl border border-white/10 shadow-2xl shadow-black/40">
                             <h2 className="text-2xl font-serif text-text-primary mb-8 border-b border-white/5 pb-4">
                                 Riepilogo Ordine
@@ -553,12 +433,9 @@ const CartPage = (): React.ReactElement => {
                                 </div>
                             )}
 
-                            <form onSubmit={handlePreSubmit} onKeyDown={handleKeyDown} className="space-y-5">
+                            <form onSubmit={handleSubmit(onSubmitHandler)} onKeyDown={handleKeyDown} className="space-y-5">
                                 <input
-                                    type="text"
-                                    name="website"
-                                    value={formData.website}
-                                    onChange={handleInputChange}
+                                    {...register('website')}
                                     tabIndex={-1}
                                     autoComplete="off"
                                     aria-hidden="true"
@@ -574,50 +451,44 @@ const CartPage = (): React.ReactElement => {
                                 <div className="space-y-1">
                                     <label htmlFor="checkout-name" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Nome Completo</label>
                                     <input
+                                        {...register('nombre')}
                                         id="checkout-name"
                                         type="text"
-                                        name="nombre"
-                                        value={formData.nombre}
-                                        onChange={handleInputChange}
                                         placeholder="Il tuo nome"
                                         className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
-                                    {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre}</p>}
+                                    {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre.message}</p>}
                                 </div>
 
                                 <div className="space-y-1">
                                     <label htmlFor="checkout-phone" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">WhatsApp</label>
                                     <input
+                                        {...register('telefono')}
                                         id="checkout-phone"
                                         type="tel"
-                                        name="telefono"
-                                        value={formData.telefono}
-                                        onChange={handleInputChange}
                                         placeholder="+39 ..."
                                         className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
-                                    {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono}</p>}
+                                    {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono.message}</p>}
                                 </div>
 
                                 <div className="space-y-1">
                                     <label htmlFor="checkout-email" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Email</label>
                                     <input
+                                        {...register('email')}
                                         id="checkout-email"
                                         type="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
                                         placeholder="esempio@dominio.it"
                                         className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
                                     />
-                                    {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email}</p>}
+                                    {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email.message}</p>}
                                 </div>
 
                                 <AddressAutocomplete
-                                    formData={formData}
-                                    setFormData={setFormData}
-                                    errors={errors as Record<string, string>}
-                                    setErrors={(newErrors: any) => setErrors(newErrors)}
+                                    register={register}
+                                    setValue={setValue}
+                                    watch={watch}
+                                    errors={errors}
                                     disabled={formData.metodoEnvio.includes('Ritiro')}
                                 />
 
@@ -626,7 +497,7 @@ const CartPage = (): React.ReactElement => {
                                     <div className="relative">
                                         <Select
                                             value={formData.metodoEnvio}
-                                            onChange={(val: string) => setFormData({ ...formData, metodoEnvio: val })}
+                                            onChange={(val: string) => setValue('metodoEnvio', val as any, { shouldValidate: true })}
                                             options={[
                                                 { value: 'Spedizione a domicilio', label: 'Spedizione a domicilio' },
                                                 { value: 'Ritiro in sede (Verbania)', label: 'Ritiro in sede (Verbania)' }
@@ -647,27 +518,31 @@ const CartPage = (): React.ReactElement => {
                                 <div className="space-y-1">
                                     <label htmlFor="checkout-notes" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">Note (Opzionale)</label>
                                     <textarea
+                                        {...register('note')}
                                         id="checkout-notes"
-                                        name="note"
-                                        value={formData.note}
-                                        onChange={handleInputChange}
                                         placeholder="Note per la consegna..."
                                         rows={2}
                                         className={`w-full bg-background-dark border ${errors.note ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all resize-none`}
                                     />
-                                    {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note}</p>}
+                                    {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note.message}</p>}
                                 </div>
+
+                                <Turnstile
+                                    siteKey={TURNSTILE_SITE_KEY}
+                                    onVerify={(token) => setValue('turnstileToken', token, { shouldValidate: true })}
+                                />
+                                {errors.turnstileToken && <p className="text-red-500 text-xs text-center">{errors.turnstileToken.message}</p>}
 
                                 <motion.button
                                     type="submit"
-                                    disabled={isSubmitting}
+                                    disabled={isFinalSubmitting}
                                     whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(63,255,193,0.5)" }}
                                     whileTap={{ scale: 0.95 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(63,255,193,0.3)] flex items-center justify-center gap-3 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(63,255,193,0.3)] flex items-center justify-center gap-3 ${isFinalSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    {isSubmitting ? (
-                                        <span>Attendere...</span>
+                                    {isFinalSubmitting ? (
+                                        <Loader2 className="w-6 h-6 animate-spin text-background-dark" />
                                     ) : (
                                         <>
                                             <span>Completa su WhatsApp</span>
@@ -686,7 +561,7 @@ const CartPage = (): React.ReactElement => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 onConfirm={confirmOrder}
-                formData={formData}
+                formData={formData as any}
                 cartTotal={total}
                 successData={successData}
             />
