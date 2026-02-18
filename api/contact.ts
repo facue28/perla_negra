@@ -26,10 +26,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
 
         const verifyData = await verifyResponse.json();
-        if (!verifyData.success || verifyData.hostname !== 'perlanegra.it') { // Ajustar hostname según el entorno
-            // Log minimalista de fallo de bot
-            console.warn(`[Bot Detected] Turnstile failed for IP: ${req.headers['x-forwarded-for']}`);
-            return res.status(403).json({ error: 'Verificacion bot fallida' });
+        if (!verifyData.success) {
+            console.warn(`[Bot Detected] Turnstile failed for IP: ${req.headers['x-forwarded-for']}. Details:`, verifyData['error-codes']);
+            return res.status(403).json({ error: 'Verificasione bot fallida (Turnstile)' });
         }
 
         // 3. Honeypot check (YA validado por Zod, pero reforzamos lógica)

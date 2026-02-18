@@ -25,7 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const verifyData = await verifyResponse.json();
         if (!verifyData.success) {
-            console.warn(`[Bot Detected] Turnstile failed for IP: ${req.headers['x-forwarded-for']}`);
+            console.warn(`[Bot Detected] Turnstile failed for IP: ${req.headers['x-forwarded-for']}. Details:`, verifyData['error-codes']);
             return res.status(403).json({ error: 'Verificacion bot fallida' });
         }
 
