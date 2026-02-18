@@ -32,3 +32,9 @@ raw_images/
 optimized_images/
 *.csv
 *.txt
+
+# Testing / Playwright output
+test-output*.json
+test-results/
+playwright-report/
+storage-state.json
