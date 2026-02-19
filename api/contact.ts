@@ -12,7 +12,7 @@ const ContactSchema = z.object({
 
 // Variables moved inside handler for better serverless compatibility
 
-import { getBaseTemplate } from './lib/email-templates';
+import { getBaseTemplate } from './lib/email-templates.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {

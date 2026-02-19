@@ -15,7 +15,7 @@ const ResellerSchema = z.object({
     turnstileToken: z.string().min(1)
 });
 
-import { getBaseTemplate } from './lib/email-templates';
+import { getBaseTemplate } from './lib/email-templates.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
