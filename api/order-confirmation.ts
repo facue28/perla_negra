@@ -104,7 +104,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             <div style="text-align: center; margin-top: 40px;">
                 <p>Ti avviseremo appena il tuo pacco sarà in viaggio.</p>
-                <a href="https://perla-negra.vercel.app/admin" class="btn">Visualizza Ordine</a>
             </div>
         `;
 
