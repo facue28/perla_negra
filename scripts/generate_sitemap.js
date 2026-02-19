@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-const SITE_URL = 'https://perlanegra.it'; // Replace with actual domain if different
+const SITE_URL = process.env.VITE_SITE_URL || 'https://perla-negra.vercel.app'; // Default to Vercel domain, override via env var
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('Error: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set in .env');
