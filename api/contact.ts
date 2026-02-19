@@ -12,37 +12,29 @@ const ContactSchema = z.object({
 
 // Variables moved inside handler for better serverless compatibility
 
+import { getBaseTemplate } from './lib/email-templates';
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
-    const SMTP_HOST = process.env.SMTP_HOST;
-    const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465');
-    const SMTP_USER = process.env.SMTP_USER;
-    const SMTP_PASS = process.env.SMTP_PASS;
-    const EMAIL_TO = process.env.EMAIL_TO;
+    const {
+        TURNSTILE_SECRET_KEY,
+        SMTP_HOST,
+        SMTP_PORT,
+        SMTP_USER,
+        SMTP_PASS,
+        EMAIL_TO
+    } = process.env;
+
+    const SMTP_PORT_INT = parseInt(SMTP_PORT || '465');
 
     console.log('API Contact called');
-    console.log('Available keys starting with TURN/SMTP:', Object.keys(process.env).filter(k => k.startsWith('TURN') || k.startsWith('SMTP') || k.includes('VITE')));
 
     try {
-        // Log de depuración de variables (solo presencia y pedacito para verificar)
-        console.log('Environment check:', {
-            hasSecret: !!TURNSTILE_SECRET_KEY,
-            secretStart: TURNSTILE_SECRET_KEY ? `${TURNSTILE_SECRET_KEY.substring(0, 6)}...` : 'NONE',
-            hasSMTP: !!SMTP_HOST,
-            hasUser: !!SMTP_USER,
-            hasPass: !!SMTP_PASS,
-            port: SMTP_PORT
-        });
-
-        // 1. Validar Esquema Zod
         const validatedData = ContactSchema.parse(req.body);
-        console.log('Zod validation success');
 
-        // 2. Validar Turnstile (Siteverify)
         const params = new URLSearchParams();
         params.append('secret', TURNSTILE_SECRET_KEY || '');
         params.append('response', validatedData.turnstileToken);
@@ -51,53 +43,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             : req.headers['x-forwarded-for'] || '';
         params.append('remoteip', remoteIp);
 
-        console.log('Verifying Turnstile with secret starting with:', TURNSTILE_SECRET_KEY?.substring(0, 6));
-        console.log('Payload body:', params.toString());
-
         const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
             body: params
         });
 
         const verifyData = await verifyResponse.json();
-        console.log('Turnstile response:', verifyData);
 
         if (!verifyData.success) {
-            console.warn(`[Bot Detected] Turnstile failed. Details:`, verifyData['error-codes']);
             return res.status(403).json({
                 error: 'Verificasione bot fallida (Turnstile)',
                 details: verifyData['error-codes']
             });
         }
 
-        // 3. Honeypot check (YA validado por Zod, pero reforzamos lógica)
         if (validatedData.trap) {
-            console.warn(`[Bot Detected] Honeypot filled for IP: ${req.headers['x-forwarded-for']}`);
             return res.status(403).json({ error: 'Spam detected' });
         }
 
-        // 4. Configurar SMTP y enviar
         const transporter = nodemailer.createTransport({
             host: SMTP_HOST,
-            port: SMTP_PORT,
-            secure: SMTP_PORT === 465,
+            port: SMTP_PORT_INT,
+            secure: SMTP_PORT_INT === 465,
             auth: { user: SMTP_USER, pass: SMTP_PASS }
         });
+
+        const emailContent = `
+            <div style="text-align: center;">
+                <h2 style="margin-bottom: 10px;">Nuovo Messaggio Ricevuto</h2>
+                <p>Hai ricevuto un nuevo contacto dal sito <span class="accent">Perla Negra</span>.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; color: #FFFFFF; font-size: 16px; text-transform: uppercase; letter-spacing: 0.1em;">Dettagli del Mittente</h3>
+                <p style="margin-bottom: 5px;"><strong style="color: #FFFFFF;">Nome:</strong> ${validatedData.nombre}</p>
+                <p style="margin-top: 0;"><strong style="color: #FFFFFF;">Email:</strong> <a href="mailto:${validatedData.email}" style="color: #3FFFC1; text-decoration: none;">${validatedData.email}</a></p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; color: #FFFFFF; font-size: 16px; text-transform: uppercase; letter-spacing: 0.1em;">Messaggio</h3>
+                <div style="white-space: pre-wrap; color: #D1D5D4; font-style: italic; border-left: 2px solid #3FFFC1; padding-left: 15px; margin: 10px 0;">
+                    "${validatedData.mensaje}"
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="mailto:${validatedData.email}" class="btn">Rispondi al Cliente</a>
+            </div>
+        `;
 
         const mailOptions = {
             from: `"Perla Negra Contact" <${SMTP_USER}>`,
             to: EMAIL_TO,
             replyTo: validatedData.email,
-            subject: `Nuovo Messaggio da ${validatedData.nombre}`,
-            text: `Nome: ${validatedData.nombre}\nEmail: ${validatedData.email}\nMessaggio:\n${validatedData.mensaje}`,
-            html: `
-        <h2>Nuovo Messaggio dal Sito</h2>
-        <p><strong>Nome:</strong> ${validatedData.nombre}</p>
-        <p><strong>Email:</strong> ${validatedData.email}</p>
-        <p><strong>Messaggio:</strong></p>
-        <div style="white-space: pre-wrap; padding: 10px; background: #f4f4f4;">${validatedData.mensaje}</div>
-      `
+            subject: `Messaggio da ${validatedData.nombre} - Perla Negra`,
+            html: getBaseTemplate(emailContent, `Nuovo Messaggio da ${validatedData.nombre}`)
         };
+
+        await transporter.sendMail(mailOptions);
 
         await transporter.sendMail(mailOptions);
 

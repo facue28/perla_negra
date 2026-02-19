@@ -15,24 +15,27 @@ const ResellerSchema = z.object({
     turnstileToken: z.string().min(1)
 });
 
-// Variables moved inside handler
+import { getBaseTemplate } from './lib/email-templates';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
-    const SMTP_HOST = process.env.SMTP_HOST;
-    const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465');
-    const SMTP_USER = process.env.SMTP_USER;
-    const SMTP_PASS = process.env.SMTP_PASS;
-    const EMAIL_TO = process.env.EMAIL_TO;
+    const {
+        TURNSTILE_SECRET_KEY,
+        SMTP_HOST,
+        SMTP_PORT,
+        SMTP_USER,
+        SMTP_PASS,
+        EMAIL_TO
+    } = process.env;
+
+    const SMTP_PORT_INT = parseInt(SMTP_PORT || '465');
 
     console.log('API Reseller called');
     try {
         const validatedData = ResellerSchema.parse(req.body);
-        console.log('Zod validation success');
 
         const params = new URLSearchParams();
         params.append('secret', TURNSTILE_SECRET_KEY || '');
@@ -42,17 +45,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             : req.headers['x-forwarded-for'] || '';
         params.append('remoteip', remoteIp);
 
-        console.log('Verifying Turnstile...');
         const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
             body: params
         });
 
         const verifyData = await verifyResponse.json();
-        console.log('Turnstile response:', verifyData);
 
         if (!verifyData.success) {
-            console.warn(`[Bot Detected] Turnstile failed. Details:`, verifyData['error-codes']);
             return res.status(403).json({
                 error: 'Verificacion bot fallida',
                 details: verifyData['error-codes']
@@ -61,28 +61,64 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         const transporter = nodemailer.createTransport({
             host: SMTP_HOST,
-            port: SMTP_PORT,
-            secure: SMTP_PORT === 465,
+            port: SMTP_PORT_INT,
+            secure: SMTP_PORT_INT === 465,
             auth: { user: SMTP_USER, pass: SMTP_PASS }
         });
 
+        const emailContent = `
+            <div style="text-align: center;">
+                <h2 style="margin-bottom: 10px;">Nuova Candidatura Rivenditore</h2>
+                <p>Una nueva persona desidera collaborare con <span class="accent">Perla Negra</span>.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; color: #FFFFFF; font-size: 16px; text-transform: uppercase; letter-spacing: 0.1em;">Profilo Candidato</h3>
+                <table style="border: none;">
+                    <tr>
+                        <td style="border: none; padding: 5px 0; color: #FFFFFF; width: 150px;"><strong>Nome:</strong></td>
+                        <td style="border: none; padding: 5px 0; color: #D1D5D4;">${validatedData.nombre} ${validatedData.cognome}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px 0; color: #FFFFFF;"><strong>Email:</strong></td>
+                        <td style="border: none; padding: 5px 0; color: #3FFFC1;">${validatedData.email}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px 0; color: #FFFFFF;"><strong>Telefono:</strong></td>
+                        <td style="border: none; padding: 5px 0; color: #D1D5D4;">${validatedData.telefono}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px 0; color: #FFFFFF;"><strong>Località:</strong></td>
+                        <td style="border: none; padding: 5px 0; color: #D1D5D4;">${validatedData.citta} (${validatedData.provincia})</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px 0; color: #FFFFFF;"><strong>Conoscenza:</strong></td>
+                        <td style="border: none; padding: 5px 0; color: #D1D5D4;">${validatedData.conoscenza}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; color: #FFFFFF; font-size: 16px; text-transform: uppercase; letter-spacing: 0.1em;">Messaggio</h3>
+                <div style="white-space: pre-wrap; color: #D1D5D4; font-style: italic; border-left: 2px solid #3FFFC1; padding-left: 15px; margin: 10px 0;">
+                    "${validatedData.messaggio || 'Nessun messaggio aggiuntivo.'}"
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="mailto:${validatedData.email}" class="btn">Contatta Candidato</a>
+            </div>
+        `;
+
         const mailOptions = {
-            from: `"Perla Negra Reseller" <${SMTP_USER}>`,
+            from: `"Perla Negra B2B" <${SMTP_USER}>`,
             to: EMAIL_TO,
             replyTo: validatedData.email,
-            subject: `Nuova Candidatura Rivenditore: ${validatedData.nombre} ${validatedData.cognome}`,
-            html: `
-        <h2>Candidatura Rivenditore / Collaboratore</h2>
-        <p><strong>Nome Completo:</strong> ${validatedData.nombre} ${validatedData.cognome}</p>
-        <p><strong>Email:</strong> ${validatedData.email}</p>
-        <p><strong>Telefono:</strong> ${validatedData.telefono}</p>
-        <p><strong>Provincia:</strong> ${validatedData.provincia}</p>
-        <p><strong>Città:</strong> ${validatedData.citta}</p>
-        <p><strong>Come ci ha conosciuto:</strong> ${validatedData.conoscenza}</p>
-        <p><strong>Messaggio Adizionale:</strong></p>
-        <div style="white-space: pre-wrap; padding: 10px; background: #f4f4f4;">${validatedData.messaggio || 'Nessun messaggio'}</div>
-      `
+            subject: `Candidatura B2B: ${validatedData.nombre} ${validatedData.cognome} - Perla Negra`,
+            html: getBaseTemplate(emailContent, `Candidatura Rivenditore: ${validatedData.nombre}`)
         };
+
+        await transporter.sendMail(mailOptions);
 
         await transporter.sendMail(mailOptions);
         console.info(`[Form Success] Reseller form sent successfully.`);
