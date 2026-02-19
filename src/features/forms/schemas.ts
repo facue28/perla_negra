@@ -39,17 +39,56 @@ export const CheckoutSchema = z.object({
     nombre: z.string().min(2, 'Il nome è obbligatorio'),
     telefono: z.string().min(6, 'Telefono non valido'),
     email: z.string().email('Email non valida'),
-    indirizzo: z.string().min(5, 'L\'indirizzo è obbligatorio'),
-    civico: z.string().min(1, 'Il civico è obbligatorio'),
-    citta: z.string().min(1, 'La città è obbligatoria'),
-    provincia: z.string().length(2, 'Provincia (2 lettere)'),
-    cap: z.string().regex(/^\d{5}$/, 'CAP non valido (5 cifre)'),
+    // Base fields allow empty strings, validation is conditional below
+    indirizzo: z.string(),
+    civico: z.string(),
+    citta: z.string(),
+    provincia: z.string(),
+    cap: z.string(),
     note: z.string().max(500).optional().refine(val => !val || !/(http|https|www\.|ftp)/i.test(val), {
         message: 'I link non sono consentiti nelle note'
     }),
     metodoEnvio: z.enum(['Spedizione a domicilio', 'Ritiro in sede (Verbania)']),
     website: z.string().max(0, 'Bot detected').optional(), // Honeypot
     turnstileToken: z.string().min(1, 'Token Turnstile mancante')
+}).superRefine((data, ctx) => {
+    if (data.metodoEnvio === 'Spedizione a domicilio') {
+        if (!data.indirizzo || data.indirizzo.length < 5) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "L'indirizzo è obbligatorio",
+                path: ["indirizzo"]
+            });
+        }
+        if (!data.civico || data.civico.length < 1) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Il civico è obbligatorio",
+                path: ["civico"]
+            });
+        }
+        if (!data.citta || data.citta.length < 1) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "La città è obbligatoria",
+                path: ["citta"]
+            });
+        }
+        if (!data.provincia || data.provincia.length !== 2) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Provincia (2 lettere)",
+                path: ["provincia"]
+            });
+        }
+        if (!data.cap || !/^\d{5}$/.test(data.cap)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "CAP non valido (5 cifre)",
+                path: ["cap"]
+            });
+        }
+    }
 });
 
 export type CheckoutFormData = z.infer<typeof CheckoutSchema>;
