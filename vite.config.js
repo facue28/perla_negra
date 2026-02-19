@@ -23,9 +23,13 @@ export default defineConfig({
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
+      sourcemaps: {
+        assets: "./dist/**",
+      }
     }),
   ],
   build: {
+    sourcemap: true, // Enable sourcemaps for Sentry
     rollupOptions: {
       output: {
         manualChunks: {
