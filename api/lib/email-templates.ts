@@ -100,7 +100,7 @@ export function getBaseTemplate(content: string, title: string) {
             display: inline-block;
             padding: 16px 32px;
             background-color: ${colors.accent};
-            color: ${colors.background};
+            color: #000000 !important;
             text-decoration: none;
             border-radius: 100px;
             font-weight: 800;
