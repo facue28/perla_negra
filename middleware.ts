@@ -8,7 +8,7 @@ export const config = {
          * - favicon.ico (favicon file)
          * - assets (static assets)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|assets).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|assets|sitemap.xml|robots.txt).*)',
     ],
 };
 
