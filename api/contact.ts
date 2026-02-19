@@ -10,19 +10,23 @@ const ContactSchema = z.object({
     turnstileToken: z.string().min(1)
 });
 
-const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465');
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
-const EMAIL_TO = process.env.EMAIL_TO || 'facundo.elias10@gmail.com';
+// Variables moved inside handler for better serverless compatibility
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY;
+    const SMTP_HOST = process.env.SMTP_HOST;
+    const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465');
+    const SMTP_USER = process.env.SMTP_USER;
+    const SMTP_PASS = process.env.SMTP_PASS;
+    const EMAIL_TO = process.env.EMAIL_TO;
+
     console.log('API Contact called');
+    console.log('Available keys starting with TURN/SMTP:', Object.keys(process.env).filter(k => k.startsWith('TURN') || k.startsWith('SMTP') || k.includes('VITE')));
+
     try {
         // Log de depuración de variables (solo presencia y pedacito para verificar)
         console.log('Environment check:', {
