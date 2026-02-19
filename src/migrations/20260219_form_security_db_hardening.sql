@@ -29,8 +29,8 @@ CREATE OR REPLACE FUNCTION public.create_order_secure(
     p_delivery_address text,
     p_delivery_notes text,
     p_items jsonb,
-    p_idempotency_key text, -- Nuevo parámetro
-    p_coupon_code text DEFAULT NULL
+    p_coupon_code text DEFAULT NULL, -- Reordenado para coincidir con JS call
+    p_idempotency_key text DEFAULT NULL -- Reordenado
 )
 RETURNS json
 LANGUAGE plpgsql
@@ -121,10 +121,10 @@ BEGIN
             RAISE EXCEPTION 'Cantidad máxima por producto: %', c_max_quantity_per_item;
         END IF;
         
-        -- [DEBUG] Consultar producto - Usando image_url
+        -- [DEBUG] Consultar producto - Usando image_url y CAST explícito
         SELECT id, name, price, image_url, category INTO v_product
         FROM public.products 
-        WHERE id::text = (v_item->>'product_id')::text
+        WHERE id = (v_item->>'product_id')::bigint
           AND active = true;
         
         IF NOT FOUND THEN 
@@ -134,13 +134,13 @@ BEGIN
         v_item_subtotal := v_product.price * v_quantity;
         v_subtotal := v_subtotal + v_item_subtotal;
         
-        -- Insertar en order_items asegurando cast numérico para product_id
+        -- Insertar en order_items asegurando cast explícito a BIGINT para product_id
         INSERT INTO public.order_items (
             order_id, product_id, product_name, product_image, product_category,
             price, quantity, subtotal
         ) VALUES (
-            v_order_id, v_product.id, v_product.name, v_product.image_url, v_product.category,
-            v_product.price, v_quantity, v_item_subtotal
+            v_order_id::uuid, v_product.id::bigint, v_product.name, v_product.image_url, v_product.category,
+            v_product.price::numeric, v_quantity::integer, v_item_subtotal::numeric
         );
     END LOOP;
     
@@ -255,4 +255,4 @@ BEGIN
 END;
 $$;
 
-SELECT 'DB Hardening: COMPLETE - Idempotency and Email Deduplication added' as status;
+SELECT 'DB Hardening: COMPLETE - Idempotency and Email Deduplication addedv1' as status;
