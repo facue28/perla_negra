@@ -21,7 +21,11 @@ ADD COLUMN IF NOT EXISTS dedupe_key TEXT UNIQUE;
 
 COMMENT ON COLUMN public.order_email_attempts.dedupe_key IS 'Identificador único del intento de envío (ej: order-confirmation:UUID) para prevenir re-envíos.';
 
--- 3. Actualización de RPC create_order_secure para manejar idempotencia
+-- 3. Actualización de RPC create_order_secure
+-- ELIMINAMOS VERSIONES PREVIAS PARA EVITAR CONFLICTOS DE NOMBRES/TIPOS
+DROP FUNCTION IF EXISTS public.create_order_secure(text, text, text, text, text, jsonb, text, text);
+DROP FUNCTION IF EXISTS public.create_order_secure(text, text, text, text, text, jsonb, text);
+
 CREATE OR REPLACE FUNCTION public.create_order_secure(
     p_customer_name text,
     p_customer_phone text,
@@ -29,8 +33,8 @@ CREATE OR REPLACE FUNCTION public.create_order_secure(
     p_delivery_address text,
     p_delivery_notes text,
     p_items jsonb,
-    p_coupon_code text DEFAULT NULL, -- Reordenado para coincidir con JS call
-    p_idempotency_key text DEFAULT NULL -- Reordenado
+    p_coupon_code text DEFAULT NULL,
+    p_idempotency_key text DEFAULT NULL
 )
 RETURNS json
 LANGUAGE plpgsql
