@@ -232,7 +232,9 @@ const CartPage = (): React.ReactElement => {
                 messageBody: whatsappUrl.split('text=')[1]
             });
 
-            window.open(whatsappUrl, '_blank');
+            // Removed window.open to prevent popup blockers on mobile
+            // Redirection will be handled in the SuccessPage
+
 
             navigate('/grazie', {
                 state: {

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, Link, Navigate } from 'react-router-dom';
-import { CheckCircle2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ShoppingBag, ArrowRight, Send } from 'lucide-react';
 import SEO from '@/components/ui/SEO';
 
 interface SuccessState {
@@ -20,6 +20,14 @@ const SuccessPage: React.FC = () => {
     useEffect(() => {
         if (state?.orderNumber) {
             clearCart();
+        }
+
+        // Auto-redirect to WhatsApp responsibly
+        if (state?.whatsappUrl) {
+            const timer = setTimeout(() => {
+                window.location.href = state.whatsappUrl;
+            }, 1500); // Small delay to let the user see the success page first
+            return () => clearTimeout(timer);
         }
     }, [state, clearCart]);
 
@@ -62,24 +70,24 @@ const SuccessPage: React.FC = () => {
                     </ul>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <Link
-                        to="/prodotti"
-                        className="bg-accent text-background-dark px-8 py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all shadow-[0_0_20px_rgba(63,255,193,0.2)] hover:shadow-[0_0_30px_rgba(63,255,193,0.4)] flex items-center justify-center gap-2"
-                    >
-                        <ShoppingBag size={20} />
-                        Continua lo Shopping
-                    </Link>
-
+                <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
                     <a
                         href={state.whatsappUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-text-muted hover:text-white text-sm py-2 transition-colors flex items-center justify-center gap-1"
+                        className="bg-[#25D366] text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-[#20bd5a] transition-all shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_30px_rgba(37,211,102,0.5)] flex items-center justify-center gap-3 animate-pulse-slow"
                     >
-                        Non si è aperto WhatsApp? <span className="underline decoration-accent/50">Clicca qui</span>
-                        <ArrowRight size={14} />
+                        <Send size={24} />
+                        Invia Ordine su WhatsApp
                     </a>
+
+                    <Link
+                        to="/prodotti"
+                        className="bg-white/5 text-text-muted hover:text-white px-8 py-3 rounded-xl font-medium text-base hover:bg-white/10 transition-all flex items-center justify-center gap-2 border border-white/5"
+                    >
+                        <ShoppingBag size={18} />
+                        Continua lo Shopping
+                    </Link>
                 </div>
             </div>
         </div>
