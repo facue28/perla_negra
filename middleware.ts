@@ -62,52 +62,58 @@ const IGNORE_EXTENSIONS = [
 ];
 
 export default async function middleware(request: Request) {
-    const userAgent = request.headers.get('user-agent')?.toLowerCase();
-    const url = new URL(request.url);
-    const path = url.pathname;
+    try {
+        const userAgent = request.headers.get('user-agent')?.toLowerCase();
+        const url = new URL(request.url);
+        const path = url.pathname;
 
-    // 1. Check if it's a static file (double check in case matcher misses something)
-    const isStaticFile = IGNORE_EXTENSIONS.some(ext => path.endsWith(ext));
-    if (isStaticFile) {
-        return; // Continue normally
-    }
-
-    // 2. Check if it's a bot
-    const isBot = userAgent && BOT_AGENTS.some(bot => userAgent.includes(bot.toLowerCase()));
-
-    if (isBot) {
-        // 3. Rewrite to Prerender.io
-        const prerenderToken = process.env.PRERENDER_TOKEN;
-
-        // Skip if no token configured (avoid unnecessary errors)
-        if (!prerenderToken) {
-            console.warn('Prerender token missing, skipping prerender for bot');
-            return;
+        // 1. Check if it's a static file (double check in case matcher misses something)
+        const isStaticFile = IGNORE_EXTENSIONS.some(ext => path.endsWith(ext));
+        if (isStaticFile) {
+            return; // Continue normally
         }
 
-        const newUrl = `https://service.prerender.io/${request.url}`;
+        // 2. Check if it's a bot
+        const isBot = userAgent && BOT_AGENTS.some(bot => userAgent.includes(bot.toLowerCase()));
 
-        try {
-            // Create new headers, copying originals and adding the token
-            const newHeaders = new Headers(request.headers);
-            newHeaders.set('X-Prerender-Token', prerenderToken);
+        if (isBot) {
+            // 3. Rewrite to Prerender.io
+            const prerenderToken = process.env.PRERENDER_TOKEN;
 
-            // Remove host header to avoid conflicts with Prerender's upstream host
-            newHeaders.delete('host');
-            newHeaders.delete('connection'); // Let fetch handle connection
+            // Skip if no token configured (avoid unnecessary errors)
+            if (!prerenderToken) {
+                // console.warn('Prerender token missing');
+                return;
+            }
 
-            // Rewrite the request
-            const response = await fetch(newUrl, {
-                headers: newHeaders,
-                redirect: 'manual', // Prerender might handle redirects
-            });
+            const newUrl = `https://service.prerender.io/${request.url}`;
 
-            return response;
-        } catch (error) {
-            console.error('Prerender error:', error);
-            // Fallback: If Prerender fails, return normal response (let user see the app loading)
-            return;
+            try {
+                // Create new headers, copying originals and adding the token
+                const newHeaders = new Headers(request.headers);
+                newHeaders.set('X-Prerender-Token', prerenderToken);
+
+                // Remove host header to avoid conflicts with Prerender's upstream host
+                newHeaders.delete('host');
+                newHeaders.delete('connection'); // Let fetch handle connection
+
+                // Rewrite the request
+                const response = await fetch(newUrl, {
+                    headers: newHeaders,
+                    redirect: 'manual', // Prerender might handle redirects
+                });
+
+                return response;
+            } catch (error) {
+                console.error('Prerender error:', error);
+                // Fallback: If Prerender fails, return normal response (let user see the app loading)
+                return;
+            }
         }
+    } catch (error) {
+        console.error('Middleware execution error:', error);
+        // Fail open: If middleware fails, return normal response
+        return;
     }
 
     // Not a bot, continue normally
