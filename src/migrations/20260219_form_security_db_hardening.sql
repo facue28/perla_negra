@@ -117,9 +117,12 @@ BEGIN
             RAISE EXCEPTION 'Cantidad máxima por producto: %', c_max_quantity_per_item;
         END IF;
         
-        SELECT id, name, price, image_url, category INTO v_product
+        -- [DEBUG] Consultar producto con cast a texto para evitar conflictos de tipo UUID/Bigint
+        RAISE NOTICE 'Buscando producto con ID: %', (v_item->>'product_id');
+        
+        SELECT id, name, price, image, category INTO v_product
         FROM public.products 
-        WHERE id = (v_item->>'product_id')::bigint
+        WHERE id::text = (v_item->>'product_id')::text
           AND active = true;
         
         IF NOT FOUND THEN 
@@ -133,7 +136,7 @@ BEGIN
             order_id, product_id, product_name, product_image, product_category,
             price, quantity, subtotal
         ) VALUES (
-            v_order_id, v_product.id, v_product.name, v_product.image_url, v_product.category,
+            v_order_id, v_product.id, v_product.name, v_product.image, v_product.category,
             v_product.price, v_quantity, v_item_subtotal
         );
     END LOOP;
