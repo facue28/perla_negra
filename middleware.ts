@@ -60,7 +60,7 @@ const BOT_AGENTS = [
     '.eot', '.otf', '.ttc'
 ];
 
-export default function middleware(request: Request) {
+export default async function middleware(request: Request) {
     const userAgent = request.headers.get('user-agent')?.toLowerCase();
     const url = new URL(request.url);
     const path = url.pathname;
@@ -76,23 +76,37 @@ export default function middleware(request: Request) {
 
     if (isBot) {
         // 3. Rewrite to Prerender.io
-        // PRERENDER_TOKEN must be set in Vercel Environment Variables
         const prerenderToken = process.env.PRERENDER_TOKEN;
 
-        // Construct the new URL for Prerender.io
-        const newUrl = `https://service.prerender.io/${request.url}`;
-
-        // Create new headers, copying originals and adding the token
-        const newHeaders = new Headers(request.headers);
-        if (prerenderToken) {
-            newHeaders.set('X-Prerender-Token', prerenderToken);
+        // Skip if no token configured (avoid unnecessary errors)
+        if (!prerenderToken) {
+            console.warn('Prerender token missing, skipping prerender for bot');
+            return;
         }
 
-        // Rewrite the request
-        return fetch(newUrl, {
-            headers: newHeaders,
-            redirect: 'manual', // Prerender might handle redirects
-        });
+        const newUrl = `https://service.prerender.io/${request.url}`;
+
+        try {
+            // Create new headers, copying originals and adding the token
+            const newHeaders = new Headers(request.headers);
+            newHeaders.set('X-Prerender-Token', prerenderToken);
+
+            // Remove host header to avoid conflicts with Prerender's upstream host
+            newHeaders.delete('host');
+            newHeaders.delete('connection'); // Let fetch handle connection
+
+            // Rewrite the request
+            const response = await fetch(newUrl, {
+                headers: newHeaders,
+                redirect: 'manual', // Prerender might handle redirects
+            });
+
+            return response;
+        } catch (error) {
+            console.error('Prerender error:', error);
+            // Fallback: If Prerender fails, return normal response (let user see the app loading)
+            return;
+        }
     }
 
     // Not a bot, continue normally
