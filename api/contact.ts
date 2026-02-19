@@ -102,8 +102,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         await transporter.sendMail(mailOptions);
 
-        await transporter.sendMail(mailOptions);
-
         // 5. Log de éxito minimalista (sin PII)
         console.info(`[Form Success] Contact form sent successfully. Status: 200`);
 

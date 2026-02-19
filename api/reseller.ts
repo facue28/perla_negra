@@ -119,8 +119,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         };
 
         await transporter.sendMail(mailOptions);
-
-        await transporter.sendMail(mailOptions);
         console.info(`[Form Success] Reseller form sent successfully.`);
 
         return res.status(200).json({ success: true });
