@@ -18,24 +18,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const authHeader = req.headers.authorization;
 
-    // LOG DE SEGURIDAD (Para depurar el 401)
-    console.log('Auth Debug:', {
-        hasHeader: !!authHeader,
-        headerPrefix: authHeader?.substring(0, 10),
-        headerLength: authHeader?.length,
-        hasEnvKey: !!SUPABASE_SERVICE_ROLE_KEY,
-        envKeyLength: SUPABASE_SERVICE_ROLE_KEY?.length,
-        isMatch: authHeader === `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
-    });
-
     if (!authHeader || authHeader !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
-        return res.status(401).json({
-            error: 'Unauthorized',
-            debug: {
-                received: authHeader ? 'present' : 'absent',
-                config: SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'absent'
-            }
-        });
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 
     const {
