@@ -111,21 +111,20 @@ BEGIN
     
     -- Procesar items
     FOR v_item IN SELECT * FROM jsonb_array_elements(p_items) LOOP
+        -- [DEBUG 1] Cantidad
+        RAISE NOTICE 'Procesando item: %', v_item;
         BEGIN
             v_quantity := (v_item->>'quantity')::integer;
         EXCEPTION WHEN OTHERS THEN
-            RAISE EXCEPTION 'Cantidad inválida para producto';
+            RAISE EXCEPTION 'Cantidad inválida para producto: %', (v_item->>'product_id');
         END;
         
         IF v_quantity IS NULL OR v_quantity <= 0 THEN
             RAISE EXCEPTION 'La cantidad debe ser mayor a 0';
         END IF;
         
-        IF v_quantity > c_max_quantity_per_item THEN
-            RAISE EXCEPTION 'Cantidad máxima por producto: %', c_max_quantity_per_item;
-        END IF;
-        
-        -- [DEBUG] Consultar producto - Usando image_url y CAST explícito
+        -- [DEBUG 2] Producto
+        RAISE NOTICE 'Buscando producto ID: %', (v_item->>'product_id');
         SELECT id, name, price, image_url, category INTO v_product
         FROM public.products 
         WHERE id = (v_item->>'product_id')::bigint
@@ -138,7 +137,8 @@ BEGIN
         v_item_subtotal := v_product.price * v_quantity;
         v_subtotal := v_subtotal + v_item_subtotal;
         
-        -- Insertar en order_items asegurando cast explícito a BIGINT para product_id
+        -- [DEBUG 3] Inserción order_items
+        RAISE NOTICE 'Insertando order_item para orden: %, producto: %', v_order_id, v_product.id;
         INSERT INTO public.order_items (
             order_id, product_id, product_name, product_image, product_category,
             price, quantity, subtotal
