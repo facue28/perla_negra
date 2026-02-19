@@ -5,9 +5,13 @@
 -- Objetivo: Prevenir duplicados en órdenes y envíos de e-mail
 -- ==============================================================================
 
--- 1. Hardening de la tabla Orders (Idempotencia)
+-- 1. Hardening de las tablas (Idempotencia y Tipos)
 ALTER TABLE public.orders 
 ADD COLUMN IF NOT EXISTS idempotency_key TEXT UNIQUE;
+
+-- Asegurar tipo correcto para product_id en order_items (evitar error UUID)
+ALTER TABLE public.order_items 
+ALTER COLUMN product_id TYPE BIGINT USING product_id::text::bigint;
 
 COMMENT ON COLUMN public.orders.idempotency_key IS 'Token único generado por el cliente para evitar duplicados en el proceso de checkout.';
 
@@ -117,9 +121,7 @@ BEGIN
             RAISE EXCEPTION 'Cantidad máxima por producto: %', c_max_quantity_per_item;
         END IF;
         
-        -- [DEBUG] Consultar producto con cast a texto para evitar conflictos de tipo UUID/Bigint
-        RAISE NOTICE 'Buscando producto con ID: %', (v_item->>'product_id');
-        
+        -- [DEBUG] Consultar producto - Usando image_url
         SELECT id, name, price, image_url, category INTO v_product
         FROM public.products 
         WHERE id::text = (v_item->>'product_id')::text
@@ -132,6 +134,7 @@ BEGIN
         v_item_subtotal := v_product.price * v_quantity;
         v_subtotal := v_subtotal + v_item_subtotal;
         
+        -- Insertar en order_items asegurando cast numérico para product_id
         INSERT INTO public.order_items (
             order_id, product_id, product_name, product_image, product_category,
             price, quantity, subtotal
