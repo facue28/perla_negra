@@ -14,7 +14,7 @@ dotenv.config({ path: envPath });
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
-const SITE_URL = 'https://perlanegra.shop'; // URL real del sitio
+const SITE_URL = process.env.VITE_SITE_URL || 'https://perla-negra.vercel.app';
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
     console.error('❌ Error: Faltan variables de entorno VITE_SUPABASE_URL o VITE_SUPABASE_ANON_KEY');
