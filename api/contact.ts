@@ -24,9 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log('API Contact called');
     try {
-        // Log de depuración de variables (solo presencia)
+        // Log de depuración de variables (solo presencia y pedacito para verificar)
         console.log('Environment check:', {
             hasSecret: !!TURNSTILE_SECRET_KEY,
+            secretStart: TURNSTILE_SECRET_KEY ? `${TURNSTILE_SECRET_KEY.substring(0, 6)}...` : 'NONE',
             hasSMTP: !!SMTP_HOST,
             hasUser: !!SMTP_USER,
             hasPass: !!SMTP_PASS,
@@ -46,7 +47,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             : req.headers['x-forwarded-for'] || '';
         params.append('remoteip', remoteIp);
 
-        console.log('Verifying Turnstile...');
+        console.log('Verifying Turnstile with secret starting with:', TURNSTILE_SECRET_KEY?.substring(0, 6));
+        console.log('Payload body:', params.toString());
+
         const verifyResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
             method: 'POST',
             body: params
