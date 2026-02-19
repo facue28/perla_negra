@@ -8,7 +8,7 @@ export const config = {
          * - favicon.ico (favicon file)
          * - assets (static assets)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|assets|sitemap.xml|robots.txt).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|assets|sitemap.xml|robots.txt|manifest.webmanifest|images|icons|.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|js|css|woff|woff2|ttf|eot|otf|ttc|map|xml|txt|json)$).*)',
     ],
 };
 
@@ -51,13 +51,13 @@ const BOT_AGENTS = [
     'telegrambot'
 ];
 
-const IGNORE_EXTENSIONS = [
-    '.js', '.css', '.xml', '.less', '.png', '.jpg', '.jpeg', '.gif',
+'.js', '.css', '.xml', '.less', '.png', '.jpg', '.jpeg', '.gif',
     '.pdf', '.doc', '.txt', '.ico', '.rss', '.zip', '.mp3', '.rar',
     '.exe', '.wmv', '.doc', '.avi', '.ppt', '.mpg', '.mpeg', '.tif',
     '.wav', '.mov', '.psd', '.ai', '.xls', '.mp4', '.m4a', '.swf',
     '.dat', '.dmg', '.iso', '.flv', '.m4v', '.torrent', '.woff',
-    '.ttf', '.svg', '.webmanifest'
+    '.ttf', '.svg', '.webmanifest', '.json', '.webp', '.map', '.woff2',
+    '.eot', '.otf', '.ttc'
 ];
 
 export default function middleware(request: Request) {
