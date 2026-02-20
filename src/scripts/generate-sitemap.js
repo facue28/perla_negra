@@ -84,7 +84,7 @@ async function generateSitemap() {
         sitemap += `
 </urlset>`;
 
-        // 4. Guardar archivo en public/sitemap.xml
+        // 4. Guardar archivo en public/sitemap.xml y public/sitemap-gsc.xml
         // Subimos dos niveles desde src/scripts para llegar a public/
         const publicDir = path.resolve(__dirname, '../../public');
 
@@ -92,8 +92,14 @@ async function generateSitemap() {
             fs.mkdirSync(publicDir);
         }
 
-        fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+        const outputPath = path.join(publicDir, 'sitemap.xml');
+        const outputPathGSC = path.join(publicDir, 'sitemap-gsc.xml');
+
+        fs.writeFileSync(outputPath, sitemap);
+        fs.writeFileSync(outputPathGSC, sitemap);
+
         console.log('✅ sitemap.xml generado exitosamente en public/sitemap.xml');
+        console.log('✅ sitemap-gsc.xml generado exitosamente en public/sitemap-gsc.xml');
 
     } catch (error) {
         console.error('❌ Error generando sitemap:', JSON.stringify(error, null, 2));
