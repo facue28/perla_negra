@@ -8,7 +8,7 @@ export const config = {
          * - favicon.ico (favicon file)
          * - assets (static assets)
          */
-        '/((?!api|_next/static|_next/image|favicon.ico|assets|sitemap.xml|robots.txt|manifest.webmanifest|images|icons|.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|js|css|woff|woff2|ttf|eot|otf|ttc|map|xml|txt|json)$).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|assets|sitemap.xml|sitemap-gsc.xml|robots.txt|manifest.webmanifest|images|icons|.*\\.(?:jpg|jpeg|gif|png|svg|ico|webp|js|css|woff|woff2|ttf|eot|otf|ttc|map|xml|txt|json)$).*)',
     ],
 };
 

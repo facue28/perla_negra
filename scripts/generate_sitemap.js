@@ -43,7 +43,7 @@ async function generateSitemap() {
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>${SITE_URL}/productos</loc>
+        <loc>${SITE_URL}/prodotti</loc>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
@@ -53,7 +53,7 @@ async function generateSitemap() {
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>${SITE_URL}/contacto</loc>
+        <loc>${SITE_URL}/contatti</loc>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
     </url>
@@ -64,7 +64,7 @@ async function generateSitemap() {
     products.forEach(product => {
         const lastMod = product.created_at ? new Date(product.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
         sitemap += `    <url>
-        <loc>${SITE_URL}/productos/${product.slug}</loc>
+        <loc>${SITE_URL}/prodotti/${product.slug}</loc>
         <lastmod>${lastMod}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -75,8 +75,13 @@ async function generateSitemap() {
     sitemap += '</urlset>';
 
     const outputPath = path.join(__dirname, '../public/sitemap.xml');
+    const outputPathGSC = path.join(__dirname, '../public/sitemap-gsc.xml');
+
     fs.writeFileSync(outputPath, sitemap);
+    fs.writeFileSync(outputPathGSC, sitemap);
+
     console.log(`Sitemap generated at ${outputPath}`);
+    console.log(`Sitemap GSC mirror generated at ${outputPathGSC}`);
 }
 
 generateSitemap();
