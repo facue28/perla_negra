@@ -31,7 +31,7 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
     return (
         <Link
             to={`/prodotti/${product.slug}`}
-            className="block group relative bg-background-alt rounded-3xl overflow-hidden border border-border/10 transition-all duration-300 h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] hover:border-accent/40"
+            className="block group relative bg-zinc-900/60 rounded-2xl overflow-hidden border border-zinc-800 transition-all duration-300 h-full flex flex-col hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(63,255,193,0.15)] hover:border-accent/40"
         >
             {/* Image Container */}
             <div className="aspect-square overflow-hidden bg-white relative p-0 flex-shrink-0">
@@ -91,21 +91,27 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
             </div>
 
             {/* Content */}
-            <div className="p-3 md:p-4 text-center flex-grow flex flex-col justify-between">
-                <div>
-                    <h3 className="text-text-primary font-medium text-sm md:text-lg mb-1 group-hover:text-accent transition-colors">
+            <div className="p-4 flex flex-col justify-between flex-grow">
+                {/* Title & Subtitle Wrapper taking up available space */}
+                <div className="flex flex-col gap-2 items-center flex-grow">
+                    <h3 className="text-text-primary text-center font-medium text-sm md:text-lg group-hover:text-accent transition-colors">
                         {toTitleCase(product.name)}
                     </h3>
-                    <p className="text-text-muted text-[10px] md:text-xs mb-2 md:mb-3 min-h-[2em] md:min-h-[3em] flex items-center justify-center line-clamp-2 leading-tight first-letter:uppercase">
+                    <p className="text-text-muted text-center text-[10px] md:text-xs min-h-[2em] md:min-h-[3em] flex items-center justify-center line-clamp-2 leading-tight first-letter:uppercase mb-2">
                         {product.subtitle}
                     </p>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center justify-center mt-2 gap-2 md:gap-4">
-                    <span className="text-accent font-bold text-base md:text-lg">€{product.price.toFixed(2)}</span>
-                    <span className="hidden md:block bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors w-full md:w-auto">
-                        Vedi
+                {/* Price & CTA Wrapper pinned to bottom */}
+                <div className="flex flex-col items-center mt-auto">
+                    <span className="text-accent font-bold text-lg md:text-xl">
+                        €{product.price.toFixed(2)}
                     </span>
+                    <div className="flex justify-center mt-3">
+                        <span className="hidden md:block bg-accent text-background-dark px-6 py-1.5 rounded-full text-xs md:text-sm font-bold group-hover:bg-accent-hover transition-colors">
+                            Vedi
+                        </span>
+                    </div>
                 </div>
             </div>
         </Link>

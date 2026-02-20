@@ -177,7 +177,8 @@
     #static-hero-shell>div:first-child>div:last-child {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+      background-color: rgba(0, 0, 0, 0.4);
+      background-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
       z-index: 1;
     }
 
@@ -233,7 +234,7 @@
     #static-hero-shell a:first-of-type {
       background-color: #3FFFC1;
       color: #000000;
-      padding: 0.75rem 2rem;
+      padding: 0.875rem 2rem;
       border-radius: 9999px;
       font-weight: 700;
       text-decoration: none;
@@ -244,14 +245,15 @@
 
     /* Secondary button (CHI SONO) */
     #static-hero-shell a:last-of-type {
-      border: 1px solid #B1B5B4;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
-      padding: 0.75rem 2rem;
+      padding: 0.875rem 2rem;
       border-radius: 9999px;
       text-decoration: none;
-      background: rgba(0, 0, 0, 0.1);
       display: inline-block;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.2s, background-color 0.2s, border-color 0.2s, color 0.2s;
     }
 
     /* Hover effects */
@@ -260,8 +262,7 @@
     }
 
     #static-hero-shell a:last-of-type:hover {
-      border-color: #3FFFC1;
-      color: #3FFFC1;
+      background-color: rgba(255, 255, 255, 0.2);
     }
 
     /* Mobile responsive */
@@ -270,6 +271,12 @@
         font-size: 3.75rem;
         line-height: 1;
         /* Match Tailwind text-6xl */
+      }
+
+      #static-hero-shell a:first-of-type,
+      #static-hero-shell a:last-of-type {
+        padding: 1rem 2.5rem;
+        /* Match sm:px-10 sm:py-4 */
       }
     }
   </style>
@@ -331,7 +338,7 @@
       </picture>
       <!-- Gradient Overlay -->
       <div
-        style="position: absolute; inset: 0; background: linear-gradient(to top, #000000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%); z-index: 1;">
+        style="position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.4); background-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%); z-index: 1;">
       </div>
     </div>
 
@@ -346,11 +353,11 @@
       </p>
       <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
         <a href="/productos"
-          style="background-color: #3FFFC1; color: #000000; padding: 0.75rem 2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block;">
+          style="background-color: #3FFFC1; color: #000000; padding: 0.875rem 2rem; border-radius: 9999px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-block;">
           VEDI PRODOTTI
         </a>
         <a href="/chi-sono"
-          style="border: 1px solid #B1B5B4; color: white; padding: 0.75rem 2rem; border-radius: 9999px; text-decoration: none; background: rgba(0,0,0,0.1); display: inline-block;">
+          style="background-color: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 0.875rem 2rem; border-radius: 9999px; text-decoration: none; display: inline-block;">
           CHI SONO
         </a>
       </div>

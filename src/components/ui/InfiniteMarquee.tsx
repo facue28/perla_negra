@@ -7,11 +7,11 @@ const InfiniteMarquee: React.FC = () => {
     const renderContent = (): React.ReactElement => (
         <>
             <span className="marquee-item">
-                DIVENTA <span className="font-signature text-accent font-light">Partner</span>
+                DIVENTA <span className="text-accent tracking-[0.2em] uppercase font-bold">PARTNER</span>
             </span>
             <span className="marquee-separator">✦</span>
             <span className="marquee-item">
-                ESPANDI <span className="font-signature text-accent font-light">il tuo Business</span>
+                ESPANDI <span className="text-accent tracking-[0.2em] uppercase font-bold">IL TUO BUSINESS</span>
             </span>
             <span className="marquee-separator">✦</span>
             <span className="marquee-item">

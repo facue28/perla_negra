@@ -425,46 +425,35 @@ const ProductDetailPage = (): React.ReactElement => {
                                 {product.description || "Lorem ipsum dolor sit amet consectetur. Placerat arcu at non consequat phasellus mi morbi maecenas."}
                             </p>
 
-                            {/* Interactive Section: Quantity + Add to Cart Row - Compact Height */}
-                            <div className="flex flex-col lg:flex-row gap-3 pt-6" id="main-add-to-cart-btn">
-                                {/* Quantity - Smaller Height */}
-                                <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px] h-[48px]">
+                            {/* Interactive Section: Quantity + Add to Cart Row */}
+                            <div className="flex flex-col gap-4 mt-2" id="main-add-to-cart-btn">
+                                {/* Quantity - Increased Height for better touch */}
+                                <div className="flex items-center border border-border/30 rounded-full bg-background-dark/50 px-2 min-w-[120px] h-[56px] mx-auto w-full lg:w-auto">
                                     <button
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                        className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
+                                        className="w-12 h-full flex items-center justify-center text-text-muted hover:text-accent text-xl"
                                     >
                                         -
                                     </button>
-                                    <div className="flex-grow text-center font-bold text-text-primary text-base">{quantity}</div>
+                                    <div className="flex-grow text-center font-bold text-text-primary text-lg">{quantity}</div>
                                     <button
                                         onClick={() => setQuantity(q => q + 1)}
-                                        className="w-10 h-full flex items-center justify-center text-text-muted hover:text-accent text-lg"
+                                        className="w-12 h-full flex items-center justify-center text-text-muted hover:text-accent text-xl"
                                     >
                                         +
                                     </button>
                                 </div>
 
-                                {/* Add Button - Smaller Height/Text */}
+                                {/* Add Button - Increased Height */}
                                 <motion.button
                                     onClick={handleAddToCart}
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.95 }}
-                                    className="w-full h-[48px] rounded-full font-bold text-base flex items-center justify-center gap-2 bg-accent text-background-dark shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] transition-all"
+                                    className="w-full h-[56px] rounded-full font-bold text-lg flex items-center justify-center gap-2 bg-accent text-background-dark shadow-[0_0_20px_rgba(63,255,193,0.3)] hover:shadow-[0_0_30px_rgba(63,255,193,0.5)] transition-all"
                                 >
                                     <span>Aggiungi al Carrello</span>
-                                    <ShoppingBag size={18} />
+                                    <ShoppingBag size={20} />
                                 </motion.button>
-                            </div>
-
-                            {/* Enhanced Explore CTA - Compact */}
-                            <div className="flex justify-center mt-1">
-                                <Link
-                                    to="/prodotti"
-                                    className="group flex items-center gap-2 px-4 py-2 border border-accent/20 rounded-full hover:bg-accent/10 hover:border-accent transition-all duration-300 text-accent font-medium text-xs uppercase tracking-wide"
-                                >
-                                    <span>Continua a esplorare</span>
-                                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
                             </div>
 
                             {/* Info Box - Boxed Style - COMPACT ROWS */}
@@ -503,13 +492,13 @@ const ProductDetailPage = (): React.ReactElement => {
                                 </div>
                             </div>
 
-                            {/* Footer - Compact */}
-                            <div className="flex flex-col gap-2 pt-4 flex-grow justify-center items-center text-center">
-                                <div className="flex items-center gap-2 text-accent/80 text-[10px] font-medium bg-accent/5 p-2 rounded-lg border border-accent/10">
-                                    <Check size={12} /> Pacco anonimo - Nessuna etichetta esterna
+                            {/* Footer - Trust Badges */}
+                            <div className="flex flex-col gap-3 py-4 flex-grow justify-center items-center text-center">
+                                <div className="flex items-center gap-2 text-zinc-300 text-xs font-medium bg-background-dark/50 px-4 py-2.5 rounded-xl border border-border/10">
+                                    <Check size={14} className="text-accent" /> Pacco anonimo - Nessuna etichetta esterna
                                 </div>
-                                <div className="flex items-center gap-2 text-text-muted/60 text-[10px] px-2">
-                                    <Check size={12} /> Spedizione veloce e discreta
+                                <div className="flex items-center gap-2 text-zinc-400 text-xs px-2 py-1">
+                                    <Check size={14} className="text-accent" /> Spedizione veloce e discreta
                                 </div>
                             </div>
 
@@ -575,19 +564,19 @@ const ProductDetailPage = (): React.ReactElement => {
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                        className="fixed bottom-0 left-0 right-0 z-50 bg-background-alt/90 backdrop-blur-xl border-t border-white/10 p-4 pb-6 md:pb-4 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)] md:hidden"
+                        className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-md border-t border-zinc-800 p-4 pb-6 md:pb-4 shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.5)] md:hidden"
                     >
                         <div className="flex items-center gap-4 max-w-7xl mx-auto">
                             {/* Product Info (Compact) */}
-                            <div className="flex-1 min-w-0">
-                                <h3 className="text-sm font-serif text-text-primary truncate leading-tight">{product.name}</h3>
-                                <div className="text-accent font-bold text-base">€{product.price.toFixed(2)}</div>
+                            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                <h3 className="text-sm font-serif text-zinc-300 truncate leading-tight">{product.name}</h3>
+                                <div className="text-accent font-bold text-lg mt-0.5">€{product.price.toFixed(2)}</div>
                             </div>
 
                             {/* Action Button */}
                             <button
                                 onClick={handleAddToCart}
-                                className="bg-accent text-background-dark px-6 py-3 rounded-full font-bold text-sm shadow-[0_0_15px_rgba(63,255,193,0.3)] active:scale-95 transition-transform flex items-center gap-2"
+                                className="bg-accent text-background-dark px-6 py-3.5 rounded-full font-bold text-sm shadow-[0_0_15px_rgba(63,255,193,0.3)] active:scale-95 transition-transform flex items-center gap-2"
                             >
                                 <span>Aggiungi</span>
                                 <ShoppingBag size={16} />

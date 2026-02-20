@@ -157,7 +157,7 @@ const HomePage: React.FC = () => {
                                 </div>
                             ))}
                             {/* Gradient Overlay for Text Readability */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/50 to-transparent z-10" />
+                            <div className="absolute inset-0 bg-black/40 bg-gradient-to-t from-black/80 to-transparent z-10" />
                         </motion.div>
 
                         {/* Content */}
@@ -193,7 +193,7 @@ const HomePage: React.FC = () => {
                             >
                                 <MotionLink
                                     to="/prodotti"
-                                    className="bg-accent text-background-dark px-8 py-3 rounded-full font-bold shadow-lg hover:shadow-accent/20"
+                                    className="bg-accent text-background-dark px-8 py-3.5 sm:px-10 sm:py-4 rounded-full font-bold shadow-lg hover:shadow-accent/20"
                                     whileHover={{ scale: 1.02, backgroundColor: '#32cc9a' }}
                                     whileTap={{ scale: 0.98 }}
                                 >
@@ -201,8 +201,8 @@ const HomePage: React.FC = () => {
                                 </MotionLink>
                                 <MotionLink
                                     to="/chi-sono"
-                                    className="border border-text-muted text-text-primary px-8 py-3 rounded-full font-medium backdrop-blur-sm bg-black/10"
-                                    whileHover={{ scale: 1.02, borderColor: '#3FFFC1', color: '#3FFFC1' }}
+                                    className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-3.5 sm:px-10 sm:py-4 rounded-full font-medium transition-colors hover:bg-white/20"
+                                    whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     CHI SONO

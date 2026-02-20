@@ -430,7 +430,7 @@ const CartPage = (): React.ReactElement => {
                                             placeholder="Codice sconto"
                                             value={couponCode}
                                             onChange={(e) => setCouponCode(e.target.value)}
-                                            className="min-w-0 flex-1 bg-background-dark border border-white/10 rounded-xl px-4 py-2 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent"
+                                            className="min-w-0 flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                                         />
                                         <button
                                             type="button"
@@ -466,7 +466,7 @@ const CartPage = (): React.ReactElement => {
                                         id="checkout-name"
                                         type="text"
                                         placeholder="Il tuo nome"
-                                        className={`w-full bg-background-dark border ${errors.nombre ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
+                                        className={`w-full bg-zinc-950 border ${errors.nombre ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-zinc-800'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all`}
                                     />
                                     {errors.nombre && <p className="text-red-400 text-xs ml-1">{errors.nombre.message}</p>}
                                 </div>
@@ -478,7 +478,7 @@ const CartPage = (): React.ReactElement => {
                                         id="checkout-phone"
                                         type="tel"
                                         placeholder="+39 ..."
-                                        className={`w-full bg-background-dark border ${errors.telefono ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
+                                        className={`w-full bg-zinc-950 border ${errors.telefono ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-zinc-800'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all`}
                                     />
                                     {errors.telefono && <p className="text-red-400 text-xs ml-1">{errors.telefono.message}</p>}
                                 </div>
@@ -490,7 +490,7 @@ const CartPage = (): React.ReactElement => {
                                         id="checkout-email"
                                         type="email"
                                         placeholder="esempio@dominio.it"
-                                        className={`w-full bg-background-dark border ${errors.email ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all`}
+                                        className={`w-full bg-zinc-950 border ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-zinc-800'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all`}
                                     />
                                     {errors.email && <p className="text-red-400 text-xs ml-1">{errors.email.message}</p>}
                                 </div>
@@ -533,16 +533,18 @@ const CartPage = (): React.ReactElement => {
                                         id="checkout-notes"
                                         placeholder="Note per la consegna..."
                                         rows={2}
-                                        className={`w-full bg-background-dark border ${errors.note ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent hover:border-accent/30 focus:ring-1 focus:ring-accent/50 transition-all resize-none`}
+                                        className={`w-full bg-zinc-950 border ${errors.note ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-zinc-800'} rounded-xl px-4 py-3 text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all resize-none`}
                                     />
                                     {errors.note && <p className="text-red-400 text-xs ml-1">{errors.note.message}</p>}
                                 </div>
 
-                                <Turnstile
-                                    siteKey={TURNSTILE_SITE_KEY}
-                                    onVerify={(token) => setValue('turnstileToken', token, { shouldValidate: true })}
-                                />
-                                {errors.turnstileToken && <p className="text-red-500 text-xs text-center">{errors.turnstileToken.message}</p>}
+                                <div className="mb-6">
+                                    <Turnstile
+                                        siteKey={TURNSTILE_SITE_KEY}
+                                        onVerify={(token) => setValue('turnstileToken', token, { shouldValidate: true })}
+                                    />
+                                    {errors.turnstileToken && <p className="text-red-500 text-xs text-center mt-1">{errors.turnstileToken.message}</p>}
+                                </div>
 
                                 <motion.button
                                     type="submit"
@@ -550,7 +552,7 @@ const CartPage = (): React.ReactElement => {
                                     whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(63,255,193,0.5)" }}
                                     whileTap={{ scale: 0.95 }}
                                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                                    className={`w-full mt-4 bg-accent text-background-dark py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(63,255,193,0.3)] flex items-center justify-center gap-3 ${isFinalSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`w-full bg-accent text-background-dark py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(63,255,193,0.3)] flex items-center justify-center gap-3 ${isFinalSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     {isFinalSubmitting ? (
                                         <Loader2 className="w-6 h-6 animate-spin text-background-dark" />

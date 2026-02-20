@@ -236,7 +236,7 @@ const ProductListPage = (): React.ReactElement => {
 
                         {/* // Inside component */}
                         {loading ? (
-                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                                 {[...Array(9)].map((_, i) => (
                                     <SkeletonProductCard key={i} />
                                 ))}
@@ -259,7 +259,7 @@ const ProductListPage = (): React.ReactElement => {
                                 </button>
                             </div>
                         ) : filteredAndSortedProducts.length > 0 ? (
-                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                                 {filteredAndSortedProducts.map((product) => (
                                     <div key={product.id} className="h-full">
                                         <ProductErrorBoundary>
