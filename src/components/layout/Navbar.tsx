@@ -9,8 +9,7 @@ const Navbar = (): React.ReactElement => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const location = useLocation();
     const { user } = useAuth();
-
-    const { itemCount } = useCart();
+    const { itemCount, setIsOpen: setCartOpen } = useCart();
     const cartCount = itemCount;
 
     const navLinks = [
@@ -140,7 +139,14 @@ const Navbar = (): React.ReactElement => {
                         >
                             <User size={20} />
                         </Link>
-                        <Link to="/carrello" className={`hover:text-accent transition-colors relative ${location.pathname === '/carrello' ? 'text-accent' : 'text-text-primary'}`} aria-label="Carrello" onClick={() => setIsOpen(false)}>
+                        <button
+                            className={`hover:text-accent transition-colors relative flex items-center ${location.pathname === '/carrello' ? 'text-accent' : 'text-text-primary'}`}
+                            aria-label="Apri Carrello"
+                            onClick={() => {
+                                setIsOpen(false); // Close mobile menu if open
+                                setCartOpen(true); // Open cart drawer
+                            }}
+                        >
                             {/* Animated Container for Icon */}
                             <motion.div
                                 key={cartCount}
@@ -164,7 +170,7 @@ const Navbar = (): React.ReactElement => {
                                     </motion.span>
                                 )}
                             </AnimatePresence>
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>

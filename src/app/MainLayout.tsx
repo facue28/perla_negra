@@ -7,6 +7,7 @@ import AgeVerification from '@/features/legal/components/AgeVerification';
 import CookieConsent from '@/features/legal/components/CookieConsent';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import { useProducts } from '@/features/products/hooks/useProducts'; // Import hook
+import CartDrawer from '@/features/cart/components/CartDrawer';
 
 const MainLayout = () => {
     const { loading } = useProducts(); // Access loading state
@@ -58,6 +59,7 @@ const MainLayout = () => {
             />
             <AgeVerification />
             <CookieConsent />
+            <CartDrawer />
 
             <Navbar />
 

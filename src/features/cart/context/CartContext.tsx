@@ -66,7 +66,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         });
 
         // Optimistic UI Feedback
-        setIsOpen(true);
         toast.success('Prodotto aggiunto al carrello');
     }, []);
 

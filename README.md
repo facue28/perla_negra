@@ -130,6 +130,9 @@ Perla_negra/
 - Navbar intelligente (nasconde/mostra in base allo scroll) e Sticky Bar su mobile per il Checkout.
 - Ottimizzazione LCP (Largest Contentful Paint) con Static Shell per l'Hero section.
 
+### 🔮 Funzionalità Future (Roadmap)
+- **Rastreo dell'Ordine (Order Tracking):** Area dedicata dove il cliente può inserire il numero d'ordine e l'email per visualizzare lo stato della spedizione in tempo reale.
+
 ---
 
 ## 🔒 Sicurezza e Privacy (Hardened)

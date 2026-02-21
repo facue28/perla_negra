@@ -34,6 +34,8 @@ const Turnstile: React.FC<TurnstileProps> = ({ onVerify, siteKey }) => {
             if (window.turnstile && containerRef.current && !widgetIdRef.current) {
                 widgetIdRef.current = window.turnstile.render(containerRef.current, {
                     sitekey: siteKey,
+                    theme: 'dark',
+                    appearance: 'interaction-only',
                     callback: (token: string) => onVerify(token),
                 });
             }
