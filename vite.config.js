@@ -29,6 +29,7 @@ export default defineConfig({
     }),
   ],
   build: {
+    target: 'esnext',
     sourcemap: true, // Enable sourcemaps for Sentry
     rollupOptions: {
       output: {

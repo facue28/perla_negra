@@ -27,13 +27,13 @@ const MainLayout = () => {
         <div className="flex flex-col min-h-screen bg-background-dark">
             <ScrollToTop />
             <Toaster
-                position="bottom-right"
+                position="top-right"
                 theme="dark"
                 duration={3000}
                 toastOptions={{
-                    className: 'bg-background-alt border border-white/10 text-text-primary shadow-lg shadow-black/50 backdrop-blur-md',
+                    className: 'bg-background-dark border border-white/10 text-white rounded-xl shadow-2xl',
                     style: {
-                        background: '#1A1A1A',
+                        background: '#0a0a0a', // Use exact background-dark color if Tailwind class isn't picked up by Sonner
                         borderColor: 'rgba(255,255,255,0.1)',
                         color: '#F4F4F5',
                         borderRadius: '1rem',
