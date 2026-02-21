@@ -2,7 +2,8 @@ import React, { useState, useEffect, useLayoutEffect, MouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 // ... (rest of imports unchanged by instruction)
 import { useProduct } from '@/features/products/hooks/useProduct';
-import { useProducts } from '@/features/products/hooks/useProducts'; // Keep for "Related Products"
+import { apiClient } from '@/lib/apiClient';
+import { mapProductDBToProduct } from '@/features/products/services/productService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ShoppingBag, Star, Check } from 'lucide-react';
 import { useCart } from '@/features/cart/context/CartContext';
@@ -30,8 +31,36 @@ const ProductDetailPage = (): React.ReactElement => {
     const { addItem } = useCart();
 
     const { product, loading } = useProduct(slug);
-    const { products: allProducts } = useProducts(); // Still needed for "Related Products" section
 
+    // Cross-Selling Engine
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+    const [loadingRelated, setLoadingRelated] = useState<boolean>(true);
+
+    useEffect(() => {
+        const fetchRelated = async () => {
+            if (!product?.id || !product?.category) return;
+            setLoadingRelated(true);
+            try {
+                const { data } = await apiClient.rpc('get_related_products', {
+                    p_product_id: Number(product.id),
+                    p_category: product.category,
+                    p_limit: 4
+                });
+
+                if (data && Array.isArray(data)) {
+                    setRelatedProducts(data.map(dbItem => mapProductDBToProduct(dbItem)));
+                } else {
+                    setRelatedProducts([]);
+                }
+            } catch (err) {
+                console.error("Failed to fetch related products:", err);
+                setRelatedProducts([]);
+            } finally {
+                setLoadingRelated(false);
+            }
+        };
+        fetchRelated();
+    }, [product?.id, product?.category]);
 
     // Zoom State
     const [isHovering, setIsHovering] = useState<boolean>(false);
@@ -422,7 +451,7 @@ const ProductDetailPage = (): React.ReactElement => {
 
                             {/* Content Group - Compact Font */}
                             <p className="text-text-muted text-sm leading-relaxed first-letter:uppercase">
-                                {product.description || "Lorem ipsum dolor sit amet consectetur. Placerat arcu at non consequat phasellus mi morbi maecenas."}
+                                {product.description || "Descrizione non disponibile."}
                             </p>
 
                             {/* Interactive Section: Quantity + Add to Cart Row */}
@@ -537,19 +566,26 @@ const ProductDetailPage = (): React.ReactElement => {
                     </Reveal>
                 </div>
 
-                {/* Related Products Section */}
-                {product && allProducts.filter(p => p.category === product.category && p.slug !== product.slug).length > 0 && (
+                {/* CRO Cross-Selling Engine */}
+                {product && !loadingRelated && relatedProducts.length > 0 && (
                     <div className="border-t border-border/10 pt-16 pb-24 mt-16">
-                        <h2 className="text-2xl font-serif text-text-primary mb-8 text-center">Potrebbe piacerti anche</h2>
+                        <h2 className="text-2xl font-serif text-text-primary mb-2 text-center">
+                            {product.category === 'Gioco' ? 'Eleva l\'esperienza con questi accessori' :
+                                product.category === 'Lubrificante' ? 'Esplora nuove sensazioni con questi consigli' :
+                                    product.category === 'Fragranza' ? 'Completa il tuo rituale di seduzione' :
+                                        product.category === 'Vigorizzanti' ? 'Potenzia la tua serata con questi alleati' :
+                                            product.category === 'Olio commestibile' ? 'Aggiungi passione con questi extra' :
+                                                'Potrebbe piacerti anche'}
+                        </h2>
+                        <p className="text-text-muted text-center mb-10 text-sm">
+                            Perfettamente abbinati per godersi il momento in coppia.
+                        </p>
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
-                            {allProducts
-                                .filter(p => p.category === product.category && p.slug !== product.slug)
-                                .slice(0, 4)
-                                .map(relatedProduct => (
-                                    <div key={relatedProduct.id} className="h-full">
-                                        <ProductCard product={relatedProduct} />
-                                    </div>
-                                ))}
+                            {relatedProducts.map(relatedProduct => (
+                                <div key={relatedProduct.id} className="h-full">
+                                    <ProductCard product={relatedProduct} />
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}

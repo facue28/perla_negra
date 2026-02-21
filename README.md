@@ -6,7 +6,7 @@
 
 Un'esperienza e-commerce elegante e discreta per prodotti destinati a un pubblico adulto (+18).
 
-[Demo Live](http://localhost:5173) • [Installazione](#-installazione) • [Caratteristiche](#-caratteristiche)
+[Demo Live](https://perlanegra.it) • [Installazione](#-installazione) • [Caratteristiche](#-caratteristiche)
 
 </div>
 
@@ -14,25 +14,32 @@ Un'esperienza e-commerce elegante e discreta per prodotti destinati a un pubblic
 
 ## 📖 Descrizione
 
-**Perla Negra** è un sex shop online moderno e professionale costruito con React. Il sito offre un'esperienza utente premium con design elegante, navigazione intuitiva e un sistema di ordini integrato con WhatsApp.
+**Perla Negra** è un sex shop online moderno e professionale costruito con React e TypeScript. Il sito offre un'esperienza utente premium con design elegante, navigazione intuitiva, un sistema di ordini integrato con WhatsApp e un pannello di amministrazione backend potente gestito via Supabase.
 
 Il progetto è stato pensato per garantire:
-- ✨ Design moderno con effetti glassmorphism
-- 🔒 Privacy e discrezione
-- 📱 Completa responsività mobile
+- ✨ Design moderno con effetti glassmorphism e animazioni fluide
+- 🔒 Privacy, discrezione e sicurezza dei dati (RLS)
+- 📱 Completa responsività mobile (Mobile-First)
 - 🇮🇹 Interfaccia completamente in italiano
-- ⚡ Performance ottimizzate
+- ⚡ Performance ottimizzate e SEO robusto
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Stack Tecnologico
 
-- **Framework**: [React 19](https://react.dev/) - Libreria UI moderna e performante
-- **Build Tool**: [Vite 7](https://vitejs.dev/) - Build tool velocissimo
-- **Routing**: [React Router v7](https://reactrouter.com/) - Navigazione tra pagine
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) - Framework CSS utility-first
-- **Icons**: [Lucide React](https://lucide.dev/) - Icone moderne e personalizzabili
-- **Linguaggio**: JavaScript (ES6+)
+### Frontend
+- **Framework**: [React](https://react.dev/) con TypeScript per tipizzazione statica
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Routing**: [React Router](https://reactrouter.com/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animazioni**: [Framer Motion](https://www.framer.com/motion/)
+- **Icone**: [Lucide React](https://lucide.dev/)
+
+### Backend & Database (BaaS)
+- **Database**: [Supabase](https://supabase.com/) (PostgreSQL)
+- **Autenticazione**: Supabase Auth
+- **Storage**: Supabase Storage (per le immagini dei prodotti)
+- **Sicurezza**: Row Level Security (RLS) per proteggere prodotti, ordini e coupon
 
 ---
 
@@ -41,7 +48,7 @@ Il progetto è stato pensato per garantire:
 ### Prerequisiti
 
 - [Node.js](https://nodejs.org/) v18 o superiore
-- npm (viene installato con Node.js)
+- Progetto Supabase configurato (con tabelle per `products`, `orders`, `coupons`, `admins`)
 
 ### Passi
 
@@ -56,72 +63,47 @@ Il progetto è stato pensato per garantire:
    npm install
    ```
 
-3. **Avvia il server di sviluppo**
+3. **Configura le variabili d'ambiente**
+   Crea un file `.env.local` nella root del progetto e aggiungi le chiavi di Supabase e Turnstile:
+   ```env
+   VITE_SUPABASE_URL=tuo_supabase_url
+   VITE_SUPABASE_ANON_KEY=tua_supabase_anon_key
+   VITE_TURNSTILE_SITE_KEY=tua_chiave_turnstile
+   ```
+
+4. **Avvia il server di sviluppo**
    ```bash
    npm run dev
    ```
 
-4. **Apri nel browser**
+5. **Apri nel browser**
    ```
    http://localhost:5173
    ```
 
 ---
 
-## 📜 Comandi Disponibili
+## 📁 Struttura del Progetto (Principale)
 
-| Comando | Descrizione |
-|---------|-------------|
-| `npm run dev` | Avvia il server di sviluppo in modalità hot-reload |
-| `npm run build` | Crea il build di produzione ottimizzato |
-| `npm run preview` | Visualizza il build di produzione localmente |
-| `npm run lint` | Esegue ESLint per verificare la qualità del codice |
-
----
-
-## 📁 Struttura del Progetto
+L'architettura segue i principi Feature-Sliced Design (parzialmente) e separazione delle responsabilità:
 
 ```
 Perla_negra/
-├── public/              # File statici (favicon, etc.)
+├── public/              # File statici e Sitemap
 ├── src/
-│   ├── assets/          # Asset globali organizzati
-│   │   ├── brand/       # Logo e identità di marca
-│   │   ├── icons/       # Icone UI
-│   │   ├── images/      # Immagini globali (hero, background)
-│   │   ├── illustrations/
-│   │   └── video-posters/
-│   ├── features/        # Funzionalità específicas
-│   │   └── products/
-│   │       └── assets/  # Asset del catálogo
-│   ├── components/      # Componenti riutilizzabili
-│   │   ├── Navbar.jsx
-│   │   ├── Footer.jsx
-│   │   ├── ProductCard.jsx
-│   │   ├── AgeVerification.jsx
-│   │   └── CookieConsent.jsx
-│   ├── pages/           # Pagine dell'applicazione
-│   │   ├── ChiSono.jsx
-│   │   ├── ProductList.jsx
-│   │   ├── ProductDetail.jsx
-│   │   ├── CartPage.jsx
-│   │   ├── Contact.jsx
-│   │   ├── NotFoundPage.jsx
-│   │   └── legal/       # Pagine legali
-│   │       ├── TermsPage.jsx
-│   │       ├── PrivacyPage.jsx
-│   │       └── ResponsibleUsePage.jsx
-│   ├── context/         # Context API (stato globale)
-│   │   └── CartContext.jsx
-│   ├── data/            # Dati dei prodotti
-│   │   └── products.js
-│   ├── App.jsx          # Componente principale
-│   ├── main.jsx         # Entry point
-│   └── index.css        # Stili globali
-├── index.html
-├── package.json
-├── vite.config.js
-└── tailwind.config.js
+│   ├── assets/          # Brand, icone, immagini
+│   ├── components/      # Componenti UI riutilizzabili e Layout (Navbar, Footer)
+│   ├── features/        # Moduli isolati per dominio
+│   │   ├── admin/       # Logica e UI del Pannello di Controllo
+│   │   ├── auth/        # Gestione Autenticazione Supabase
+│   │   ├── cart/        # Logica del Carrello e Checkout
+│   │   ├── orders/      # Gestione Ordini
+│   │   └── products/    # Visualizzazione e gestione Prodotti
+│   ├── pages/           # Viste principali (HomePage, ProductListPage, ecc.)
+│   ├── lib/             # Utility globali (Supabase client, SEO, Analytics)
+│   ├── App.tsx          # Configurazione Routing
+│   ├── main.tsx         # Entry point React
+│   └── index.css        # Stili base e configurazione Tailwind
 ```
 
 ---
@@ -129,103 +111,32 @@ Perla_negra/
 ## ✨ Caratteristiche Principali
 
 ### 🔞 Verificazione dell'Età
-- Modal elegante con effetto glassmorphism
-- Controllo accesso solo per maggiorenni (+18)
-- Salvataggio della preferenza in localStorage
+- Modal elegante con controllo accesso garantito (+18) e persistenza via localStorage.
 
-### 🍪 Gestione Cookie (GDPR)
-- Banner di consenso conforme alle normative europee
-- Opzioni "Accetta" / "Rifiuta"
-- Link alla Privacy Policy
+### 🛒 Sistema di Carrello e Ordini
+- Logica centralizzata tramite Context API.
+- Gestione di Coupon e Codici Sconto direttamente da DB.
+- Integrazione sicura degli ordini sul DB tramite RPC (Remote Procedure Call) con rate limiting.
+- Redirezione finale fluidissima verso WhatsApp per la conclusione dell'acquisto.
 
-### 🛒 Sistema di Carrello
-- Gestione prodotti con Context API
-- Quantità modificabili
-- Calcolo totale automatico
+### 🛡️ Pannello di Amministrazione (Admin)
+- Dashboard protetta accessibile solo ad amministratori autorizzati.
+- Gestione CRUD (Create, Read, Update, Delete) per i Prodotti.
+- Visualizzazione e gestione degli Ordini ricevuti.
+- Supporto per la "Cancellazione Logica" (Soft Delete) per non perdere lo storico ordini.
 
-### 📱 Ordini WhatsApp
-- Generazione automatica di ID univoci (`PN-DDMM-XXX`)
-- Messaggio formattato con dettagli cliente e prodotti
-- Integrazione diretta con WhatsApp
-
-### 🎨 Design Premium
-- Palette di colori elegante (nero, accent verde acqua)
-- Effetti glassmorphism e blur
-- Animazioni fluide
-- Tipografia professionale (Inter + Times New Roman)
-
-### 📦 Catalogo Prodotti
-- Sistema di filtri per categoria
-- Ordinamento per prezzo
-- Filtro per range di prezzo
-- Pagine dettaglio prodotto complete
-
-### 📄 Pagine Legali
-- Termini e Condizioni
-- Privacy Policy (GDPR compliant)
-- Uso Responsabile
+### 🎨 Design Premium & CRO
+- Layout ottimizzato per la conversione (Call To Actions chiare, Trust Badges).
+- Navbar intelligente (nasconde/mostra in base allo scroll) e Sticky Bar su mobile per il Checkout.
+- Ottimizzazione LCP (Largest Contentful Paint) con Static Shell per l'Hero section.
 
 ---
 
-## 🌐 Deployment
+## 🔒 Sicurezza e Privacy (Hardened)
 
-### Build di Produzione
-
-Per creare una versione ottimizzata per la produzione:
-
-```bash
-npm run build
-```
-
-I file ottimizzati verranno generati nella cartella `dist/`.
-
-### Hosting Consigliati
-
-- [Vercel](https://vercel.com/) - Deploy automatico da Git
-- [Netlify](https://www.netlify.com/) - CI/CD integrato
-- [Firebase Hosting](https://firebase.google.com/docs/hosting) - Google Cloud
-
----
-
-## ⚙️ Configurazione
-
-### WhatsApp Business Number
-
-Per configurare il numero WhatsApp per gli ordini, modifica:
-
-**File**: `src/pages/CartPage.jsx`
-
-```javascript
-// Linea 49
-const shopNumber = "393778317091"; // Sostituire con il tuo numero
-```
-
-### Prodotti
-
-Per aggiungere o modificare prodotti:
-
-**File**: `src/data/products.js`
-
-```javascript
-{
-  id: 1,
-  name: "Nome Prodotto",
-  price: 29.99,
-  category: "Categoria",
-  image: "/product_image.png",
-  description: "Descrizione breve",
-  details: "Descrizione estesa"
-}
-```
-
----
-
-## 🔒 Privacy e Sicurezza
-
-- ✅ Nessun dato sensibile salvato in database
-- ✅ Comunicazioni WhatsApp cifrate end-to-end
-- ✅ Conformità GDPR per utenti europei
-- ✅ Cookie essenziali con consenso esplicito
+- **Row Level Security (RLS)** attiva su tutte le tabelle Supabase: i clienti possono leggere i prodotti attivi, ma solo gli admin possono modificarli o vedere tutti gli ordini.
+- **Validazione Server-Side**: L'inserimento di ordini avviene tramite una funzione PostgreSQL sicura (`create_order`) che valida la disponibilità, calcola i totali in modo autoritativo e applica i coupon.
+- **Protezione Anti-Bot**: Integrazione con Cloudflare Turnstile nel checkout.
 
 ---
 
@@ -233,32 +144,13 @@ Per aggiungere o modificare prodotti:
 
 Questo progetto è privato e proprietario.
 
-© 2026 Perla Negra. Tutti i diritti riservati.
-
----
-
-## 👤 Autore
-
-**Perla Negra Team**
-- Website: [perlanegra.it](https://perlanegra.it)
-- Instagram: [@perlanegra.it](https://www.instagram.com/perlanegra.it)
-- WhatsApp: +39 377 831 7091
+© 2026 Perla Negra. Tutti i diritti riservati. L'uso non autorizzato, la copia o la distribuzione del codice sorgente è severamente vietato.
 
 ---
 
 ## 📞 Supporto
 
 Per domande o supporto, contattaci attraverso:
-- 📧 Form di contatto sul sito
-- 💬 WhatsApp
-- 📸 Instagram Direct
-
----
-
-<div align="center">
-
-**Fatto con 🖤 da Perla Negra**
-
-*Benessere intimo senza tabù*
-
-</div>
+- 🌐 Website: [perlanegra.it](https://perlanegra.it)
+- 📸 Instagram: [@perlanegra.it](https://www.instagram.com/perlanegra.it)
+- 💬 WhatsApp: +39 377 831 7091

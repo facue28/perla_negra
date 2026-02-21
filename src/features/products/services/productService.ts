@@ -33,8 +33,8 @@ const getOptimizedImageUrl = (url: string | null | undefined, width: number = 80
     return `${url}${separator}width=${width}&format=webp&quality=75`;
 };
 
-// Internal secure mapper
-const mapProductDBToProduct = (db: ProductDB): Product => {
+// Internal secure mapper (now exported for RPC usage)
+export const mapProductDBToProduct = (db: ProductDB): Product => {
     // 1. Safe Image Logic
     const hasBrokenUrl = db.image_url && db.image_url.includes('afrodisiaco.png');
     // Prioritize valid DB URL, then category fallback, then generic placeholder
