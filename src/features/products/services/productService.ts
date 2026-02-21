@@ -96,11 +96,48 @@ export const mapProductDBToProduct = (db: ProductDB): Product => {
 
 export const productService = {
     async getProducts(): Promise<Product[]> {
-        // Usamos apiClient para manejo automático de errores y logging
+        const CACHE_KEY = 'perlanegra_products_cache';
+        const CACHE_TIME_MS = 5 * 60 * 1000; // 5 minutos en milisegundos
+
+        try {
+            // 1. Intentar leer de la caché local primero
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                const { timestamp, products } = JSON.parse(cachedData);
+                const now = Date.now();
+
+                // Si la caché es fresca (menos de 5 minutos vieja), úsala instantáneamente
+                if (now - timestamp < CACHE_TIME_MS && Array.isArray(products) && products.length > 0) {
+                    console.info('Load products from lightning fast local cache ⚡');
+                    // Ensure dates are parsed back to Date objects from strings
+                    return products.map((p: any) => ({
+                        ...p,
+                        createdAt: new Date(p.createdAt)
+                    }));
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to read products from cache, falling back to network', error);
+        }
+
+        // 2. Si no hay caché, la caché expiró o hubo un error, vamos a la red (Supabase)
         const { data } = await apiClient.get('products', query => query.order('id'));
 
         if (data && Array.isArray(data) && data.length > 0) {
-            return data.map((item: any) => mapProductDBToProduct(item as ProductDB));
+            const parsedProducts = data.map((item: any) => mapProductDBToProduct(item as ProductDB));
+
+            // 3. Guardar los resultados frescos en la caché para el futuro
+            try {
+                const cachePayload = {
+                    timestamp: Date.now(),
+                    products: parsedProducts
+                };
+                localStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));
+            } catch (error) {
+                console.warn('Failed to save products to cache, this might be due to quota limits', error);
+            }
+
+            return parsedProducts;
         }
 
         return [];
