@@ -17,6 +17,7 @@ export interface ProductDB {
     sensation?: string;
     size_ml?: number;
     size_fl_oz?: number;
+    size?: string;
     image2_url?: string;
     image3_url?: string;
     subtitle?: string;
@@ -27,6 +28,7 @@ export interface ProductDB {
     target_audience?: string;
     details?: string;
     description_additional?: string;
+    tips?: string;
 }
 
 export interface Product {

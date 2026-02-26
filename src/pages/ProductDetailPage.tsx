@@ -25,6 +25,13 @@ const toTitleCase = (str: string | undefined): string => {
     return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
+// Helper function to capitalize the first letter after each sentence-ending punctuation
+const capitalizeAfterPunctuation = (text: string): string => {
+    return text.replace(/([.!?]\s+)([a-záéíóúüñàèìòùâêîôûä-ÿ])/gi, (_, punct, letter) =>
+        punct + letter.toUpperCase()
+    );
+};
+
 const ProductDetailPage = (): React.ReactElement => {
     const { slug } = useParams<{ slug: string }>();
 
@@ -541,27 +548,33 @@ const ProductDetailPage = (): React.ReactElement => {
                         <div className="space-y-4">
                             <AccordionItem title="Descrizione Completa">
                                 <p className="text-text-muted leading-relaxed first-letter:uppercase whitespace-pre-line text-sm">
-                                    {(product.descriptionAdditional ? product.descriptionAdditional : product.description)
-                                        .replace(/\s{4,}/g, '\n')
-                                        .split('\n')
-                                        .map(line => formatText(line))
-                                        .join('\n')}
+                                    {capitalizeAfterPunctuation(
+                                        (product.descriptionAdditional ? product.descriptionAdditional : product.description)
+                                            .replace(/\s{4,}/g, '\n')
+                                            .split('\n')
+                                            .map(line => formatText(line))
+                                            .join('\n')
+                                    )}
                                 </p>
                             </AccordionItem>
 
-                            <AccordionItem title="Ingredienti">
-                                <p className="text-text-muted leading-relaxed text-sm">
-                                    {displayData.ingredients}
-                                </p>
-                            </AccordionItem>
-
-                            <AccordionItem title="Consigli Perla Negra">
-                                <div className="bg-background-alt p-6 rounded-xl border-l-2 border-accent">
+                            {product.ingredients && (
+                                <AccordionItem title="Ingredienti">
                                     <p className="text-text-muted leading-relaxed text-sm">
-                                        {displayData.tips}
+                                        {product.ingredients}
                                     </p>
-                                </div>
-                            </AccordionItem>
+                                </AccordionItem>
+                            )}
+
+                            {product.tips && (
+                                <AccordionItem title="Consigli Perla Negra">
+                                    <div className="bg-background-alt p-6 rounded-xl border-l-2 border-accent">
+                                        <p className="text-text-muted leading-relaxed text-sm">
+                                            {product.tips}
+                                        </p>
+                                    </div>
+                                </AccordionItem>
+                            )}
                         </div>
                     </Reveal>
                 </div>

@@ -63,7 +63,7 @@ const AdminProductForm: React.FC = () => {
     const [thumbFiles, setThumbFiles] = useState<(File | null)[]>([null, null, null]);
     const [imagePreviews, setImagePreviews] = useState<(string | null)[]>([null, null, null]);
 
-    const CATEGORIES = ['Lubrificanti', 'Giocattoli', 'Lingerie', 'Oli', 'Fragranze', 'Vigorizzanti', 'Olio commestibile', 'Gioco', 'Kit'];
+    const CATEGORIES = ['Lubrificanti', 'Lubrificante', 'Fragranza', 'Vigorizzanti', 'Olio commestibile', 'Gioco'];
 
     const convertToWebP = (file: File, targetWidth?: number): Promise<File> => {
         return new Promise((resolve, reject) => {
@@ -124,7 +124,7 @@ const AdminProductForm: React.FC = () => {
                 name: data.name || '',
                 subtitle: data.subtitle || '',
                 description: data.description || '',
-                description_additional: data.description_additional || '',
+                description_additional: data.description_additional || data.details || '',
                 price: data.price || '',
                 category: data.category || '',
                 stock: data.stock || 0,
@@ -192,7 +192,7 @@ const AdminProductForm: React.FC = () => {
             newPreviews[index] = URL.createObjectURL(file);
             setImagePreviews(newPreviews);
 
-            const webpFile = await convertToWebP(file);
+            const webpFile = await convertToWebP(file, 1200);
             const thumbFile = await convertToWebP(file, 400);
 
             const newFiles = [...imageFiles];
@@ -365,6 +365,10 @@ const AdminProductForm: React.FC = () => {
                                 {CATEGORIES.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
+                                {/* Fallback: if DB value doesn't match any listed category, show it anyway */}
+                                {formData.category && !CATEGORIES.includes(formData.category) && (
+                                    <option value={formData.category}>{formData.category}</option>
+                                )}
                             </select>
                         </div>
 
@@ -477,12 +481,20 @@ const AdminProductForm: React.FC = () => {
                                             />
                                         </div>
                                     </div>
-                                    {/* Auto-generated preview */}
-                                    <div className="text-xs text-text-muted flex items-center gap-2 mt-2">
-                                        <span>Anteprima web:</span>
-                                        <span className="text-accent font-mono bg-accent/10 px-2 py-1 rounded">
-                                            {formData.size || "N/A"}
-                                        </span>
+                                    {/* Formato personalizzato (override manuale) */}
+                                    <div className="space-y-1 mt-3 border-t border-white/10 pt-3">
+                                        <label className="text-xs text-text-muted flex items-center gap-1">
+                                            Formato visualizzato sul sito
+                                            <span className="text-white/30 italic">(auto-generato, modificabile)</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="size"
+                                            value={formData.size}
+                                            onChange={handleChange}
+                                            className="w-full px-3 py-2 bg-black/30 border border-accent/30 rounded-lg focus:outline-none focus:border-accent text-accent font-mono text-sm"
+                                            placeholder="Es: 100 ml / 30 CAPS / 1 bustina"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -502,7 +514,7 @@ const AdminProductForm: React.FC = () => {
 
                             {/* Additional Description */}
                             <div className="space-y-2">
-                                <label className="text-sm text-text-muted">Descrizione Dettagliata (Estesa)</label>
+                                <label className="text-sm text-text-muted">Descrizione Completa</label>
                                 <textarea
                                     rows={8}
                                     name="description_additional"
