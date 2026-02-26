@@ -46,13 +46,15 @@ export const mapProductDBToProduct = (db: ProductDB): Product => {
     const validImageUrl = getOptimizedImageUrl(rawImageUrl) || rawImageUrl;
 
     // 2. Size Logic
-    let displaySize: string | number = 'N/A';
+    let displaySize: string | number = '';
     if (db.size_ml) {
         displaySize = `${db.size_ml}ml`;
     } else if (db.size_fl_oz) {
         displaySize = `${db.size_fl_oz}oz`;
     } else if (db.format) {
         displaySize = db.format;
+    } else if (db.size) {
+        displaySize = db.size; // Custom text like "60 CAPS", "1 bustina", etc.
     }
 
     return {
@@ -88,7 +90,7 @@ export const mapProductDBToProduct = (db: ProductDB): Product => {
         productFilter: db.product_filter || db.usage_area,
         usageArea: db.usage_area || db.product_filter,
         targetAudience: db.target_audience,
-        tips: db.usage_tips, // Map usage_tips to tips
+        tips: db.tips || db.usage_tips, // Prefer tips (admin field) over legacy usage_tips
         descriptionAdditional: db.description_additional || db.details,
         details: db.details
     };
