@@ -52,6 +52,7 @@ const CartPage = (): React.ReactElement => {
             email: '',
             indirizzo: '',
             civico: '',
+            dettagli: '',
             citta: '',
             provincia: '',
             cap: '',
@@ -144,7 +145,9 @@ const CartPage = (): React.ReactElement => {
         let orderNumber: string | null = null;
 
         const isPickup = formData.metodoEnvio.includes('Ritiro');
-        const finalAddress = isPickup ? 'Ritiro in sede (Verbania)' : `${formData.indirizzo}, ${formData.civico}`;
+        const finalAddress = isPickup
+            ? 'Ritiro in sede (Verbania)'
+            : `${formData.indirizzo} ${formData.civico}${formData.dettagli ? ` (${formData.dettagli})` : ''}, ${formData.cap} ${formData.citta} (${formData.provincia})`;
         const finalCity = isPickup ? 'Verbania' : formData.citta;
 
         try {

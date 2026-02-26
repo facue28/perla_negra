@@ -42,6 +42,7 @@ export const CheckoutSchema = z.object({
     // Base fields allow empty strings, validation is conditional below
     indirizzo: z.string(),
     civico: z.string(),
+    dettagli: z.string().optional(),
     citta: z.string(),
     provincia: z.string(),
     cap: z.string(),
