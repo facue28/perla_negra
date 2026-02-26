@@ -20,15 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const authHeader = req.headers.authorization;
 
-    // LOG DE SEGURIDAD PARA DEBUGGEAR EL 401
-    console.log('Auth Debug:', {
-        hasHeader: !!authHeader,
-        headerPrefix: authHeader?.substring(0, 10),
-        headerLength: authHeader?.length,
-        hasEnvKey: !!SUPABASE_SERVICE_ROLE_KEY,
-        envKeyLength: SUPABASE_SERVICE_ROLE_KEY?.length,
-        isMatch: authHeader === `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`
-    });
+
 
     if (!authHeader || authHeader !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -104,6 +96,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             <div style="text-align: center; margin-top: 40px;">
                 <p>Ti avviseremo appena il tuo pacco sarà in viaggio.</p>
+                <div style="margin-top: 30px; padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+                    <p style="font-size: 13px; color: #D1D5D4; margin-bottom: 15px;">Serve aiuto o vuoi modificare l'ordine?</p>
+                    <a href="https://wa.me/393778317091" style="display: inline-block; padding: 12px 24px; background-color: #25D366; color: #FFFFFF; text-decoration: none; border-radius: 100px; font-weight: bold; font-size: 14px;">
+                        Chatta su WhatsApp
+                    </a>
+                </div>
             </div>
         `;
 
