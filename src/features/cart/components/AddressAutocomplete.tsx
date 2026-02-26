@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, AlertTriangle, Loader2, MapPin } from 'lucide-react';
+import { Search, AlertTriangle, Loader2, MapPin, CheckCircle } from 'lucide-react';
 import { provinces } from '@/features/cart/data/italy_provinces';
 import Select from '@/components/ui/Select';
 
@@ -110,6 +110,11 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
 
         if (!cap || cap.length < 5) return;
 
+        // Truth in CAP: Clear fields relative to city/province as soon as we start validating a full CAP
+        // This prevents browser autocomplete from sticking with wrong values.
+        setValue('citta', '', { shouldDirty: true });
+        setValue('provincia', '', { shouldDirty: true });
+
         setIsValidating(true);
         setValidationError(null);
 
@@ -124,9 +129,9 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
 
             if (!data.features || data.features.length === 0) {
                 const isVerbania = ['28921', '28922', '28923', '28924', '28925', '28900'].includes(cap);
-                if (isVerbania && (!citta || citta.toLowerCase().includes('verbania'))) {
-                    if (!citta) setValue('citta', 'Verbania', { shouldDirty: true });
-                    if (!provincia) setValue('provincia', 'VB', { shouldDirty: true });
+                if (isVerbania) {
+                    setValue('citta', 'Verbania', { shouldDirty: true, shouldValidate: true });
+                    setValue('provincia', 'VB', { shouldDirty: true, shouldValidate: true });
                     setValidationError(null);
                     return;
                 }
@@ -137,23 +142,21 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
 
             const match = data.features[0].properties;
 
-            // Auto-fill if empty or if we found a strong CAP match
+            // Auto-fill: Force overwrite to ensure CAP truth
             if (match.postcode === cap) {
-                if (!citta) setValue('citta', match.city || match.municipality || '', { shouldDirty: true, shouldValidate: true });
+                setValue('citta', match.city || match.municipality || '', { shouldDirty: true, shouldValidate: true });
 
-                if (!provincia) {
-                    const rawCode = (match.county_code || match.state_code || '').toUpperCase().replace('IT-', '');
-                    const countyName = (match.county || '').toLowerCase();
+                const rawCode = (match.county_code || match.state_code || '').toUpperCase().replace('IT-', '');
+                const countyName = (match.county || '').toLowerCase();
 
-                    const provinceMatch = provinces.find(p =>
-                        p.code === rawCode ||
-                        p.name.toLowerCase() === countyName ||
-                        countyName.includes(p.name.toLowerCase())
-                    );
+                const provinceMatch = provinces.find(p =>
+                    p.code === rawCode ||
+                    p.name.toLowerCase() === countyName ||
+                    countyName.includes(p.name.toLowerCase())
+                );
 
-                    if (provinceMatch) {
-                        setValue('provincia', provinceMatch.code, { shouldDirty: true, shouldValidate: true });
-                    }
+                if (provinceMatch) {
+                    setValue('provincia', provinceMatch.code, { shouldDirty: true, shouldValidate: true });
                 }
             }
 
@@ -242,7 +245,7 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                         id="checkout-cap"
                         type="text"
                         onBlur={validateLocation}
-                        disabled={disabled}
+                        autoComplete="none"
                         placeholder={disabled ? "-" : "00100"}
                         maxLength={5}
                         className={`w-full bg-background-dark border ${errors.cap || validationError ? 'border-yellow-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
@@ -268,14 +271,21 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                     <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                         Provincia *
                     </label>
-                    <Select
-                        value={watch('provincia')}
-                        onChange={(val) => handleManualChange('provincia', val)}
-                        options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
-                        placeholder={disabled ? "-" : "Seleziona"}
-                        disabled={disabled}
-                        className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-                    />
+                    <div className="relative">
+                        <Select
+                            value={watch('provincia')}
+                            onChange={(val) => handleManualChange('provincia', val)}
+                            options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
+                            placeholder={disabled ? "-" : "Seleziona"}
+                            disabled={disabled}
+                            className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                        />
+                        {watch('provincia') && !errors.provincia && !isValidating && (
+                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-accent pointer-events-none">
+                                <CheckCircle size={14} />
+                            </div>
+                        )}
+                    </div>
                     {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia.message}</p>}
                 </div>
 
@@ -283,15 +293,23 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                     <label htmlFor="checkout-city" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
                         Comune *
                     </label>
-                    <input
-                        {...register('citta')}
-                        id="checkout-city"
-                        type="text"
-                        onBlur={validateLocation}
-                        disabled={disabled}
-                        placeholder={disabled ? "-" : "Roma"}
-                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
-                    />
+                    <div className="relative">
+                        <input
+                            {...register('citta')}
+                            id="checkout-city"
+                            type="text"
+                            onBlur={validateLocation}
+                            disabled={disabled}
+                            autoComplete="none"
+                            placeholder={disabled ? "-" : "Roma"}
+                            className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
+                        />
+                        {watch('citta') && !errors.citta && !isValidating && (
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-accent">
+                                <CheckCircle size={14} />
+                            </div>
+                        )}
+                    </div>
                     {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta.message}</p>}
                 </div>
             </div>
@@ -309,6 +327,7 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                         value={disabled ? '' : (query || watch('indirizzo'))}
                         onChange={handleQueryChange}
                         disabled={disabled}
+                        autoComplete="none"
                         placeholder={disabled ? "Non richiesto per il ritiro" : "Inizia a scrivere la tua via..."}
                         className={`w-full bg-background-dark border ${errors.indirizzo ? 'border-red-500' : 'border-white/10'} rounded-xl pl-10 pr-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
                     />

@@ -20,6 +20,12 @@ import { logger } from '@/lib/logger';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { SuccessData } from '@/features/cart/types';
 
+const toTitleCase = (str: string) => {
+    return str.toLowerCase().split(' ').map(word => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }).join(' ');
+};
+
 const CartPage = (): React.ReactElement => {
     const { items: cart, removeItem: removeFromCart, updateQuantity, total, subtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
     const { products } = useProducts();
@@ -145,10 +151,12 @@ const CartPage = (): React.ReactElement => {
         let orderNumber: string | null = null;
 
         const isPickup = formData.metodoEnvio.includes('Ritiro');
-        const finalAddress = isPickup
+        const rawAddress = isPickup
             ? 'Ritiro in sede (Verbania)'
             : `${formData.indirizzo} ${formData.civico}${formData.dettagli ? ` (${formData.dettagli})` : ''}, ${formData.cap} ${formData.citta} (${formData.provincia})`;
-        const finalCity = isPickup ? 'Verbania' : formData.citta;
+
+        const finalAddress = isPickup ? rawAddress : toTitleCase(rawAddress);
+        const finalCity = isPickup ? 'Verbania' : toTitleCase(formData.citta);
 
         try {
             try {
