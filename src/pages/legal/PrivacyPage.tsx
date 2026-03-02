@@ -1,7 +1,12 @@
 import React from 'react';
 import SEO from '@/components/ui/SEO';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 const PrivacyPage = (): React.ReactElement => {
+    const config = useSiteConfigStore(state => state.config);
+    const rawNumber = config?.whatsapp_number || "393778317091";
+    const formattedNumber = `+${rawNumber.substring(0, 2)} ${rawNumber.substring(2, 5)} ${rawNumber.substring(5, 8)} ${rawNumber.substring(8)}`;
+
     return (
         <div className="min-h-screen bg-background-dark pt-24 pb-20 px-4">
             <SEO title="Privacy Policy" description="Informativa sulla privacy di Perla Negra." />
@@ -12,7 +17,7 @@ const PrivacyPage = (): React.ReactElement => {
 
                     <h3 className="text-2xl font-serif text-text-primary mt-8">1. Titolare del Trattamento</h3>
                     <p><strong>Perla Negra</strong></p>
-                    <p>Per qualsiasi domanda relativa alla privacy, puoi contattarci tramite il nostro form di contatto o WhatsApp al +39 377 831 7091.</p>
+                    <p>Per qualsiasi domanda relativa alla privacy, puoi contattarci tramite il nostro form di contatto o WhatsApp al {formattedNumber}.</p>
 
                     <h3 className="text-2xl font-serif text-text-primary mt-8">2. Raccolta Dati</h3>
                     <p>Raccogliamo solo i dati strettamente necessari per elaborare e spedire il tuo ordine:</p>

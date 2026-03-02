@@ -8,9 +8,15 @@ import CookieConsent from '@/features/legal/components/CookieConsent';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import { useProducts } from '@/features/products/hooks/useProducts'; // Import hook
 import CartDrawer from '@/features/cart/components/CartDrawer';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 const MainLayout = () => {
     const { loading } = useProducts(); // Access loading state
+    const fetchConfig = useSiteConfigStore(state => state.fetchConfig);
+
+    useEffect(() => {
+        fetchConfig();
+    }, [fetchConfig]);
 
     // Signal Prerender.io when app is fully ready (products loaded)
     useEffect(() => {

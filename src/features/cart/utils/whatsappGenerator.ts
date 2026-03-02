@@ -6,7 +6,8 @@ export const generateWhatsAppLink = (
     total: number,
     discount: Coupon | null,
     subtotal: number,
-    orderNumber: string
+    orderNumber: string,
+    shopNumber: string = "393778317091"
 ): { whatsappUrl: string; orderId: string } => {
 
     // 1. Validation
@@ -102,7 +103,6 @@ export const generateWhatsAppLink = (
 
     // 3. Generate Link
     const encodedMessage = encodeURIComponent(message);
-    const shopNumber = "393778317091";
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${shopNumber}&text=${encodedMessage}`;
 

@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Phone, User, CheckCircle, MessageCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { CheckoutFormData, SuccessData } from '../types';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 interface OrderConfirmationModalProps {
     isOpen: boolean;
@@ -21,6 +22,10 @@ const OrderConfirmationModal = ({
     cartTotal,
     successData
 }: OrderConfirmationModalProps) => {
+    const config = useSiteConfigStore(state => state.config);
+    const rawNumber = config?.whatsapp_number || "393778317091";
+    const formattedNumber = `+${rawNumber.substring(0, 2)} ${rawNumber.substring(2, 5)} ${rawNumber.substring(5, 8)} ${rawNumber.substring(8)}`;
+
     // Derived state instead of useEffect sync
     const viewState: 'success' | 'confirm' = (isOpen && successData) ? 'success' : 'confirm';
 
@@ -96,7 +101,7 @@ const OrderConfirmationModal = ({
                             </div>
 
                             <p className="text-xs text-text-muted/60 mt-4">
-                                Se WhatsApp non si apre, copia il mensaje e invialo al <span className="text-text-muted font-mono select-all">+39 377 831 7091</span>
+                                Se WhatsApp non si apre, copia il mensaje e invialo al <span className="text-text-muted font-mono select-all">{formattedNumber}</span>
                             </p>
 
                             <button onClick={onClose} className="text-text-muted hover:text-white text-sm underline pt-2">

@@ -1,8 +1,12 @@
 import React from 'react';
 import { Instagram } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 const InstagramSection: React.FC = () => {
+    const config = useSiteConfigStore(state => state.config);
+    const instagramUrl = config?.instagram_url || "https://instagram.com/perlanegra.it";
+
     return (
         <section className="py-16 bg-background-dark border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,7 +25,7 @@ const InstagramSection: React.FC = () => {
                 <div className="flex justify-center items-center w-full">
                     <Reveal delay={0.2} width="100%" className="flex justify-center">
                         <a
-                            href="https://instagram.com/perlanegra.it"
+                            href={instagramUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="block w-full max-w-md hover:opacity-95 transition-opacity duration-300"
@@ -42,7 +46,7 @@ const InstagramSection: React.FC = () => {
                 <Reveal delay={0.4}>
                     <div className="mt-10 text-center">
                         <a
-                            href="https://instagram.com/perlanegra.it"
+                            href={instagramUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 text-accent hover:text-accent-light font-medium transition-colors border-b border-transparent hover:border-accent pb-1"
