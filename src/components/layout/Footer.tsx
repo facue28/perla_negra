@@ -1,7 +1,12 @@
 import React from 'react';
 import { Instagram, Facebook } from 'lucide-react';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 const Footer = (): React.ReactElement => {
+    const config = useSiteConfigStore(state => state.config);
+    const instagramUrl = config?.instagram_url || "https://www.instagram.com/perlanegra.it";
+    const facebookUrl = config?.facebook_url || "https://www.facebook.com/profile.php?id=61580952122579";
+
     return (
         <footer className="bg-background-alt text-text-muted border-t border-border/20 py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,10 +36,10 @@ const Footer = (): React.ReactElement => {
                     {/* Social / Contact */}
                     <div className="flex flex-col items-center md:items-end space-y-4">
                         <div className="flex space-x-4">
-                            <a href="https://www.instagram.com/perlanegra.it?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Instagram">
+                            <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Instagram">
                                 <Instagram size={20} />
                             </a>
-                            <a href="https://www.facebook.com/profile.php?id=61580952122579&rdid=KF3E80I7TNmdrcd4&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1C3Cp1Ayiw%2F" target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Facebook">
+                            <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="p-2 bg-background-dark rounded-full hover:text-accent hover:border-accent border border-transparent transition-all" aria-label="Visita il nostro Facebook">
                                 <Facebook size={20} />
                             </a>
                         </div>

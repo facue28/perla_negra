@@ -19,6 +19,7 @@ import { createOrder } from '@/features/orders/services/orderService';
 import { logger } from '@/lib/logger';
 import { useProducts } from '@/features/products/hooks/useProducts';
 import { SuccessData } from '@/features/cart/types';
+import { useSiteConfigStore } from '@/features/core/store/useSiteConfigStore';
 
 const toTitleCase = (str: string) => {
     return str.toLowerCase().split(' ').map(word => {
@@ -29,6 +30,8 @@ const toTitleCase = (str: string) => {
 const CartPage = (): React.ReactElement => {
     const { items: cart, removeItem: removeFromCart, updateQuantity, total, subtotal, clearCart, discount, applyCoupon, removeCoupon } = useCart();
     const { products } = useProducts();
+    const config = useSiteConfigStore(state => state.config);
+    const whatsappNumber = config?.whatsapp_number || "393778317091";
     const navigate = useNavigate();
 
     // Idempotency Token (Generated once per session/mount)
@@ -243,7 +246,8 @@ const CartPage = (): React.ReactElement => {
                 orderTotal,
                 discount,
                 subtotal,
-                orderNumber
+                orderNumber,
+                whatsappNumber
             );
 
             setSuccessData({

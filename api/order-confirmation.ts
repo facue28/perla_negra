@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import nodemailer from 'nodemailer';
+import { createClient } from '@supabase/supabase-js';
 
 import { getBaseTemplate } from './lib/email-templates.js';
 
@@ -15,12 +16,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         SMTP_USER,
         SMTP_PASS,
         EMAIL_TO,
-        SUPABASE_SERVICE_ROLE_KEY // Para validar que la petición viene de nuestro Supabase
+        SUPABASE_SERVICE_ROLE_KEY, // Para validar que la petición viene de nuestro Supabase
+        VITE_SUPABASE_URL,
+        VITE_SUPABASE_ANON_KEY
     } = process.env;
 
     const authHeader = req.headers.authorization;
-
-
 
     if (!authHeader || authHeader !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
         return res.status(401).json({ error: 'Unauthorized' });
@@ -37,6 +38,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } = req.body;
 
     try {
+        let whatsappNumber = "393518549246"; // Default/Fallback
+        let contactEmail = SMTP_USER; // Default/Fallback
+
+        // Attempt to fetch dynamic configs
+        if (VITE_SUPABASE_URL && VITE_SUPABASE_ANON_KEY) {
+            try {
+                const supabase = createClient(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY);
+                const { data, error } = await supabase
+                    .from('site_config')
+                    .select('key, value')
+                    .eq('is_public', true);
+
+                if (!error && data) {
+                    const waObj = data.find(d => d.key === 'whatsapp_number');
+                    if (waObj) whatsappNumber = waObj.value;
+
+                    const emObj = data.find(d => d.key === 'contact_email');
+                    if (emObj) contactEmail = emObj.value;
+                }
+            } catch (configError) {
+                console.error("Failed to fetch dynamic site config for email:", configError);
+            }
+        }
+
         const transporter = nodemailer.createTransport({
             host: SMTP_HOST,
             port: parseInt(SMTP_PORT || '465'),
@@ -98,7 +123,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 <p>Ti avviseremo appena il tuo pacco sarà in viaggio.</p>
                 <div style="margin-top: 30px; padding: 20px; border-top: 1px solid rgba(255, 255, 255, 0.05);">
                     <p style="font-size: 13px; color: #D1D5D4; margin-bottom: 15px;">Serve aiuto o vuoi modificare l'ordine?</p>
-                    <a href="https://wa.me/393778317091" style="display: inline-block; padding: 12px 24px; background-color: #25D366; color: #FFFFFF; text-decoration: none; border-radius: 100px; font-weight: bold; font-size: 14px;">
+                    <a href="https://wa.me/${whatsappNumber}" style="display: inline-block; padding: 12px 24px; background-color: #25D366; color: #FFFFFF; text-decoration: none; border-radius: 100px; font-weight: bold; font-size: 14px;">
                         Chatta su WhatsApp
                     </a>
                 </div>
@@ -106,9 +131,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         `;
 
         const mailOptions = {
-            from: `"Perla Negra" <${SMTP_USER}>`,
+            from: `"Perla Negra" <${contactEmail}>`,
             to: customer_email,
-            bcc: EMAIL_TO,
+            bcc: EMAIL_TO || contactEmail,
             subject: `Conferma Ordine #${order_number} - Perla Negra`,
             html: getBaseTemplate(emailContent, `Conferma Ordine #${order_number}`)
         };
