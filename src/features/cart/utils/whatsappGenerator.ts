@@ -104,7 +104,7 @@ export const generateWhatsAppLink = (
     // 3. Generate Link
     const encodedMessage = encodeURIComponent(message);
 
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${shopNumber}&text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/${shopNumber}?text=${encodedMessage}`;
 
     return { whatsappUrl, orderId };
 };
