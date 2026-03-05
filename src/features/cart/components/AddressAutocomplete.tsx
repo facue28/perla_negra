@@ -268,24 +268,20 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
             {/* 2. Provincia & Comune - Funnel Grid (General to Specific) */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                    <label className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1 flex items-center gap-1">
                         Provincia *
-                    </label>
-                    <div className="relative">
-                        <Select
-                            value={watch('provincia')}
-                            onChange={(val) => handleManualChange('provincia', val)}
-                            options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
-                            placeholder={disabled ? "-" : "Seleziona"}
-                            disabled={disabled}
-                            className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
-                        />
                         {watch('provincia') && !errors.provincia && !isValidating && (
-                            <div className="absolute right-10 top-1/2 -translate-y-1/2 text-accent pointer-events-none">
-                                <CheckCircle size={14} />
-                            </div>
+                            <CheckCircle size={12} className="text-accent" />
                         )}
-                    </div>
+                    </label>
+                    <Select
+                        value={watch('provincia')}
+                        onChange={(val) => handleManualChange('provincia', val)}
+                        options={provinces.map(p => ({ value: p.code, label: `${p.name} (${p.code})` }))}
+                        placeholder={disabled ? "-" : "Seleziona"}
+                        disabled={disabled}
+                        className={`w-full ${errors.provincia ? 'border-red-500' : ''} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                    />
                     {errors.provincia && <p className="text-red-400 text-xs ml-1">{errors.provincia.message}</p>}
                 </div>
 
@@ -366,7 +362,7 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                 {errors.indirizzo && <p className="text-red-400 text-xs ml-1 mt-1">{errors.indirizzo.message}</p>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 items-end">
                 {/* 4. Civico */}
                 <div className="space-y-1">
                     <label htmlFor="checkout-civico" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
