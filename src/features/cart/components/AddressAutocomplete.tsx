@@ -286,26 +286,22 @@ const AddressAutocomplete = ({ register, setValue, watch, errors, disabled }: Ad
                 </div>
 
                 <div className="space-y-1">
-                    <label htmlFor="checkout-city" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1">
+                    <label htmlFor="checkout-city" className="text-xs uppercase tracking-wider text-text-muted/70 font-bold ml-1 flex items-center gap-1">
                         Comune *
-                    </label>
-                    <div className="relative">
-                        <input
-                            {...register('citta')}
-                            id="checkout-city"
-                            type="text"
-                            onBlur={validateLocation}
-                            disabled={disabled}
-                            autoComplete="none"
-                            placeholder={disabled ? "-" : "Roma"}
-                            className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
-                        />
                         {watch('citta') && !errors.citta && !isValidating && (
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-accent">
-                                <CheckCircle size={14} />
-                            </div>
+                            <CheckCircle size={12} className="text-accent" />
                         )}
-                    </div>
+                    </label>
+                    <input
+                        {...register('citta')}
+                        id="checkout-city"
+                        type="text"
+                        onBlur={validateLocation}
+                        disabled={disabled}
+                        autoComplete="none"
+                        placeholder={disabled ? "-" : "Roma"}
+                        className={`w-full bg-background-dark border ${errors.citta ? 'border-red-500' : 'border-white/10'} rounded-xl px-4 py-3 text-text-primary hover:border-accent/30 focus:ring-1 focus:ring-accent/50 focus:border-accent focus:outline-none transition-all ${disabled ? 'opacity-40 cursor-not-allowed bg-white/5' : ''}`}
+                    />
                     {errors.citta && <p className="text-red-400 text-xs ml-1">{errors.citta.message}</p>}
                 </div>
             </div>
