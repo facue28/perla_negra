@@ -33,7 +33,7 @@ const MainLayout = () => {
         <div className="flex flex-col min-h-screen bg-background-dark">
             <ScrollToTop />
             <Toaster
-                position="top-right"
+                position="bottom-right"
                 theme="dark"
                 duration={3000}
                 toastOptions={{
