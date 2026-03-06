@@ -63,7 +63,7 @@ const AdminProductForm: React.FC = () => {
     const [thumbFiles, setThumbFiles] = useState<(File | null)[]>([null, null, null]);
     const [imagePreviews, setImagePreviews] = useState<(string | null)[]>([null, null, null]);
 
-    const CATEGORIES = ['Lubrificanti', 'Lubrificante', 'Fragranza', 'Vigorizzanti', 'Olio commestibile', 'Gioco'];
+    const CATEGORIES = ['Lubrificante', 'Fragranza', 'Vigorizzanti', 'Olio commestibile', 'Gioco'];
 
     const convertToWebP = (file: File, targetWidth?: number): Promise<File> => {
         return new Promise((resolve, reject) => {
