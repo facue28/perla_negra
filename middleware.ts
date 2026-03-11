@@ -47,8 +47,15 @@ const BOT_AGENTS = [
     'XING-contenttabreceiver',
     'TelegramBot',
     'odklbot',
-    'vkShare',
-    'telegrambot'
+    'telegrambot',
+    // SEO Audit Bots
+    'ahrefsbot',
+    'semrushbot',
+    'dotbot',
+    'screaming frog seo spider',
+    'sitebulb',
+    'mj12bot',
+    'seokicks'
 ];
 
 const IGNORE_EXTENSIONS = [
