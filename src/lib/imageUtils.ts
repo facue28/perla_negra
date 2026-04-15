@@ -17,10 +17,17 @@ export const getOptimizedImageUrl = (url: string | null | undefined, options: Op
     if (!url) return '';
     if (typeof url !== 'string') return url as any; // Handle potential non-string legacy data
 
-    // TEMPORARY FIX: Disable Image Transformation to ensure images load
-    // The Render API might be failing or misconfigured. 
-    // Return original Storage URL.
-    return url;
+    // If options specify a small width, attempt to use the physically generated -min thumbnail
+    if (options.width && options.width <= 600 && url.includes('supabase.co/storage/v1/object/public/images/')) {
+        // Only append -min if it's a webp and not already a -min file
+        const urlWithoutQueries = url.split('?')[0];
+        if (urlWithoutQueries && urlWithoutQueries.endsWith('.webp') && !urlWithoutQueries.endsWith('-min.webp')) {
+            return urlWithoutQueries.replace('.webp', '-min.webp');
+        }
+    }
+
+    // Return original Storage URL
+    return url.split('?')[0];
 
     // Original Logic Disabled:
     /*

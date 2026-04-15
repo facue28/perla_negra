@@ -7,6 +7,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 import { getOptimizedImageUrl } from '@/lib/imageUtils';
 import { Product } from '@/features/products/types';
+import logoFallback from '@/assets/brand/logo-perla-negra.png';
 
 // Helper function to properly capitalize product names
 const toTitleCase = (str: string | undefined): string => {
@@ -50,9 +51,9 @@ const ProductCard = memo(({ product }: ProductCardProps) => {
                             } else if (product.fallbackImage && currentSrc !== product.fallbackImage) {
                                 // Fallback to category placeholder if everything else fails
                                 e.target.src = product.fallbackImage;
-                            } else {
-                                // Final fallback: Generic placeholder
-                                e.target.src = '/placeholder-product.webp';
+                            } else if (currentSrc !== logoFallback) {
+                                // Final fallback: Generic placeholder protecting against loop
+                                e.target.src = logoFallback;
                             }
                         }}
                         className="w-full h-full object-contain mix-blend-multiply transition-opacity duration-300"

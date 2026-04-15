@@ -5,45 +5,25 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const storageUrl = `${supabaseUrl}/storage/v1/object/public/images`;
 
 const getPlaceholderImage = (category: string | undefined): string => {
-    const cat = category?.toLowerCase() || '';
-
-    // 'Vigorizzanti' uses 'vigorizzanti.webp' - prioritizing this check
-    if (cat.includes('vigoriza')) return `${storageUrl}/vigorizzanti.webp`;
-
-    if (cat.includes('lubri') || cat.includes('gel')) return `${storageUrl}/lubricante.webp`;
-    if (cat.includes('frag') || cat.includes('profum')) return `${storageUrl}/fragancia.webp`;
-
-    // 'Afrodisiaco' and others use 'afrodisiaco.webp'
-    if (cat.includes('afro') || cat.includes('suple') || cat.includes('crema')) return `${storageUrl}/afrodisiaco.webp`;
-    if (cat.includes('olio') || cat.includes('aceite')) return `${storageUrl}/olio.webp`;
-    if (cat.includes('gioco') || cat.includes('juego')) return `${storageUrl}/gioco.webp`;
-
-    return `${storageUrl}/lubricante.webp`; // Revert to known working fallback
+    return ''; 
 };
 
-const getOptimizedImageUrl = (url: string | null | undefined, width: number = 800): string | undefined => {
+const getOptimizedImageUrl = (url: string | null | undefined): string | undefined => {
     if (!url) return undefined;
-
-    // Check if it's a Supabase Storage URL
-    if (!url.includes('supabase.co/storage')) return url; // Don't touch external URLs
-    if (url.includes('.svg')) return url; // Don't optimize SVGs
-
-    // Append transformation parameters
-    const separator = url.includes('?') ? '&' : '?';
-    return `${url}${separator}width=${width}&format=webp&quality=75`;
+    return url;
 };
 
 // Internal secure mapper (now exported for RPC usage)
 export const mapProductDBToProduct = (db: ProductDB): Product => {
     // 1. Safe Image Logic
     const hasBrokenUrl = db.image_url && db.image_url.includes('afrodisiaco.png');
-    // Prioritize valid DB URL, then category fallback, then generic placeholder
+    // Prioritize valid DB URL, then category fallback, then empty string
     const rawImageUrl = (hasBrokenUrl || !db.image_url)
-        ? getPlaceholderImage(db.category)
+        ? ''
         : db.image_url || '';
 
     // Optimize the final chosen URL
-    const validImageUrl = getOptimizedImageUrl(rawImageUrl) || rawImageUrl;
+    const validImageUrl = rawImageUrl;
 
     // 2. Size Logic
     let displaySize: string | number = '';
@@ -98,7 +78,7 @@ export const mapProductDBToProduct = (db: ProductDB): Product => {
 
 export const productService = {
     async getProducts(): Promise<Product[]> {
-        const CACHE_KEY = 'perlanegra_products_cache';
+        const CACHE_KEY = 'perlanegra_products_cache_v3';
         const CACHE_TIME_MS = 5 * 60 * 1000; // 5 minutos en milisegundos
 
         try {
